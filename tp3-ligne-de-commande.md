@@ -280,8 +280,7 @@ Afficher des informations sur le système :
 ```
 $ hostname
 $ uname -a
-$ cat /etc/release
-$ cat /etc/version
+$ cat /etc/lsb-release
 $ cat /etc/issue
 ```
 
