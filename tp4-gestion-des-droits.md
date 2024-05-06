@@ -10,8 +10,9 @@ Linux, de gérer les droits de base sur les fichiers et les répertoires et d’
 Il vous faut ouvrir une **session** sur votre poste de travail. Vous pouvez utiliser soit le mode console soit l’interface graphique. Dans les deux cas, vous allez travailler **« en ligne de commande »**.
 
 Pour ce tp, il vous faudra préalablement créer un répertoire de travail tpos4 dans $HOME/tpos et se déplacer dans l’arborescence de travail
-```
-$ mkdir -p $HOME/tpos/tpos
+
+```bash
+$ mkdir -p $HOME/tpos/tpos4
 $ cd $HOME/tpos/tpos4
 ```
 
