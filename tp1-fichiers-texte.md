@@ -335,7 +335,7 @@ $ file bonjour_dos.txt
 $ vim bonjour_dos.txt
 ```
 
-Remarque : pour quitter l’éditeur vim , faire Echap puis :q
+Remarque : pour quitter l’éditeur vim , faire Echap puis :q!
 
 Question 17. Observez en bas de page la détection du format[dos]par l’éditeur vim. 
 En vous aidant de l’aide (help echo), que permet l’option -e de la commande interne echo? Et l’option -n?
