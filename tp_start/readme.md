@@ -1,32 +1,36 @@
-### TP “Commandes de base Linux” — parcours progressif, guidé, et vérifié automatiquement
+### TP "Commandes de base Linux" — parcours progressif, guidé, et vérifié automatiquement
 
-— Contexte: vous démarrez sous Linux et vous souhaitez "apprendre en faisant". Ce TP vous guide pas à pas pour manipuler le système de fichiers, rechercher, filtrer, archiver, gérer des liens, variables, et observer les processus.
-— Contraintes: pas de sudo; tout se fait dans votre dossier personnel ($HOME, supposé être /home/user).
-— Vérification: un script Python vérifie à chaque étape l'état final (résultat concret).
-— Philosophie: l'énoncé ne donne pas forcément la commande exacte. Vous trouverez la commande via le manuel (man) et les indices fournis.
+**Présentation** :
+
+- **Contexte** : vous démarrez sous Linux et vous souhaitez "apprendre en faisant". Ce TP vous guide pas à pas pour manipuler le système de fichiers, rechercher, filtrer, archiver, gérer des liens, variables, et observer les processus.
+- **Contraintes** : pas de sudo; tout se fait dans votre dossier personnel ($HOME, supposé être /home/user).
+- **Vérification** : un script Python vérifie à chaque étape l'état final (résultat concret).
+- **Philosophie** : l'énoncé ne donne pas forcément la commande exacte. Vous trouverez la commande via le manuel (man) et les indices fournis.
 
 Divisez l’écran: à gauche votre terminal, à droite l’énoncé. Avancez calmement, lisez les intros, cherchez les commandes dans man, exécutez, puis validez avec le script.
 
 ---
 
-### Installation locale 
+### Installation locale
 
-1) Cloner le TP
+**1) Cloner le TP**
 
 ```bash
 git clone https://github.com/fabrice1618/intro_linux_tp.git
 cd intro_linux_tp/tp_start
 ```
 
-2) Initialiser les fichiers de départ
-- Exécutez: bash setup.sh
-- Puis test rapide: python3 verify.py --step 1
+**2) Initialiser les fichiers de départ**
 
-3) Vérifier une étape
-- Exemple: python3 verify.py --step 3
-- Mode tout-en-un: python3 verify.py --all
+- Exécutez : `bash setup.sh`
+- Puis test rapide : `python3 verify.py --step 1`
 
-Astuce man: utilisez man <commande>, /mot pour chercher dans la page, n pour “suivant”, q pour quitter.
+**3) Vérifier une étape**
+
+- Exemple : `python3 verify.py --step 3`
+- Mode tout-en-un : `python3 verify.py --all`
+
+**Astuce man** : utilisez `man <commande>`, `/mot` pour chercher dans la page, `n` pour "suivant", `q` pour quitter.
 
 ---
 
@@ -36,15 +40,28 @@ Chaque étape inclut: introduction (concept), tâche à réaliser (objectif obse
 
 ---
 
-#### Étape 1 — Se repérer dans l’arborescence
-- Concept: le “répertoire courant” est l’endroit où vous travaillez. Savoir où l’on est et lister ce qui s’y trouve est la base de toute manipulation.
-- À réaliser (résultat attendu):
-  1) Savoir afficher le chemin absolu du répertoire courant (juste le faire une fois pour vous).
-  2) Savoir lister les entrées, y compris cachées, et un listing détaillé (juste le faire pour vous).
-- Indices:
-  - Cherchez dans man (section 1): “print name of current working directory”.
-  - Cherchez la commande de listage dont les options incluent “-a” (inclure fichiers cachés) et “-l”.
-- Validation: python3 verify.py --step 1
+#### Étape 1 — Se repérer dans l'arborescence
+
+**Contexte et concepts** :
+Sous Linux, tout est organisé en arborescence de fichiers et dossiers, à partir de la racine `/`. Lorsque vous travaillez dans un terminal, vous êtes toujours "quelque part" dans cette arborescence : c'est le **répertoire courant** (ou répertoire de travail).
+
+Concepts clés :
+- **Chemin absolu** : commence par `/` et décrit le chemin complet depuis la racine (ex: `/home/user/Documents`)
+- **Chemin relatif** : décrit le chemin depuis le répertoire courant (ex: `Documents/projet`)
+- **Variables d'environnement** : `$HOME` contient le chemin de votre dossier personnel, `$PWD` contient le répertoire courant
+- **Fichiers cachés** : sous Linux, tout fichier dont le nom commence par `.` est considéré comme "caché" (ex: `.bashrc`)
+
+**À réaliser (résultat attendu)** :
+  1) Afficher le chemin absolu du répertoire courant (pour savoir où vous êtes)
+  2) Lister toutes les entrées du répertoire courant, y compris les fichiers cachés
+  3) Afficher un listing détaillé montrant les permissions, propriétaires, tailles et dates
+
+**Indices** :
+  - Cherchez dans man (section 1): "print name of current working directory"
+  - Cherchez la commande de listage dont les options incluent "-a" (all, inclure fichiers cachés) et "-l" (long format)
+  - Astuce : vous pouvez combiner plusieurs options, par exemple `-la` ou `-l -a`
+
+**Validation** : `python3 verify.py --step 1`
 
 Questions (théorie/pratique):
 1) Quelle variable contient le chemin du dossier personnel courant ? (A) $HOME (B) $PWD (C) $USER (D) $PATH  
@@ -56,14 +73,31 @@ Questions (théorie/pratique):
 ---
 
 #### Étape 2 — Créer dossiers et fichiers
-- Concept: créer une arborescence de travail, initialiser des fichiers, écrire et ajouter du contenu.
-- À réaliser (résultat attendu):
-  1) Créer un fichier vide dans workspace/data et un fichier “caché” (nom commençant par “.”) dans workspace/tmp.  
-  2) Créer workspace/docs/bonjour.txt avec 2 lignes de texte.
-- Indices:
-  - man: “make directories”, “create empty files or update times”, “write arguments to the standard output” (utilisable avec redirection > et >>).
-  - Astuce: pour numéroter/visualiser les lignes, cherchez la commande qui “number lines”.
-- Validation: python3 verify.py --step 2
+
+**Contexte et concepts** :
+Pour organiser votre travail, vous devez savoir créer des dossiers et des fichiers. Linux distingue plusieurs façons de créer et manipuler des fichiers texte.
+
+Concepts clés :
+- **Créer des dossiers** : utile pour organiser vos fichiers en arborescence
+- **Option -p** : crée les dossiers parents manquants (ex: `docs/rapports/2024` crée les trois niveaux d'un coup)
+- **Fichiers vides** : parfois on a besoin de créer un fichier sans contenu (pour le remplir plus tard)
+- **Redirections** :
+  - `>` : écrit dans un fichier (écrase le contenu existant)
+  - `>>` : ajoute à la fin d'un fichier (sans écraser)
+- **Fichiers cachés** : nommer un fichier `.cache` ou `.config` le rend invisible au listage normal
+
+**À réaliser (résultat attendu)** :
+  1) Créer un fichier vide nommé `todo.txt` dans `workspace/data`
+  2) Créer un fichier caché nommé `.cache` dans `workspace/tmp`
+  3) Créer le fichier `workspace/docs/bonjour.txt` contenant au moins 2 lignes de texte
+
+**Indices** :
+  - man: "make directories", "create empty files or update times", "write arguments to the standard output"
+  - Les redirections `>` et `>>` permettent d'écrire la sortie d'une commande dans un fichier
+  - Pour visualiser avec numéros de ligne : cherchez "number lines" dans man
+  - Exemple d'utilisation : `echo "première ligne" > fichier.txt` puis `echo "deuxième ligne" >> fichier.txt`
+
+**Validation** : `python3 verify.py --step 2`
 
 Questions:
 1) Quel caractère au début du nom rend un fichier “caché” ? (A) . (B) _ (C) ~ (D) -  
@@ -75,14 +109,33 @@ Questions:
 ---
 
 #### Étape 3 — Copier, déplacer, renommer, supprimer
-- Concept: “copier” duplique, “déplacer/renommer” change l’emplacement/nom, “supprimer” efface.
-- À réaliser (résultat attendu):
-  1) Copier récursivement le dossier data vers workspace/backup_data.  
-  2) Renommer la copie de bonjour en bonjour.renomme.txt et la déplacer à la racine de workspace.  
-  3) Supprimer workspace/docs/bonjour.txt et supprimer un dossier vide via la commande dédiée aux dossiers vides.
-- Indices:
-  - man: “copy files and directories” (option pour récursif), “move/rename files”, “remove files or directories”, “remove empty directories”.
-- Validation: python3 verify.py --step 3
+
+**Contexte et concepts** :
+Une fois vos fichiers créés, vous devez pouvoir les réorganiser : faire des copies de sauvegarde, déplacer des fichiers entre dossiers, renommer, ou nettoyer ce qui ne sert plus.
+
+Concepts clés :
+- **Copier** : crée un duplicata du fichier/dossier source, l'original reste intact
+  - Copie récursive (`-R` ou `-r`) : nécessaire pour copier un dossier avec tout son contenu
+- **Déplacer/Renommer** : sous Linux, c'est la même opération ! Déplacer un fichier dans le même dossier = le renommer
+- **Supprimer** :
+  - Fichiers : avec la commande de suppression classique
+  - Dossiers vides : commande spécifique dédiée aux répertoires vides
+  - Dossiers non vides : nécessite l'option récursive (`-r`)
+- **Mode verbeux** (`-v`) : affiche ce qui est fait, utile pour suivre les opérations
+
+**À réaliser (résultat attendu)** :
+  1) Copier le dossier `data` (avec tout son contenu) vers `workspace/backup_data`
+  2) Dans `workspace/backup_data/`, renommer `bonjour.txt` en `bonjour.renomme.txt`, puis le déplacer à la racine de `workspace/`
+  3) Supprimer le fichier original `workspace/docs/bonjour.txt`
+
+**Indices** :
+  - man: "copy files and directories" (cherchez l'option pour copie récursive)
+  - man: "move/rename files" (une seule commande pour déplacer ET renommer)
+  - man: "remove files or directories"
+  - Attention : il n'y a pas de "corbeille" en ligne de commande, la suppression est définitive !
+  - Note : vous pouvez aussi explorer "remove empty directories" pour supprimer des dossiers vides (optionnel)
+
+**Validation** : `python3 verify.py --step 3`
 
 Questions:
 1) Quelle option rend la copie “récursive” ? (A) -a (B) -R (C) -p (D) -v  
@@ -94,14 +147,33 @@ Questions:
 ---
 
 #### Étape 4 — Rechercher des fichiers et du texte
-- Concept: rechercher des fichiers par nom, motif, casse; chercher du texte dans des fichiers.
-- À réaliser (résultat attendu):
-  1) Sous workspace, trouver tout fichier dont le nom contient “fruits” (insensible à la casse).  
-  2) Dans data/fruits.txt, trouver les lignes contenant “pomme” avec numéros de lignes.  
-  3) Savoir localiser un exécutable dans le PATH (ex.: l’interpréteur Python).
-- Indices:
-  - man: commande qui “search for files in a directory hierarchy”; commande qui “print lines matching a pattern”; “show full path of shell commands” et builtin pour connaître la nature d’un nom de commande.
-- Validation: python3 verify.py --step 4
+
+**Contexte et concepts** :
+Dans un système avec des milliers de fichiers, savoir chercher efficacement est essentiel. Linux offre des outils puissants pour trouver des fichiers par leur nom et pour chercher du texte à l'intérieur des fichiers.
+
+Concepts clés :
+- **Recherche de fichiers** : parcourt l'arborescence pour trouver des fichiers selon des critères (nom, type, taille, date...)
+  - Recherche insensible à la casse : ignore majuscules/minuscules (ex: "Fruits" = "fruits" = "FRUITS")
+  - Jokers : `*` remplace n'importe quelle séquence de caractères
+- **Recherche de texte** : analyse le contenu des fichiers ligne par ligne
+  - Numéros de ligne : utile pour localiser précisément où se trouve le texte
+  - Expressions régulières : motifs de recherche puissants (avancé)
+- **Variable PATH** : liste des répertoires où le shell cherche les commandes exécutables
+  - `which` : trouve le chemin complet d'un exécutable
+  - `type` : indique si un nom est un alias, un builtin, ou un fichier exécutable
+
+**À réaliser (résultat attendu)** :
+  1) Rechercher sous `workspace/` tous les fichiers dont le nom contient "fruits" (sans tenir compte de la casse)
+  2) Dans le fichier `data/fruits.txt`, afficher les lignes contenant le mot "pomme" avec leurs numéros de lignes
+  3) Trouver le chemin complet de l'interpréteur Python (`python3`)
+
+**Indices** :
+  - man: commande qui "search for files in a directory hierarchy" (option `-iname` pour ignorer la casse)
+  - man: commande qui "print lines matching a pattern" (option `-n` pour les numéros de ligne, `-i` pour ignorer la casse)
+  - man: "show full path of shell commands"
+  - Le builtin `type` peut aussi identifier la nature d'une commande
+
+**Validation** : `python3 verify.py --step 4`
 
 Questions:
 1) Quelle option rend la recherche insensible à la casse pour la recherche texte ? (A) -n (B) -i (C) -v (D) -w  
@@ -113,16 +185,38 @@ Questions:
 ---
 
 #### Étape 5 — Filtres et redirections (pipes)
-- Concept: combiner des commandes: entrée standard → filtre → sortie standard. Trier, dédupliquer, compter, transformer.
-- À réaliser (résultat attendu):
-  1) Extraire les 5 premières et 3 dernières lignes de data/lorem.txt (visualisation, pas forcément fichier).  
-  2) Créer workspace/data/fruits_uniques.txt en triant data/fruits.txt puis en supprimant les doublons.  
-  3) Créer workspace/data/lorem_wc.txt contenant le nombre de mots de lorem.txt.  
-  4) Créer workspace/data/fruits_upper.txt contenant fruits.txt en MAJUSCULES.  
-  5) Extraire la 2e colonne d’un CSV (séparateur “,”) vers workspace/data/col2.txt.
-- Indices:
-  - man: “output the first part of files”, “output the last part…”, “sort lines of text files”, “report or omit repeated lines”, “print newline, word, and byte counts”, “translate or delete characters”, “remove sections from each line of files”.
-- Validation: python3 verify.py --step 5
+
+**Contexte et concepts** :
+La puissance de Linux réside dans la capacité à **combiner des commandes simples** pour réaliser des traitements complexes. C'est la philosophie Unix : chaque outil fait une chose, mais la fait bien, et on les combine.
+
+Concepts clés :
+- **Pipe (`|`)** : connecte la sortie d'une commande à l'entrée de la suivante
+  - Exemple : `cat fichier.txt | grep "mot"` (affiche le fichier puis filtre les lignes contenant "mot")
+- **Filtres** : commandes qui lisent l'entrée, la transforment, et produisent une sortie
+- **Opérations courantes** :
+  - Extraire des portions : premières/dernières lignes, colonnes spécifiques
+  - Trier : ordre alphabétique, numérique, inverse
+  - Dédupliquer : enlever les doublons (nécessite un tri préalable avec `uniq`)
+  - Compter : lignes, mots, caractères
+  - Transformer : changer la casse, remplacer des caractères
+- **Redirections** : `>` envoie le résultat dans un fichier au lieu de l'écran
+
+**À réaliser (résultat attendu)** :
+  1) Afficher les 5 premières lignes de `data/lorem.txt`, puis les 3 dernières lignes
+  2) Créer `workspace/data/fruits_uniques.txt` : trier `data/fruits.txt` et enlever les doublons
+  3) Créer `workspace/data/lorem_wc.txt` contenant le nombre de mots du fichier `lorem.txt`
+  4) Créer `workspace/data/fruits_upper.txt` : convertir `data/fruits.txt` en MAJUSCULES
+  5) Extraire la 2ème colonne de `data/sample.csv` vers `workspace/data/col2.txt`
+
+**Indices** :
+  - man: "output the first part of files" et "output the last part"
+  - man: "sort lines of text files" (tri alphabétique par défaut)
+  - man: "report or omit repeated lines" (attention : `uniq` ne fonctionne que sur des lignes **consécutives**, d'où le tri préalable)
+  - man: "print newline, word, and byte counts" (option `-w` pour les mots)
+  - man: "translate or delete characters" (peut convertir minuscules → majuscules)
+  - man: "remove sections from each line of files" (pour extraire des colonnes, options `-d` pour le délimiteur et `-f` pour le champ)
+
+**Validation** : `python3 verify.py --step 5`
 
 Questions:
 1) Quelle commande supprime les doublons consécutifs après tri ? (A) uniq (B) sort (C) cut (D) tr  
@@ -134,14 +228,40 @@ Questions:
 ---
 
 #### Étape 6 — Archiver et compresser
-- Concept: empaqueter plusieurs fichiers dans une archive, puis compresser; lister et extraire.
-- À réaliser (résultat attendu):
-  1) Créer une archive tar.gz du dossier data dans workspace/data_archive.tgz.  
-  2) Lister le contenu de l’archive.  
-  3) Extraire l’archive sous workspace/tmp.
-- Indices:
-  - man: utilitaire “tar” (voir options pour créer, compresser gzip, lister, extraire).
-- Validation: python3 verify.py --step 6
+
+**Contexte et concepts** :
+Pour partager ou sauvegarder plusieurs fichiers/dossiers, on les regroupe dans une **archive** unique, souvent **compressée** pour économiser de l'espace.
+
+Concepts clés :
+- **Archive** : regroupe plusieurs fichiers et dossiers en un seul fichier (comme un "sac")
+  - Format `tar` (Tape ARchive) : le standard sous Linux
+- **Compression** : réduit la taille des données
+  - `gzip` : algorithme de compression courant (extension `.gz`)
+  - Une archive tar compressée = `.tar.gz` ou `.tgz`
+- **Opérations sur les archives** :
+  - **Créer** : rassembler des fichiers dans une archive
+  - **Lister** : voir le contenu sans extraire
+  - **Extraire** : récupérer les fichiers originaux
+- **Options tar** : souvent combinées (ex: `-czf` = create + gzip + file)
+  - `-c` : create (créer)
+  - `-x` : extract (extraire)
+  - `-t` : test/list (lister)
+  - `-z` : gzip (compresser/décompresser)
+  - `-f` : file (spécifier le nom de l'archive)
+  - `-C` : change directory (extraire vers un répertoire spécifique)
+
+**À réaliser (résultat attendu)** :
+  1) Créer une archive compressée `workspace/data_archive.tgz` contenant tout le dossier `data/`
+  2) Lister le contenu de l'archive pour vérifier
+  3) Extraire l'archive dans `workspace/tmp/`
+
+**Indices** :
+  - man tar : cherchez les sections CREATE, LIST, EXTRACT
+  - Pour créer : `tar -czf archive.tgz dossier_source/`
+  - Pour lister : cherchez l'option qui affiche le contenu
+  - Pour extraire : option `-x` avec `-C` pour spécifier la destination
+
+**Validation** : `python3 verify.py --step 6`
 
 Questions:
 1) Quelle option de tar crée une archive ? (A) -x (B) -t (C) -c (D) -z  
@@ -153,14 +273,38 @@ Questions:
 ---
 
 #### Étape 7 — Liens symboliques et permissions
-- Concept: un lien symbolique est un “raccourci” vers un autre fichier; les permissions contrôlent lecture/écriture/exécution pour user:groupe:autres.
-- À réaliser (résultat attendu):
-  1) Créer un lien symbolique workspace/data/link_fruits.txt pointant vers data/fruits.txt.  
-  2) Régler les permissions de workspace/data/fruits_uniques.txt sur 640 (rw‑r-----).
-- Indices:
-  - man: “make links between files” (option pour symlink), “change file mode bits”.
-  - Pour lire les permissions: listage détaillé; repérez rwx en trois triplets.
-- Validation: python3 verify.py --step 7
+
+**Contexte et concepts** :
+Sous Linux, les **liens symboliques** permettent de créer des raccourcis, et les **permissions** contrôlent qui peut lire, écrire ou exécuter chaque fichier.
+
+Concepts clés :
+- **Lien symbolique (symlink)** : un "pointeur" vers un autre fichier ou dossier
+  - Comme un raccourci Windows, mais plus puissant
+  - Si on supprime la cible, le lien devient "cassé"
+  - Utile pour : accès rapide, compatibilité, organisation
+- **Permissions Linux** : système rwx (read, write, execute) pour 3 catégories
+  - **Propriétaire (user)** : le créateur du fichier
+  - **Groupe (group)** : les utilisateurs du même groupe
+  - **Autres (others)** : tout le reste du monde
+- **Notation octale** : représentation numérique des permissions
+  - r (read) = 4, w (write) = 2, x (execute) = 1
+  - Exemples :
+    - `640` = `rw-r-----` (user: lecture+écriture, group: lecture, others: rien)
+    - `755` = `rwxr-xr-x` (user: tout, group: lecture+exécution, others: lecture+exécution)
+    - `644` = `rw-r--r--` (user: lecture+écriture, tous: lecture seule)
+
+**À réaliser (résultat attendu)** :
+  1) Créer un lien symbolique `workspace/data/link_fruits.txt` qui pointe vers le fichier `data/fruits.txt` (utilisez le chemin absolu ou relatif approprié)
+  2) Changer les permissions de `workspace/data/fruits_uniques.txt` en `640` (rw-r-----)
+
+**Indices** :
+  - man: "make links between files" (option `-s` pour symbolic link)
+  - man: "change file mode bits" (accepte notation octale ou symbolique)
+  - Pour voir les permissions : `ls -l` affiche le format `-rwxrwxrwx`
+  - Syntaxe lien : `commande -s chemin_cible nom_du_lien`
+  - Astuce : pour un lien depuis `workspace/data/` vers `data/fruits.txt`, vous pouvez utiliser un chemin absolu (commence par `/`) ou un chemin relatif (ex: `../../data/fruits.txt`)
+
+**Validation** : `python3 verify.py --step 7`
 
 Questions:
 1) Quelle option crée un lien symbolique ? (A) -h (B) -s (C) -L (D) -P  
@@ -171,15 +315,46 @@ Questions:
 
 ---
 
-#### Étape 8 — Variables d’environnement et alias
-- Concept: variables (clé → valeur) qui influencent les programmes; exportation au sous‑processus; alias pour abréger une commande (valables dans la session).
-- À réaliser (résultat attendu):
-  1) Définir puis exporter une variable MYVAR avec une courte valeur (session courante).  
-  2) Créer un alias ll équivalent à un listage détaillé incluant les fichiers cachés; l’utiliser au moins une fois.
-- Indices:
-  - man bash (cherchez “Shell Variables”, “export”, “alias”).  
-  - help export, help alias dans bash.
-- Validation: python3 verify.py --step 8 (tolérant: les alias/variables sont propres au shell interactif; le script donne des conseils s’il ne les “voit” pas).
+#### Étape 8 — Variables d'environnement et alias
+
+**Contexte et concepts** :
+Le shell Bash vous permet de personnaliser votre environnement de travail avec des **variables** et des **alias** pour gagner du temps et adapter le comportement des programmes.
+
+Concepts clés :
+- **Variables shell** : stockent des valeurs (texte, nombres, chemins...)
+  - Déclaration : `MYVAR="valeur"` (sans espaces autour du `=`)
+  - Utilisation : `$MYVAR` ou `${MYVAR}`
+  - Scope : par défaut, visible uniquement dans le shell courant
+- **Export** : rend une variable visible par les programmes lancés depuis le shell
+  - Sans export : la variable reste locale au shell
+  - Avec export : les sous-processus (programmes enfants) peuvent la lire
+  - Exemple : `export PATH=/usr/local/bin:$PATH`
+- **Variables importantes** :
+  - `HOME` : votre dossier personnel
+  - `PATH` : où chercher les exécutables
+  - `USER` : votre nom d'utilisateur
+- **Alias** : raccourcis pour des commandes fréquentes
+  - Syntaxe : `alias nom='commande complète'`
+  - Exemples courants :
+    - `alias ll='ls -la'`
+    - `alias ..='cd ..'`
+  - Valable uniquement dans la session courante (sauf si ajouté à `~/.bashrc`)
+
+**À réaliser (résultat attendu)** :
+  1) Créer une variable `MYVAR` avec une valeur de votre choix, puis l'exporter
+  2) Créer un alias `ll` qui exécute un listage détaillé avec fichiers cachés
+  3) Utiliser l'alias `ll` pour vérifier qu'il fonctionne
+  4) Afficher la valeur de `MYVAR` avec `echo $MYVAR`
+
+**Indices** :
+  - man bash : cherchez les sections "Shell Variables", "ENVIRONMENT", "ALIASES"
+  - Commandes intégrées (builtins) : tapez `help export` et `help alias` directement dans bash
+  - Pour voir toutes les variables exportées : `env` ou `printenv`
+  - Pour voir tous les alias : `alias` sans argument
+
+**Validation** : `python3 verify.py --step 8`
+
+**Note** : Le script de vérification ne peut pas "voir" vos variables/alias car il s'exécute dans un processus séparé. C'est normal ! L'important est de comprendre comment les créer et les utiliser.
 
 Questions:
 1) Quelle commande exporte MYVAR ? (A) env MYVAR (B) export MYVAR (C) set MYVAR (D) declare -x sans export  
@@ -191,14 +366,44 @@ Questions:
 ---
 
 #### Étape 9 — Processus et ressources
-- Concept: observer les processus de l’utilisateur, trouver/terminer un processus, lire l’espace disque.
-- À réaliser (résultat attendu):
-  1) Lister vos processus.  
-  2) Lancer un processus court en arrière‑plan (ex.: sommeil), retrouver son PID, puis le terminer.  
-  3) Afficher l’espace disque en format lisible.
-- Indices:
-  - man: “report a snapshot of current processes”, “look up or signal processes based on name”, “report file system disk space usage”.
-- Validation: python3 verify.py --step 9
+
+**Contexte et concepts** :
+Sous Linux, chaque programme en cours d'exécution est un **processus**. Savoir les observer, les contrôler et surveiller les ressources système est essentiel pour gérer votre environnement.
+
+Concepts clés :
+- **Processus** : instance d'un programme en cours d'exécution
+  - Chaque processus a un **PID** (Process ID) unique
+  - Hiérarchie parent/enfant : chaque processus (sauf init) a un parent
+- **États d'un processus** :
+  - **Avant-plan (foreground)** : occupe le terminal, vous ne pouvez rien faire d'autre
+  - **Arrière-plan (background)** : s'exécute en parallèle, vous gardez la main sur le terminal
+  - Syntaxe : ajouter `&` à la fin d'une commande pour la lancer en arrière-plan
+- **Gestion des processus** :
+  - Lister : voir tous les processus en cours (ps, top, htop...)
+  - Filtrer : trouver un processus par nom ou critère
+  - Terminer : envoyer un signal pour arrêter un processus (proprement ou brutalement)
+- **Signaux courants** :
+  - `SIGTERM` (15) : demande d'arrêt propre (par défaut)
+  - `SIGKILL` (9) : arrêt brutal, sans nettoyage
+- **Ressources système** :
+  - Espace disque : voir l'occupation des systèmes de fichiers
+  - Option `-h` : affichage "human-readable" (Ko, Mo, Go...)
+
+**À réaliser (résultat attendu)** :
+  1) Afficher la liste de vos processus en cours
+  2) Lancer un processus simple en arrière-plan : `sleep 300 &`
+  3) Trouver le PID de ce processus `sleep`
+  4) Terminer ce processus en utilisant son nom ou son PID
+  5) Afficher l'espace disque disponible en format lisible (humain)
+
+**Indices** :
+  - man: "report a snapshot of current processes" (option `-u` pour filtrer par utilisateur)
+  - man: "look up or signal processes based on name" (cherchez `pgrep` pour trouver, `pkill` pour terminer)
+  - man: "report file system disk space usage" (option `-h` pour format lisible)
+  - Pour lister vos processus : `ps -u $(whoami)` ou `ps -u $USER`
+  - `$(whoami)` est une substitution de commande : exécute `whoami` et utilise le résultat
+
+**Validation** : `python3 verify.py --step 9`
 
 Questions:
 1) Quelle commande liste les processus de l’utilisateur actuel ? (A) ps -u $(whoami) (B) top (C) jobs -l (D) pstree  
@@ -209,16 +414,46 @@ Questions:
 
 ---
 
-#### Étape 10 — Trouver de l’aide, historique, horloge
-- Concept: s’auto‑documenter efficacement: pages de manuel, aide intégrée, historique pour rejouer des commandes, date/calendrier.
-- À réaliser (résultat attendu):
-  1) Lire une page de manuel et y chercher un mot‑clé.  
-  2) Afficher l’aide d’une commande avec --help.  
-  3) Afficher quelques lignes d’historique.  
-  4) Afficher la date et, si disponible, le calendrier.
-- Indices:
-  - man man (cherchez “SEARCHING”), “history” est un builtin Bash, date et cal sont des utilitaires usuels.
-- Validation: python3 verify.py --step 10
+#### Étape 10 — Trouver de l'aide, historique, horloge
+
+**Contexte et concepts** :
+Un bon développeur Linux sait **s'auto-documenter** : trouver de l'aide rapidement, réutiliser des commandes précédentes, et utiliser les outils système.
+
+Concepts clés :
+- **Pages de manuel (man)** : documentation complète de toutes les commandes
+  - Structure standard : NAME, SYNOPSIS, DESCRIPTION, OPTIONS, EXAMPLES...
+  - Navigation : espace (page suivante), `/mot` (rechercher), `n` (occurrence suivante), `q` (quitter)
+  - Sections : man 1 (commandes), man 3 (fonctions C), man 5 (formats de fichiers)...
+- **Aide rapide (--help)** : résumé court, affiché directement dans le terminal
+  - Plus rapide que man pour une référence rapide
+  - Exemple : `ls --help` affiche les options de ls
+- **Historique des commandes** : Bash garde en mémoire vos commandes précédentes
+  - `history` : affiche l'historique complet
+  - Flèche ↑/↓ : naviguer dans l'historique
+  - `!n` : ré-exécuter la commande numéro n
+  - `!!` : ré-exécuter la dernière commande
+  - `!grep` : ré-exécuter la dernière commande commençant par "grep"
+  - Ctrl+R : recherche interactive dans l'historique
+- **Utilitaires système** :
+  - `date` : affiche/configure date et heure
+  - `cal` : affiche un calendrier mensuel (peut ne pas être installé partout)
+
+**À réaliser (résultat attendu)** :
+  1) Ouvrir la page de manuel de `ls`, chercher le mot "hidden", puis quitter
+  2) Afficher l'aide rapide d'une commande avec `--help` (ex: `grep --help`)
+  3) Afficher les 10 dernières commandes de votre historique
+  4) Afficher la date et l'heure actuelles
+  5) Si disponible, afficher le calendrier du mois en cours
+
+**Indices** :
+  - man man : lisez la section "SEARCHING" pour apprendre à chercher dans une page man
+  - `history` est une commande intégrée (builtin) de Bash
+  - Pour limiter l'historique : `history 10` ou `history | tail -10`
+  - `date` fonctionne partout, `cal` peut nécessiter une installation
+
+**Validation** : `python3 verify.py --step 10`
+
+**Astuce** : Consultez la section "Guide d'utilisation de man" en fin de document pour plus de détails !
 
 Questions:
 1) Dans man, quel raccourci cherche un mot ? (A) ?mot (B) /mot (C) :mot (D) @mot  
