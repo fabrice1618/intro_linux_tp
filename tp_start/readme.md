@@ -1,9 +1,9 @@
 ### TP “Commandes de base Linux” — parcours progressif, guidé, et vérifié automatiquement
 
-— Contexte: vous démarrez sous Linux et vous souhaitez “apprendre en faisant”. Ce TP vous guide pas à pas pour manipuler le système de fichiers, rechercher, filtrer, archiver, gérer des liens, variables, et observer les processus.  
-— Contraintes: pas de sudo; tout se fait dans votre dossier personnel ($HOME, supposé être /home/user).  
-— Vérification: un script Python vérifie à chaque étape l’état final (résultat concret) et vous pose une mini‑question (QCM) pour valider une notion clé.  
-— Philosophie: l’énoncé ne donne pas forcément la commande exacte. Vous trouverez la commande via le manuel (man) et les indices fournis.
+— Contexte: vous démarrez sous Linux et vous souhaitez "apprendre en faisant". Ce TP vous guide pas à pas pour manipuler le système de fichiers, rechercher, filtrer, archiver, gérer des liens, variables, et observer les processus.
+— Contraintes: pas de sudo; tout se fait dans votre dossier personnel ($HOME, supposé être /home/user).
+— Vérification: un script Python vérifie à chaque étape l'état final (résultat concret).
+— Philosophie: l'énoncé ne donne pas forcément la commande exacte. Vous trouverez la commande via le manuel (man) et les indices fournis.
 
 Divisez l’écran: à gauche votre terminal, à droite l’énoncé. Avancez calmement, lisez les intros, cherchez les commandes dans man, exécutez, puis validez avec le script.
 
@@ -18,17 +18,13 @@ git clone https://github.com/fabrice1618/intro_linux_tp.git
 cd intro_linux_tp/tp_start
 ```
 
-2) Initialiser les fichiers de départ  
-- Exécutez: bash setup.sh  
-- Puis test rapide: python3 verify.py --step 1 --no-quiz
+2) Initialiser les fichiers de départ
+- Exécutez: bash setup.sh
+- Puis test rapide: python3 verify.py --step 1
 
-3) Vérifier une étape  
-- Exemple: python3 verify.py --step 3  
-- Mode tout-en-un: python3 verify.py --all  
-Options utiles:
-- --no-quiz désactive la question.  
-- --quiz force une question même si les vérifs “état final” suffisent.  
-- --answer B permet de répondre automatiquement au QCM (A/B/C/D).
+3) Vérifier une étape
+- Exemple: python3 verify.py --step 3
+- Mode tout-en-un: python3 verify.py --all
 
 Astuce man: utilisez man <commande>, /mot pour chercher dans la page, n pour “suivant”, q pour quitter.
 
@@ -36,7 +32,7 @@ Astuce man: utilisez man <commande>, /mot pour chercher dans la page, n pour “
 
 ## Parcours progressif
 
-Chaque étape inclut: introduction (concept), tâche à réaliser (objectif observable), indices (comment trouver les commandes dans man), validation (commande de vérification), et 5 questions (bases/approfondissement). Les questions sont aussi intégrées au script de vérification en QCM.
+Chaque étape inclut: introduction (concept), tâche à réaliser (objectif observable), indices (comment trouver les commandes dans man), et validation (commande de vérification).
 
 ---
 
@@ -236,8 +232,8 @@ Questions:
 ### Mode d’emploi rapide
 
 - Préparer: bash setup.sh
-- Travailler: lisez l’intro de l’étape, trouvez les commandes via man et les indices, réalisez l’objectif observable (résultat concret dans les fichiers).  
-- Vérifier: python3 verify.py --step N (répondre au QCM quand demandé).  
+- Travailler: lisez l'intro de l'étape, trouvez les commandes via man et les indices, réalisez l'objectif observable (résultat concret dans les fichiers).
+- Vérifier: python3 verify.py --step N
 - Consolider: python3 verify.py --all pour tout rejouer.
 
 Bon TP, et bonne exploration de la ligne de commande !

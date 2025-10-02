@@ -228,12 +228,9 @@ def step10():
 STEPS = {1: step1, 2: step2, 3: step3, 4: step4, 5: step5, 6: step6, 7: step7, 8: step8, 9: step9, 10: step10}
 
 def main():
-    ap = argparse.ArgumentParser(description="Vérification TP Linux (états + QCM)")
+    ap = argparse.ArgumentParser(description="Vérification TP Linux")
     ap.add_argument("--step", type=int, help="Numéro d'étape à vérifier (1-10)")
     ap.add_argument("--all", action="store_true", help="Tout vérifier (1→10)")
-    ap.add_argument("--quiz", action="store_true", help="Poser une question QCM même si non nécessaire")
-    ap.add_argument("--no-quiz", action="store_true", help="Ne pas poser de question QCM")
-    ap.add_argument("--answer", type=str, help="Réponse QCM automatique (A/B/C/D)")
     args = ap.parse_args()
 
     if not BASE.exists():
@@ -242,11 +239,6 @@ def main():
     def verify_one(i):
         print(f"\n=== Étape {i} ===")
         passed = STEPS[i]()
-        # Politique QCM: poser si --quiz, ou toujours (sauf --no-quiz) pour renforcer l'apprentissage
-        ask = args.quiz or not args.no_quiz
-        if ask:
-            qok = ask_quiz(i, given_answer=args.answer)
-            passed = passed and qok
         print("Résultat:", "✅ OK" if passed else "❌ À corriger")
         return passed
 
