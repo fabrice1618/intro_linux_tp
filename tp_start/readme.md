@@ -236,4 +236,100 @@ Questions:
 - Vérifier: python3 verify.py --step N
 - Consolider: python3 verify.py --all pour tout rejouer.
 
+---
+
+### Guide d'utilisation de man (pages de manuel)
+
+Le système `man` (manual) est votre référence principale pour comprendre les commandes Linux. Chaque page de manuel suit une structure standardisée et offre des fonctions de navigation et de recherche puissantes.
+
+#### Utilisation de base
+
+```bash
+man <commande>        # Ouvrir la page de manuel d'une commande
+man man              # Afficher l'aide sur man lui-même
+man -k <mot-clé>     # Chercher des commandes par mot-clé (apropos)
+whatis <commande>    # Description courte d'une commande
+```
+
+#### Structure d'une page de manuel
+
+Les pages man sont organisées en sections standardisées :
+
+- **NAME** : Nom de la commande et brève description
+- **SYNOPSIS** : Syntaxe d'utilisation (entre [] = optionnel, <> = obligatoire)
+- **DESCRIPTION** : Description détaillée de la commande et de ses fonctionnalités
+- **OPTIONS** : Liste et explication de toutes les options disponibles (-a, --verbose, etc.)
+- **EXAMPLES** : Exemples d'utilisation concrets (pas toujours présent)
+- **SEE ALSO** : Commandes et pages de manuel connexes
+- **AUTHOR** : Auteur(s) de la commande
+- **BUGS** : Bugs connus et limitations
+
+#### Navigation dans man
+
+Une fois dans une page de manuel (affichée via `less` par défaut) :
+
+| Touche | Action |
+|--------|--------|
+| `Espace` ou `f` | Page suivante |
+| `b` | Page précédente |
+| `↓` ou `Entrée` | Ligne suivante |
+| `↑` | Ligne précédente |
+| `g` | Début du document |
+| `G` | Fin du document |
+| `h` | Afficher l'aide de navigation |
+| `q` | Quitter man |
+
+#### Fonctions de recherche
+
+La recherche est l'outil le plus puissant dans man :
+
+| Commande | Action |
+|----------|--------|
+| `/mot` | Chercher "mot" vers l'avant (en descendant) |
+| `?mot` | Chercher "mot" vers l'arrière (en remontant) |
+| `n` | Occurrence suivante de la recherche |
+| `N` | Occurrence précédente de la recherche |
+
+**Exemples pratiques** :
+```bash
+man ls          # Ouvrir la page de ls
+/hidden         # Chercher le mot "hidden"
+n               # Passer à l'occurrence suivante
+q               # Quitter
+```
+
+#### Sections du manuel
+
+Le manuel Linux est divisé en sections numérotées :
+
+1. Commandes utilisateur (ls, cat, grep...)
+2. Appels système (fork, exec...)
+3. Fonctions de bibliothèque C (printf, malloc...)
+4. Fichiers spéciaux et périphériques (/dev/...)
+5. Formats de fichiers et conventions (/etc/passwd...)
+6. Jeux et économiseurs d'écran
+7. Divers (protocoles, systèmes de fichiers...)
+8. Commandes d'administration système (mount, useradd...)
+
+Pour accéder à une section spécifique :
+```bash
+man 1 printf    # printf en tant que commande shell
+man 3 printf    # printf en tant que fonction C
+```
+
+#### Astuces pour ce TP
+
+Lorsque les indices vous orientent vers man :
+1. Ouvrez la page avec `man <commande>`
+2. Utilisez `/` suivi du mot-clé suggéré dans l'indice
+3. Parcourez les occurrences avec `n` jusqu'à trouver l'option pertinente
+4. Lisez la section DESCRIPTION pour comprendre le contexte
+5. Vérifiez les EXAMPLES si disponibles
+
+**Exemple pour l'étape 1** :
+- Indice : "print name of current working directory"
+- `man -k directory | grep print` ou `man -k "print.*directory"`
+- Trouvez `pwd` dans les résultats
+- `man pwd` pour confirmer
+
 Bon TP, et bonne exploration de la ligne de commande !
