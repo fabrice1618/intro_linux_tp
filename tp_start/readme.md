@@ -489,7 +489,7 @@ Chaque étape inclut un **quiz QCM** (Questions à Choix Multiples) pour renforc
 
 **Lancer le quiz** :
 ```bash
-./quiz
+./quiz/quiz -q linux
 ```
 Le script quiz vous permet de tester vos connaissances sur les concepts abordés dans chaque étape.
 
@@ -501,13 +501,6 @@ Les questions portent sur :
 - Les bonnes pratiques Linux
 
 **Astuce** : Les questions sont listées à la fin de chaque étape dans ce document. Vous pouvez les consulter pour vous préparer !
-
-#### Workflow recommandé
-
-1. Réaliser les tâches de l'étape
-2. Vérifier avec `python3 verify.py --step N`
-3. Si validation OK, tester vos connaissances avec `./quiz`
-4. Passer à l'étape suivante
 
 ---
 
