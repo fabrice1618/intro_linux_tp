@@ -64,7 +64,7 @@ Concepts clés :
   - `date` : affiche/configure date et heure
 
 **À réaliser (résultat attendu)** :
-  1) Ouvrir la page de manuel de `ls`, chercher le mot "hidden", puis quitter
+  1) Ouvrir la page de manuel de `ls`, chercher le mot "starting", puis quitter
   2) Afficher l'aide rapide d'une commande avec `--help` (ex: `grep --help`)
   3) Afficher les 10 dernières commandes de votre historique
   4) Afficher la date et l'heure actuelles
