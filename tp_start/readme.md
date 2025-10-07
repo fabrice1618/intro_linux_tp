@@ -215,7 +215,7 @@ Concepts clés :
   - `type` : indique si un nom est un alias, un builtin, ou un fichier exécutable
 
 **À réaliser (résultat attendu)** :
-  1) Rechercher sous `workspace/` tous les fichiers dont le nom contient "fruits" (sans tenir compte de la casse)
+  1) Rechercher sous `data/` tous les fichiers dont le nom contient "fruits" (sans tenir compte de la casse)
   2) Dans le fichier `data/fruits.txt`, afficher les lignes contenant le mot "pomme" avec leurs numéros de lignes
   3) Trouver le chemin complet de l'interpréteur Python (`python3`)
 
