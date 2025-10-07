@@ -150,8 +150,8 @@ def step4():
 def step5():
     # Étape 5: Rechercher (ancienne step4)
     passed = True
-    out = run(f'find "{BASE}/workspace" -iname "*fruits*"').stdout.strip()
-    if out: ok("Recherche de *fruits* trouvée sous workspace")
+    out = run(f'find "{BASE}/data" -iname "*fruits*"').stdout.strip()
+    if out: ok("Recherche de *fruits* trouvée sous data")
     else: ko("find n'a rien trouvé"); passed = False
     out2 = run(f'grep -n "pomme" "{BASE}/data/fruits.txt"').stdout
     if out2: ok('grep a trouvé "pomme" dans data/fruits.txt')
