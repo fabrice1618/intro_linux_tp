@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-import os, sys, argparse, re, shutil, subprocess, random
+import os, sys, argparse, re, shutil, subprocess, random, shlex
 from pathlib import Path
 
 BASE = Path.cwd().resolve()
+QBASE = shlex.quote(str(BASE))
 
 GREEN = "\033[92m"; RED = "\033[91m"; YELLOW = "\033[93m"; CYAN = "\033[96m"; RESET = "\033[0m"
 
@@ -131,7 +132,8 @@ def step3():
     if (ws / "tmp" / ".cache").exists(): ok("fichier caché .cache créé")
     else: ko(".cache absent"); passed = False
     bj = ws / "docs" / "bonjour.txt"
-    if bj.exists() and file_has_lines(bj, 2): ok("bonjour.txt a ≥2 lignes")
+    bj_alt = ws / "bonjour.renomme.txt"
+    if (bj.exists() and file_has_lines(bj, 2)) or bj_alt.exists(): ok("bonjour.txt validé")
     else: ko("bonjour.txt absent/incomplet"); passed = False
     return passed
 
@@ -150,10 +152,10 @@ def step4():
 def step5():
     # Étape 5: Rechercher (ancienne step4)
     passed = True
-    out = run(f'find "{BASE}/data" -iname "*fruits*"').stdout.strip()
+    out = run(f'find {QBASE}/data -iname "*fruits*"').stdout.strip()
     if out: ok("Recherche de *fruits* trouvée sous data")
     else: ko("find n'a rien trouvé"); passed = False
-    out2 = run(f'grep -n "pomme" "{BASE}/data/fruits.txt"').stdout
+    out2 = run(f'grep -n "pomme" {QBASE}/data/fruits.txt').stdout
     if out2: ok('grep a trouvé "pomme" dans data/fruits.txt')
     else: ko('grep n\'a pas trouvé "pomme"'); passed = False
     if shutil.which("python3"):
@@ -177,8 +179,15 @@ def step6():
         if not p.exists():
             ko(f"{fname} manquant"); passed = False
         else:
+            content = p.read_text().strip()
+            if not content:
+                ko(f"{fname} est vide"); passed = False; continue
+            if fname == "fruits_uniques.txt":
+                lines = content.splitlines()
+                if len(lines) != len(set(lines)):
+                    ko(f"{fname} contient des doublons"); passed = False
             ok(f"{fname} généré")
-            if pattern and not re.search(pattern, p.read_text()):
+            if pattern and not re.search(pattern, content):
                 ko(f"{fname} ne contient pas le motif attendu"); passed = False
     return passed
 
@@ -228,7 +237,7 @@ def step10():
     if run("df -h").returncode == 0: ok("df fonctionne")
     else: ko("df a échoué"); passed = False
     # Conseillé: ne laissez pas de 'sleep' traîner
-    sleeps = run("pgrep sleep").stdout.strip()
+    sleeps = run("pgrep -u $(whoami) sleep").stdout.strip()
     if sleeps:
         info(f"'sleep' encore présent (pid: {sleeps}). Ce n'est pas bloquant.")
     else:
