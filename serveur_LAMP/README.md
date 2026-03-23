@@ -1,4 +1,4 @@
-# Serveur LAMP
+# Serveur LAMP  - serveur développement
 
 - A Installation d'un Hyperviseur et création d'une machine virtuelle
   - A1 Installation hyperviseur
@@ -419,7 +419,7 @@ mysql> show databases;
 
 
 mysql> CREATE USER 'myapp'@'localhost' IDENTIFIED BY 'abcd';
-mysql> GRANT ALL PRIVILEGES ON myapp.* TO 'myapp'@'localhost' WITH GRANT OPTION;
+mysql> GRANT ALL PRIVILEGES ON myapp.* TO 'myapp'@'localhost';
 Query OK, 0 rows affected (0.00 sec)
 
 mysql> FLUSH PRIVILEGES;
@@ -430,7 +430,7 @@ mysql> SHOW GRANTS FOR 'myapp'@'localhost';
 | Grants for myapp@localhost                                                     |
 +------------------------------------------------------------------------------------+
 | GRANT USAGE ON *.* TO `myapp`@`localhost`                                      |
-| GRANT ALL PRIVILEGES ON `myapp`.* TO `myapp`@`localhost` WITH GRANT OPTION |
+| GRANT ALL PRIVILEGES ON `myapp`.* TO `myapp`@`localhost`                       |
 +------------------------------------------------------------------------------------+
 2 rows in set (0.00 sec)
 
