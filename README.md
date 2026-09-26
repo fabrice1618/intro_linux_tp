@@ -102,8 +102,7 @@ Support de cours d'introduction à GNU/Linux : histoire et philosophie d'UNIX, l
 
 Plusieurs solutions permettent de disposer d'un système Linux pour suivre le cours et réaliser les TP :
 
-- **Les machines de la salle SS5** : ouvrir une session avec le compte `utilisateur` / `istp`. Si nécessaire, les machines peuvent être réinstallées à partir d'une clé USB **vierge** de 8 Go, sur laquelle on « flashe » l'image d'installation avec **Rufus** ou **balenaEtcher**.
-- **Un Linux « live »** : le système démarre directement depuis une clé USB, sans rien installer sur le disque. Il faut parfois désactiver le *Secure Boot* dans l'UEFI de la machine, et le système est lent puisque tout est lu depuis la clé.
+- **Un Linux « live »** : le système démarre directement depuis une clé USB, sans rien installer sur le disque. On prépare une clé USB **vierge** de 8 Go en y « flashant » l'image de la distribution avec **Rufus** ou **balenaEtcher** ; la même clé permet aussi d'installer Linux sur une machine. Il faut parfois désactiver le *Secure Boot* dans l'UEFI de la machine, et le système est lent puisque tout est lu depuis la clé.
 - **Une machine virtuelle** : un hyperviseur exécute Linux à l'intérieur du système habituel. On utilise par exemple **Hyper-V** (inclus dans Windows Pro, hyperviseur de type 1) ou **VirtualBox** (hyperviseur de type 2). Une clé USB permet de transporter l'image d'installation.
 - **Un serveur VPS** : un accès à un serveur Linux distant peut être fourni. On s'y connecte en ligne de commande avec `ssh`.
 
@@ -173,6 +172,26 @@ Le système d'exploitation GNU/Linux est composé :
 - d'un **shell** et des **applications** (espace utilisateur, *user space*) ;
 - d'un **système de fichiers** ;
 - de la **mémoire virtuelle**, composée de la RAM physique et de la zone d'échange (*swap*).
+
+```mermaid
+flowchart TB
+    U(["Utilisateur"])
+    subgraph US["Espace utilisateur"]
+        SH["Shell<br/>bash"]
+        APP["Applications<br/>vim, gcc, firefox, ..."]
+        D["Démons<br/>sshd, cron, ..."]
+        LIB["Bibliothèques<br/>glibc"]
+    end
+    K["Noyau Linux<br/>processus (scheduler), mémoire virtuelle,<br/>systèmes de fichiers, pilotes (drivers)"]
+    HW["Matériel<br/>processeur, RAM, disques, réseau"]
+    U --> SH
+    U --> APP
+    SH --> LIB
+    APP --> LIB
+    D --> LIB
+    LIB -->|"appels système"| K
+    K --> HW
+```
 
 Les tâches (services) du système d'exploitation sont assurées par des processus qui fonctionnent en permanence en tâche de fond : les **démons** (*daemons*). Leur nom se termine souvent par un `d` : `sshd`, `cron`, `systemd`, ...
 
@@ -398,6 +417,17 @@ $ history | grep -v " h" | sed 's/[ \t]*$//' | sort -k 2 -r | uniq -f 1 | sort -
 
 *[Extrait d'un article de Denis Bodor dans GNU/Linux Magazine HS n°46]*
 
+Chaque programme n'effectue qu'une seule tâche, et le tube `|` les fait collaborer en transmettant la sortie de l'un à l'entrée du suivant. Le résultat : l'historique des commandes, sans les doublons.
+
+```mermaid
+flowchart LR
+    A["history<br/>liste les commandes"] --> B["grep -v<br/>élimine des lignes"]
+    B --> C["sed<br/>supprime les espaces<br/>en fin de ligne"]
+    C --> D["sort -k 2 -r<br/>trie par commande"]
+    D --> E["uniq -f 1<br/>supprime les doublons"]
+    E --> F["sort -n<br/>remet dans l'ordre<br/>chronologique"]
+```
+
 ---
 
 ## Manipuler sous Linux
@@ -582,9 +612,26 @@ Par défaut, ces flux sont :
 - 1 : l'**écran** (*stdout* : *standard output*)
 - 2 : l'**écran** (*stderr* : *standard error*)
 
+```mermaid
+flowchart LR
+    CL(["Clavier"]) -->|"0 : stdin"| P["Processus"]
+    P -->|"1 : stdout"| EC(["Écran"])
+    P -->|"2 : stderr"| EC
+```
+
 > **Remarque** : `/dev/null` est un fichier spécial qui fait disparaître tout ce qu'on y écrit. On l'utilise pour se débarrasser des messages d'erreur d'une commande : `commande 2> /dev/null`.
 
 Il est possible de **rediriger ces flux** vers des fichiers (en utilisant les opérateurs `<`, `>`, `<<` et `>>`) ou vers des processus en utilisant un tube (*pipe*). Un tube (`|`) est un canal entre deux processus (redirection de la sortie d'un processus vers l'entrée d'un autre processus).
+
+Par exemple, la ligne `cmd1 < fichier.txt 2> erreurs.txt | cmd2 > resultat.txt` réalise les redirections suivantes :
+
+```mermaid
+flowchart LR
+    F[("fichier.txt")] -->|"#lt; : stdin"| C1["cmd1"]
+    C1 -->|"tube : stdout vers stdin"| C2["cmd2"]
+    C2 -->|"#gt; : stdout"| S[("resultat.txt")]
+    C1 -.->|"2#gt; : stderr"| ERR[("erreurs.txt")]
+```
 
 ### Historique des commandes
 
@@ -641,6 +688,13 @@ cmd1 && cmd2   # si cmd1 retourne VRAI alors cmd2 sera exécuté
 cmd1 || cmd2   # si cmd1 retourne FAUX alors cmd2 sera exécuté
 ```
 
+```mermaid
+flowchart LR
+    C1["cmd1"] --> T{"code retour $?<br/>égal à 0 ?"}
+    T -->|"oui : VRAI"| A["cmd1 && cmd2<br/>cmd2 est exécutée"]
+    T -->|"non : FAUX"| B["cmd1 || cmd2<br/>cmd2 est exécutée"]
+```
+
 Le groupement `||` est notamment adapté à l'envoi conditionné de messages d'erreurs :
 
 ```bash
@@ -690,6 +744,18 @@ Une commande, une fois lancée, devient un **processus** : l'image en cours d'ex
 
 Chaque processus est identifié par un **PID** (*Process IDentifier*) et connaît le PID de son parent, le **PPID** (*Parent Process IDentifier*). Les processus sont donc organisés en arbre : chacun d'eux a un seul et unique parent, et l'ancêtre de tous les autres porte le PID 1 (historiquement le programme `init`, aujourd'hui `systemd` sur la plupart des distributions). Dans un système multitâche, c'est l'**ordonnanceur** (*scheduler*) du noyau qui répartit le temps processeur entre les processus.
 
+Exemple (simplifié) d'arbre des processus, tel que l'affiche `pstree` :
+
+```mermaid
+flowchart TD
+    S["systemd<br/>PID 1"] --> SSHD["sshd<br/>PID 812"]
+    S --> CRON["cron<br/>PID 790"]
+    S --> LOGIN["login<br/>PID 1020"]
+    SSHD --> B1["bash<br/>PID 4501, PPID 812"]
+    LOGIN --> B2["bash<br/>PID 3310, PPID 1020"]
+    B1 --> PS["ps -ef<br/>PID 4630, PPID 4501"]
+```
+
 ```bash
 $ ps -ef                  # liste tous les processus (voir aussi ps aux)
 $ pstree                  # affiche l'arbre des processus
@@ -707,10 +773,28 @@ $ kill -l                 # liste les signaux disponibles
 - `kill`, `killall`, `pkill` : envoient un **signal** à un ou plusieurs processus pour l'interrompre, le stopper, le terminer (`TERM`, par défaut) ou le tuer (`KILL`, `kill -9`) ;
 - `&` à la fin de la ligne de commande : lance la commande en arrière-plan ;
 - `nohup` : détache le processus du terminal (il continue après la fermeture de la session) ;
-- `Ctrl + C` interrompt la commande au premier plan, `Ctrl + Z` la met en pause ; `fg` et `bg` la relancent au premier plan ou en arrière-plan ;
+- `Ctrl + C` interrompt la commande au premier plan, `Ctrl + Z` la met en pause ; `fg` et `bg` la relancent au premier plan ou en arrière-plan (voir le diagramme ci-dessous) ;
 - `at` : lance des commandes à une heure précise (exécution différée) ;
 - `batch` : exécute des commandes lorsque la charge du système le permet ;
 - `cron` (`crontab -e`) : planifie l'exécution périodique de commandes.
+
+Les états d'une tâche lancée depuis le shell :
+
+```mermaid
+stateDiagram-v2
+    direction LR
+    state "Premier plan" as PP
+    state "Arrière-plan" as AP
+    state "Stoppée" as ST
+    [*] --> PP : commande
+    [*] --> AP : commande &
+    PP --> ST : Ctrl + Z
+    ST --> PP : fg
+    ST --> AP : bg
+    AP --> PP : fg
+    PP --> [*] : fin ou Ctrl + C
+    AP --> [*] : fin ou kill
+```
 
 ### Installer des logiciels : les paquets
 
@@ -726,6 +810,21 @@ Les gestionnaires de paquets Debian :
 - **APT** (`apt`, `apt-get`) : télécharge les paquets depuis les dépôts et gère automatiquement les dépendances ;
 - `aptitude` : une autre interface en ligne de commande à APT ;
 - `synaptic` : une interface graphique à APT.
+
+```mermaid
+sequenceDiagram
+    actor U as Utilisateur
+    participant APT as apt
+    participant DEP as Dépôts (Internet)
+    participant DPKG as dpkg
+    U->>APT: sudo apt update
+    APT->>DEP: télécharge la liste des paquets disponibles
+    U->>APT: sudo apt install htop
+    APT->>APT: calcule les dépendances
+    APT->>DEP: télécharge htop et ses dépendances (.deb)
+    APT->>DPKG: installe les paquets .deb
+    DPKG-->>U: logiciel installé
+```
 
 ```bash
 # apt update              # met à jour la liste des paquets disponibles
@@ -782,6 +881,19 @@ On distingue deux types de chemins d'accès :
 - le **chemin absolu** dont la référence est la **racine**. Sous UNIX/Linux, un chemin absolu commence toujours par `/`.
 - le **chemin relatif** dont la référence est le **répertoire courant** (`.`), le **répertoire parent** (`..`) ou le répertoire personnel (`~`).
 
+Les exemples suivants s'appuient sur l'arborescence ci-dessous (rectangles : répertoires, formes arrondies : fichiers) :
+
+```mermaid
+flowchart TD
+    R["/"] --> HOME["home"]
+    R --> ETC["etc"]
+    HOME --> PROF["prof"]
+    HOME --> TV["tv"]
+    TV --> HELLO("hello.c")
+    TV --> TMP["tmp"]
+    TMP --> BONJOUR("bonjour.txt")
+```
+
 **Quel est le chemin d'accès à "hello.c"?**
 
 - Avec un chemin d'accès absolu : `/home/tv/hello.c`
@@ -798,7 +910,29 @@ On distingue deux types de chemins d'accès :
 
 ### Structure de l'arborescence Unix/Linux
 
-Voir l'[Annexe n°2](#annexe-2--larborescence-unixlinux).
+Les principaux répertoires d'un système GNU/Linux :
+
+```mermaid
+flowchart LR
+    R["/"] --> BIN["bin<br/>commandes"]
+    R --> BOOT["boot<br/>noyau, démarrage"]
+    R --> DEV["dev<br/>périphériques"]
+    R --> ETC["etc<br/>configuration"]
+    R --> HOME["home<br/>utilisateurs"]
+    R --> ROOT["root<br/>répertoire de root"]
+    R --> PROC["proc<br/>processus, noyau"]
+    R --> TMP["tmp<br/>fichiers temporaires"]
+    R --> USR["usr<br/>programmes"]
+    R --> VAR["var<br/>données variables"]
+    HOME --> TV["tv"]
+    HOME --> PROF["prof"]
+    USR --> UBIN["bin"]
+    USR --> ULIB["lib"]
+    USR --> ULOCAL["local"]
+    VAR --> LOG["log<br/>journaux"]
+```
+
+Voir l'[Annexe n°2](#annexe-2--larborescence-unixlinux) pour la liste détaillée.
 
 ### Les Fichiers
 
@@ -846,6 +980,19 @@ Le terme **inode** désigne le **descripteur d'un fichier** sous UNIX/Linux. Les
 > **Remarque** : par défaut, un bloc a une taille de 4096 octets (4 KiO).
 
 > **Remarque** : l'inode ne contient pas le nom du fichier. C'est le répertoire qui associe un nom à un numéro d'inode : un même inode peut donc avoir plusieurs noms (liens physiques, créés avec `ln`).
+
+```mermaid
+flowchart LR
+    subgraph REP["Répertoire /home/tv"]
+        E1["hello.c → inode 655480"]
+        E2["lien_hello.c → inode 655480"]
+    end
+    I["Inode 655480<br/>type, droits, propriétaire,<br/>taille, dates, 2 liens,<br/>numéros des blocs"]
+    B[("Bloc 2656872<br/>contenu du fichier")]
+    E1 --> I
+    E2 --> I
+    I --> B
+```
 
 > **Attention** : la commande `stat` compte les blocs en unités de 512 octets (`stat --printf="%b blocs de %B octets\n" fichier`). Dans l'exemple ci-dessous, « Blocs : 8 » correspond donc à 8 × 512 = 4096 octets, soit un seul bloc du système de fichiers.
 
@@ -1387,6 +1534,19 @@ Chacune de ces permissions peut être attribuée à :
 
 > **Remarque** : attention, la vérification des droits d'accès se fait dans l'ordre `u` `g` `o`. Dès qu'une concordance est trouvée, elle s'applique!
 
+```mermaid
+flowchart TD
+    A["Un utilisateur veut accéder à un fichier"] --> R{"Est-il root ?<br/>UID 0"}
+    R -->|oui| OK["Accès autorisé"]
+    R -->|non| U{"Est-il le propriétaire<br/>du fichier ?"}
+    U -->|oui| DU["Seuls les droits du bloc u<br/>s'appliquent"]
+    U -->|non| G{"Appartient-il au groupe<br/>du fichier ?"}
+    G -->|oui| DG["Seuls les droits du bloc g<br/>s'appliquent"]
+    G -->|non| DO["Seuls les droits du bloc o<br/>s'appliquent"]
+```
+
+Conséquence : avec les droits `----rwx---` (`chmod 070`), le propriétaire n'a aucun accès au fichier, même s'il fait partie du groupe.
+
 ### Les droits spéciaux : SUID, SGID et sticky bit
 
 En plus de ces droits de base, il existe aussi des droits spéciaux pour les fichiers :
@@ -1400,6 +1560,18 @@ C'est grâce au bit *SUID* que `sudo` permet d'exécuter des commandes en "*root
 ```bash
 $ ls -l /usr/bin/sudo
 -rwsr-xr-x 2 root root 70K mars  12 17:35 /usr/bin/sudo
+```
+
+```mermaid
+sequenceDiagram
+    actor TV as tv (UID 1000)
+    participant S as sudo (SUID root)
+    participant A as apt
+    TV->>S: sudo apt update
+    Note over S: grâce au bit SUID, sudo s'exécute<br/>avec l'UID effectif 0 (root)
+    S->>S: vérifie /etc/sudoers et le mot de passe de tv
+    S->>A: lance apt avec les droits de root
+    A-->>TV: résultat de la commande
 ```
 
 > **Attention** : attribuer le droit `s` (Set-User-ID) abusivement peut entraîner de sérieuses failles de sécurité (par exemple ne jamais le faire pour le programme `cat`, sinon n'importe qui pourra visualiser TOUS les fichiers du système !).
@@ -1520,6 +1692,12 @@ b) Puis le système applique le masque défini par `umask` pour créer les droit
 Soit l'opération suivante : 666 & ~022 = 644 = rw- r-- r--
 
 De même, pour un répertoire (créé avec les droits 777) : 777 & ~022 = 755 = rwx r-x r-x
+
+```mermaid
+flowchart LR
+    P["Droits demandés<br/>par le programme<br/>fichier : 666 rw-rw-rw-<br/>répertoire : 777 rwxrwxrwx"] --> M{"masque umask 022<br/>retire w à g et o"}
+    M --> F["Droits obtenus<br/>fichier : 644 rw-r--r--<br/>répertoire : 755 rwxr-xr-x"]
+```
 
 Lors de la copie d'un fichier, c'est le même principe qui est appliqué en utilisant cette fois les droits du fichier source. Il existe des options (`-p`, `-a`, ...) qui modifient ce comportement et permettent de préserver les propriétés du fichier source.
 
@@ -1881,6 +2059,17 @@ je suis un script
   $ source monscript
   ```
 
+La différence est importante : `./monscript` et `sh monscript` exécutent le script dans un **nouveau processus** (un sous-shell), alors que `source` l'exécute dans le **shell courant**.
+
+```mermaid
+flowchart TD
+    SH["Shell courant<br/>bash"]
+    SH -->|"./monscript ou sh monscript"| SUB["Nouveau processus : sous-shell<br/>qui exécute le script"]
+    SUB --> X["À la fin du script, les variables<br/>et le répertoire courant modifiés<br/>par le script sont perdus"]
+    SH -->|"source monscript"| CUR["Le shell courant exécute<br/>lui-même le script"]
+    CUR --> Y["Les variables et le répertoire<br/>courant modifiés par le script<br/>restent en place"]
+```
+
 ### Les variables
 
 Une variable est un espace de stockage pour un résultat.
@@ -2232,6 +2421,20 @@ else liste de commandes
 fi
 ```
 
+La « condition » est le code retour de la liste de commandes : `0` signifie VRAI.
+
+```mermaid
+flowchart TD
+    D(["if"]) --> C1{"condition 1<br/>vraie ?"}
+    C1 -->|oui| A1["then : commandes 1"]
+    C1 -->|non| C2{"elif : condition 2<br/>vraie ?"}
+    C2 -->|oui| A2["then : commandes 2"]
+    C2 -->|non| A3["else : commandes 3"]
+    A1 --> F(["fi"])
+    A2 --> F
+    A3 --> F
+```
+
 **Exemples :**
 
 ```
@@ -2363,6 +2566,15 @@ do liste de commandes
 done
 ```
 
+```mermaid
+flowchart TD
+    D(["for variable in liste"]) --> C{"reste-t-il un élément<br/>dans la liste ?"}
+    C -->|oui| V["variable = élément suivant"]
+    V --> B["do : liste de commandes"]
+    B --> C
+    C -->|non| F(["done"])
+```
+
 **Exemples :**
 
 ```bash
@@ -2439,6 +2651,16 @@ while true    # ou while :
 do liste de commandes
 done
 ```
+
+```mermaid
+flowchart TD
+    D(["while"]) --> C{"condition<br/>vraie ?"}
+    C -->|oui| B["do : liste de commandes"]
+    B --> C
+    C -->|non| F(["done"])
+```
+
+La boucle `until` fonctionne à l'inverse : elle répète la liste de commandes tant que la condition est **fausse**.
 
 **Exemples :**
 
