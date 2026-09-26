@@ -13,35 +13,41 @@ This is a progressive Linux command-line tutorial (TP - "Travaux Pratiques") des
 ### Core Components
 
 - **setup.sh**: Initialization script that creates the practice environment
-  - Creates `data/` directory with sample files (lorem.txt, fruits.txt, sample.csv, logs/app.log)
-  - Creates `workspace/` directory structure (docs/, data/, tmp/) for student work
+  - Recreates `data/` from scratch on every run (lorem.txt, fruits.txt, Fruits_exotiques.txt, sample.csv, logs/app.log, hidden `.bienvenue`, non-executable `salut.sh`)
+  - Creates only `workspace/preuves/` and `workspace/.verify/` (SHA-256 of `data/` files); students create the other folders at step 3
+  - Keeps existing `workspace/`; `bash setup.sh --reset` wipes it
   - Must be run before starting exercises
 
-- **verify.py**: Automated verification system (Python 3)
-  - Validates each step's completion by checking expected files/directories/states
-  - Includes QCM (multiple choice quiz) questions to reinforce learning
-  - 10 verification functions (`step1()` through `step10()`) corresponding to exercises
-  - Uses colored terminal output (GREEN/RED/YELLOW/CYAN) for feedback
+- **verify.py**: Automated verification system (Python 3, stdlib only)
+  - Checks the concrete result of each task and, on failure, explains what it found plus a hint (never the command itself)
+  - Each task is a function (`e1_man`, `e6_uniques`...) returning `OK(message, *remarques)` or `KO(message, *indices)`; `ETAPES` lists the 10 steps and their tasks
+  - Observation questions (`question()`) check tasks that leave no file (secret word, PID of the shell...); correct answers are stored in `workspace/.verify/reponses.json`
+  - Warns when `data/` differs from the checksums written by setup.sh
 
 - **readme.md**: Complete tutorial with 10 progressive exercises
-  - Each step includes: concept introduction, tasks, hints for finding commands via `man`, validation instructions, and 5 QCM questions
+  - Each step includes: concept introduction, tasks, real excerpts of `man`/`help` pages (English man, French `help`), validation instructions
+  - No quiz: quiz questions are managed in a separate system
   - No `sudo` required; all work happens in user's home directory
+
+- **readme_correction.md** (git-ignored): teacher's solutions, must stay in sync with readme.md
 
 ### Directory Structure
 
 ```
 .
-├── data/                    # Initial data files (read-only source material)
-│   ├── fruits.txt          # Sample text file with fruit names
+├── data/                    # Source files, recreated by setup.sh, never modified by students
+│   ├── .bienvenue          # Hidden file with the secret word (step 2)
+│   ├── fruits.txt          # Fruit names with duplicates and mixed case
+│   ├── Fruits_exotiques.txt # Capitalized name: find must ignore case (step 5)
 │   ├── lorem.txt           # Lorem ipsum text for practice
+│   ├── salut.sh            # Script without execute permission (step 8)
 │   ├── sample.csv          # CSV file for column extraction practice
 │   └── logs/app.log        # Log file for filtering practice
-├── workspace/              # Student working directory (created by setup.sh)
-│   ├── docs/               # For document creation exercises
-│   ├── data/               # For data manipulation exercises
-│   └── tmp/                # For temporary files and extraction
+├── workspace/              # Student working directory
+│   ├── preuves/            # Outputs saved with > so verify.py can check them
+│   └── .verify/            # data.sha256 (setup.sh) and reponses.json (verify.py)
 ├── setup.sh                # Environment setup script
-├── verify.py               # Automated verification and quiz system
+├── verify.py               # Automated verification script
 └── readme.md               # Complete tutorial instructions
 ```
 
@@ -53,58 +59,62 @@ This is a progressive Linux command-line tutorial (TP - "Travaux Pratiques") des
 # Initialize the practice environment (REQUIRED FIRST STEP)
 bash setup.sh
 
-# Verify a specific step (with quiz)
-python3 verify.py --step N
+# Progress table of all steps (never asks questions)
+python3 verify.py
 
-# Verify without quiz questions
-python3 verify.py --step N --no-quiz
+# Detailed check of one step (asks the unanswered observation questions)
+python3 verify.py N        # or: python3 verify.py --step N
 
-# Verify all steps (1-10)
+# Detailed check of all steps
 python3 verify.py --all
 
-# Auto-answer quiz with specific choice
-python3 verify.py --step N --answer B
+# Restart the whole TP
+bash setup.sh --reset
 ```
 
 ### Verification System Details
 
-- Exit code 0 = success, 2 = failure
-- QCM questions are randomly selected from a bank for each step
-- Step 8 verification is tolerant (environment variables/aliases are shell-specific)
-- Verification checks concrete results (files, permissions, symlinks) not command history
+- Exit code 0 = validated, 2 = to fix, 1 = environment not ready (setup.sh not run)
+- Works from any directory (`BASE` is the script's folder)
+- A task never crashes the script: exceptions become a KO line
+- Checks tolerate later steps: step 3 still passes after step 4 moved `bonjour.txt` or removed `janvier`, so all 38 tasks can be green at the end
+- Answers to questions can be piped (`printf 'a\nb\n' | python3 verify.py 2`), handy for testing
 
 ## Tutorial Steps (10 Exercises)
 
-1. **Navigation**: pwd, ls, $HOME, $PWD
-2. **File/Directory Creation**: mkdir, touch, echo, redirection (>, >>)
-3. **Copy/Move/Delete**: cp -R, mv, rm, rmdir
-4. **Search**: find, grep, which, type
-5. **Filters/Pipes**: head, tail, sort, uniq, wc, tr, cut
-6. **Archive/Compress**: tar (create, list, extract with gzip)
-7. **Symlinks/Permissions**: ln -s, chmod (octal notation)
-8. **Environment/Aliases**: export, alias, $MYVAR
-9. **Processes**: ps, pgrep, pkill, df, background jobs (&)
-10. **Help/History**: man, --help, history, date, cal
+1. **Help/History**: man, man -k, --help, help, history, date
+2. **Navigation**: pwd, cd, ls -a -l, cat, absolute/relative paths
+3. **File/Directory Creation**: mkdir (-p), touch, echo, redirection (>, >>), cat -n
+4. **Copy/Move/Delete**: cp -R, mv, rm -r, rmdir
+5. **Search**: find -iname, grep -i -n, which, type
+6. **Filters/Pipes**: head, tail, sort, uniq, wc, tr, cut, grep | wc
+7. **Archive/Compress**: tar (create, list, extract with gzip)
+8. **Symlinks/Permissions**: ln -s, chmod (octal notation), executable script
+9. **Environment/Aliases**: export, child processes, alias
+10. **Processes**: ps, jobs, pgrep, kill/pkill, df -h, background jobs (&)
 
 ## Implementation Notes
 
 ### When Modifying verify.py
 
-- Each step function must return `True` (passed) or `False` (failed)
-- File existence checks use `Path` objects from `pathlib`
-- `run()` helper executes shell commands with captured output
-- `file_has_lines(path, min_lines)` validates minimum line count
-- QCM bank in `QCM` dictionary maps step number to list of (question, options, correct_answer)
+- A task function must return exactly one `OK(...)` or `KO(...)`: the progress table counts tasks
+- Compute expected values from `data/` files (word count, column...), never hard-code them, so setup.sh stays the single source of truth
+- `absent(path)` is the standard KO for a missing file: it also looks for a file of the same name elsewhere (wrong current directory)
+- Hints point to the relevant option or concept, not to the full command
+- When changing tasks, update readme.md, readme_correction.md and VERIFICATION_COHERENCE.md together
 
 ### Expected Student Work Products
 
-Verification looks for specific files created by students:
-
-- Step 2: `workspace/data/todo.txt`, `workspace/tmp/.cache`, `workspace/docs/bonjour.txt` (≥2 lines)
-- Step 3: `workspace/backup_data/` (recursive copy), `workspace/bonjour.renomme.txt`, `workspace/docs/bonjour.txt` (deleted)
-- Step 5: `workspace/data/fruits_uniques.txt`, `lorem_wc.txt`, `fruits_upper.txt`, `col2.txt`
-- Step 6: `workspace/data_archive.tgz`, extracted `workspace/tmp/data/fruits.txt`
-- Step 7: `workspace/data/link_fruits.txt` (symlink), `fruits_uniques.txt` with mode 640
+- Step 1: `workspace/preuves/historique.txt`; questions: `-S`, weekday of 2030-01-01, `pwd`
+- Step 2: questions only (absolute path of the TP, secret word, size of sample.csv, relative path)
+- Step 3: `workspace/{docs,data,tmp}/`, `workspace/projets/2026/janvier/`, `workspace/data/todo.txt`, `workspace/tmp/.cache`, `workspace/docs/bonjour.txt` (≥2 lines)
+- Step 4: `workspace/backup_data/` (without `logs/`), `workspace/bonjour.renomme.txt`, `janvier/` removed
+- Step 5: `workspace/preuves/find_fruits.txt`, `grep_poire.txt`, `which_python3.txt`
+- Step 6: `workspace/data/lorem_extrait.txt`, `fruits_uniques.txt`, `lorem_wc.txt`, `fruits_upper.txt`, `col2.txt`, `nb_info.txt`
+- Step 7: `workspace/data_archive.tgz`, `workspace/preuves/contenu_archive.txt`, extracted `workspace/tmp/data/`
+- Step 8: `workspace/data/link_fruits.txt` (symlink), `fruits_uniques.txt` with mode 640, `workspace/salut.sh` with mode 755
+- Step 9: exported `MYVAR` (inherited by verify.py), `workspace/preuves/alias.txt` containing the `verif` alias
+- Step 10: question (PID of the shell), `workspace/preuves/sleep.pid` (process terminated), `workspace/preuves/disque.txt` (`df -h`)
 
 ### Constraints and Philosophy
 
