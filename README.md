@@ -1,12 +1,30 @@
 # Cours GNU/Linux
 
+Support de cours d'introduction à GNU/Linux : histoire et philosophie d'UNIX, ligne de commande, fichiers, gestion des droits, filtres et scripts shell. Les travaux pratiques associés sont listés dans la partie [Mise en route](#mise-en-route).
+
 ## Sommaire
 
-- [GNU/Linux](#gnulinux-1)
+- [Mise en route](#mise-en-route)
+  - [Accéder à un système Linux](#accéder-à-un-système-linux)
+  - [Travaux pratiques](#travaux-pratiques)
+- [GNU/Linux](#gnulinux)
   - [Présentation](#présentation)
   - [Notion de système d'exploitation](#notion-de-système-dexploitation)
+  - [Composants d'un système GNU/Linux](#composants-dun-système-gnulinux)
+- [Histoire d'UNIX et de la famille UNIX](#histoire-dunix-et-de-la-famille-unix)
+  - [Aux origines : Multics et les Bell Labs](#aux-origines--multics-et-les-bell-labs)
+  - [UNIX et le langage C](#unix-et-le-langage-c)
+  - [BSD, l'UNIX de Berkeley](#bsd-lunix-de-berkeley)
+  - [Les UNIX commerciaux et la normalisation](#les-unix-commerciaux-et-la-normalisation)
+  - [Le projet GNU et le logiciel libre](#le-projet-gnu-et-le-logiciel-libre)
+  - [Linux](#linux)
+  - [La famille UNIX aujourd'hui](#la-famille-unix-aujourdhui)
+  - [Les grandes figures](#les-grandes-figures)
+  - [Chronologie](#chronologie)
+  - [Culture du logiciel libre](#culture-du-logiciel-libre)
+  - [UNIX en images et en vidéos](#unix-en-images-et-en-vidéos)
 - [Philosophie UNIX](#philosophie-unix)
-  - [« L'univers a 50 ans »](#lunivers-a-50-ans)
+  - [« L'univers a 50 ans »](#-lunivers-a-50-ans-)
   - [Des programmes qui effectuent une seule chose et qui le font bien](#des-programmes-qui-effectuent-une-seule-chose-et-qui-le-font-bien)
   - [Le silence est d'or](#le-silence-est-dor)
   - [Des programmes qui collaborent](#des-programmes-qui-collaborent)
@@ -24,6 +42,8 @@
   - [Shell Bash](#shell-bash)
   - [Historique des commandes](#historique-des-commandes)
   - [Groupement de commandes](#groupement-de-commandes)
+  - [Gérer les processus](#gérer-les-processus)
+  - [Installer des logiciels : les paquets](#installer-des-logiciels--les-paquets)
   - [Une liste de commandes de base](#une-liste-de-commandes-de-base)
 - [Manipuler des fichiers](#manipuler-des-fichiers)
   - [Système de fichiers](#système-de-fichiers)
@@ -39,8 +59,21 @@
   - [Modifier le contenu d'un fichier texte](#modifier-le-contenu-dun-fichier-texte)
   - [Éditer un fichier texte (vim)](#éditer-un-fichier-texte-vim)
   - [Manipuler des fichiers et des répertoires](#manipuler-des-fichiers-et-des-répertoires)
-  - [Contrôler l'accès à vos fichiers](#contrôler-laccès-à-vos-fichiers)
-  - [Caractères spéciaux](#caractères-spéciaux)
+- [Gestion des droits](#gestion-des-droits)
+  - [Utilisateurs et groupes](#utilisateurs-et-groupes)
+  - [Afficher les permissions](#afficher-les-permissions)
+  - [Les permissions de base](#les-permissions-de-base)
+  - [Les droits spéciaux : SUID, SGID et sticky bit](#les-droits-spéciaux--suid-sgid-et-sticky-bit)
+  - [Modifier les permissions : chmod](#modifier-les-permissions--chmod)
+  - [Les droits par défaut : umask](#les-droits-par-défaut--umask)
+  - [Changer de propriétaire : chown et chgrp](#changer-de-propriétaire--chown-et-chgrp)
+  - [Pour aller plus loin sur les droits](#pour-aller-plus-loin-sur-les-droits)
+- [Caractères spéciaux et filtres](#caractères-spéciaux-et-filtres)
+  - [Les caractères génériques du shell](#les-caractères-génériques-du-shell)
+  - [Les expressions régulières](#les-expressions-régulières)
+  - [Les standards BRE, ERE et PCRE](#les-standards-bre-ere-et-pcre)
+  - [Protéger les caractères spéciaux](#protéger-les-caractères-spéciaux)
+  - [Les filtres grep, sed et awk](#les-filtres-grep-sed-et-awk)
 - [Automatiser des tâches](#automatiser-des-tâches)
   - [Objectifs](#objectifs)
   - [Les shell scripts](#les-shell-scripts)
@@ -53,12 +86,43 @@
   - [Les commentaires](#les-commentaires)
   - [L'affichage sur la sortie standard](#laffichage-sur-la-sortie-standard)
   - [La saisie de données](#la-saisie-de-données)
+  - [Les commandes internes utiles](#les-commandes-internes-utiles)
   - [Les tests et conditions](#les-tests-et-conditions)
   - [Les structures conditionnelles](#les-structures-conditionnelles)
   - [Les contrôles itératifs (les boucles for, while et until)](#les-contrôles-itératifs-les-boucles-for-while-et-until)
   - [Les fonctions](#les-fonctions)
 - [Annexe 1 : Une liste de commandes de base](#annexe-1--une-liste-de-commandes-de-base)
 - [Annexe 2 : L'arborescence Unix/Linux](#annexe-2--larborescence-unixlinux)
+
+---
+
+## Mise en route
+
+### Accéder à un système Linux
+
+Plusieurs solutions permettent de disposer d'un système Linux pour suivre le cours et réaliser les TP :
+
+- **Les machines de la salle SS5** : ouvrir une session avec le compte `utilisateur` / `istp`. Si nécessaire, les machines peuvent être réinstallées à partir d'une clé USB **vierge** de 8 Go, sur laquelle on « flashe » l'image d'installation avec **Rufus** ou **balenaEtcher**.
+- **Un Linux « live »** : le système démarre directement depuis une clé USB, sans rien installer sur le disque. Il faut parfois désactiver le *Secure Boot* dans l'UEFI de la machine, et le système est lent puisque tout est lu depuis la clé.
+- **Une machine virtuelle** : un hyperviseur exécute Linux à l'intérieur du système habituel. On utilise par exemple **Hyper-V** (inclus dans Windows Pro, hyperviseur de type 1) ou **VirtualBox** (hyperviseur de type 2). Une clé USB permet de transporter l'image d'installation.
+- **Un serveur VPS** : un accès à un serveur Linux distant peut être fourni. On s'y connecte en ligne de commande avec `ssh`.
+
+> **Remarque** : sous Windows, WSL (*Windows Subsystem for Linux*) permet aussi d'utiliser un shell Linux sans machine virtuelle à gérer soi-même.
+
+### Travaux pratiques
+
+| Ressource | Contenu |
+|---|---|
+| [Commandes de base](linux_commandes_base.md) | Mémento des commandes de base, condensé du manuel Linux |
+| [TP « Commandes de base Linux »](tp_start/readme.md) | Parcours progressif et guidé, vérifié automatiquement par un script |
+| [TP1 - Les fichiers textes](tp/tp1-fichiers-texte.md) | Manipuler des fichiers « texte » et comprendre leur contenu |
+| [TP2 - Les fichiers exécutables](tp/tp2-fichiers-executables.md) | L'éditeur `vim`, scripts et programmes exécutables |
+| [TP3 - Ligne de commande](tp/tp3-ligne-de-commande.md) | Se déplacer dans l'arborescence, obtenir des informations sur le système |
+| [TP4 - Gestion des droits](tp/tp4-gestion-des-droits.md) | Gérer les droits sur les fichiers et les répertoires |
+| [TP5 - Commandes](tp/tp5-commandes.md) | Utilisation avancée des commandes |
+| [Serveur LAMP](serveur_LAMP/README.md) | Installer un serveur de développement Linux, Apache, MySQL, PHP |
+
+Progression conseillée pour la première séance : le mémento des [commandes de base](linux_commandes_base.md), le [TP1](tp/tp1-fichiers-texte.md), puis le [TP2](tp/tp2-fichiers-executables.md) (en partie).
 
 ---
 
@@ -76,7 +140,7 @@ Linux est le nom couramment donné à tout système d'exploitation (*operating s
 
 Le noyau Linux a été initialement écrit par Linus Torvalds, un étudiant finlandais au début des années 90. Depuis, des centaines de développeurs et des entreprises de toutes tailles participent au projet, dont Linus Torvalds est toujours le coordinateur.
 
-Le système avec les applications est le plus souvent distribué sous la forme de **distributions Linux** comme Slackware, Debian, Red Hat, Mandriva ou **Ubuntu**...
+Le système avec les applications est le plus souvent distribué sous la forme de **distributions Linux** comme Debian, **Ubuntu**, Linux Mint, Red Hat (RHEL), Fedora, Arch Linux ou Slackware...
 
 La différence essentielle de Linux par rapport à d'autres systèmes d'exploitation concurrents (comme Mac OS, Microsoft Windows et Solaris) est d'être un système d'exploitation libre, apportant quatre libertés aux utilisateurs, définies par la licence GNU GPL, les rendant indépendants de tout éditeur et encourageant l'entraide et le partage :
 
@@ -99,6 +163,193 @@ De manière générale, un système d'exploitation :
 - fournit les interfaces homme-machine des différents programmes ;
 - réalise enfin différentes fonctions visant à assurer la fiabilité (tolérance aux pannes, isolation des fautes) et la sécurité informatique (traçabilité, confidentialité, intégrité et disponibilité).
 
+UNIX, et donc GNU/Linux, est un système d'exploitation **multitâche** (plusieurs programmes s'exécutent en même temps) et **multi-utilisateur** (plusieurs utilisateurs peuvent travailler simultanément sur la même machine).
+
+### Composants d'un système GNU/Linux
+
+Le système d'exploitation GNU/Linux est composé :
+
+- d'un **noyau** (*kernel*) ;
+- d'un **shell** et des **applications** (espace utilisateur, *user space*) ;
+- d'un **système de fichiers** ;
+- de la **mémoire virtuelle**, composée de la RAM physique et de la zone d'échange (*swap*).
+
+Les tâches (services) du système d'exploitation sont assurées par des processus qui fonctionnent en permanence en tâche de fond : les **démons** (*daemons*). Leur nom se termine souvent par un `d` : `sshd`, `cron`, `systemd`, ...
+
+**Le noyau** est en charge des opérations de base :
+
+- la gestion des périphériques (à travers les pilotes de périphériques, *drivers*), de la mémoire, des processus et des démons ;
+- le contrôle des échanges de données (par exemple TCP/IP) entre les programmes et le matériel ;
+- l'ordonnancement des processus et le partage du temps processeur (*scheduler*) ;
+- la gestion de la mémoire virtuelle.
+
+**Le shell** constitue l'interface entre le noyau et l'utilisateur. Les shells les plus courants sont :
+
+- le **Bourne Shell** (`sh`) : le shell historique d'UNIX, référence pour l'écriture de scripts portables ;
+- le **C Shell** (`csh`) : une variante avec une syntaxe proche du langage C ;
+- le **Bourne Again Shell** (`bash`) : compatible avec le Bourne Shell, il ajoute l'historique des commandes, les alias et l'édition de la ligne de commande. C'est le shell par défaut de la plupart des distributions Linux (Debian, Ubuntu, Fedora, ...).
+
+**Le système de fichiers** organise les données en une hiérarchie unique de répertoires, sous-répertoires et fichiers dont le sommet est la racine `/` (voir [Manipuler des fichiers](#manipuler-des-fichiers)).
+
+**La zone de swap** est utilisée lorsque la mémoire physique (RAM) est pleine : les pages mémoire (blocs de taille fixe) inactives depuis un certain temps sont déplacées dans la zone de swap, sur le disque. Elle peut être une partition dédiée ou un simple fichier (`/swapfile`). La commande `free -h` affiche l'occupation de la RAM et du swap.
+
+---
+
+## Histoire d'UNIX et de la famille UNIX
+
+### Aux origines : Multics et les Bell Labs
+
+Au milieu des années 1960, le MIT, General Electric et les Bell Labs d'AT&T développent **Multics**, un système d'exploitation à temps partagé très ambitieux. Jugé trop complexe et trop coûteux, le projet est abandonné par les Bell Labs en 1969.
+
+La même année, deux chercheurs des Bell Labs, **Ken Thompson** et **Dennis Ritchie**, écrivent sur un mini-ordinateur **PDP-7** de DEC inutilisé un système beaucoup plus simple. Brian Kernighan le baptise par jeu de mots *Unics* (par opposition à Multics), nom qui devient **UNIX**. Le premier système UNIX date donc de **1969**.
+
+### UNIX et le langage C
+
+UNIX est porté dès 1970 sur le **PDP-11**, puis connaît une évolution décisive : en 1973, son noyau est réécrit dans un nouveau langage, le **C**, créé par Dennis Ritchie à partir du langage B de Ken Thompson. Jusque-là, un système d'exploitation était écrit en assembleur et donc lié à un modèle de machine : écrit en C, UNIX devient **portable** et peut être adapté à d'autres ordinateurs. La même année, Doug McIlroy fait ajouter les **tubes** (*pipes*), qui fondent la [philosophie UNIX](#philosophie-unix) de programmes qui collaborent.
+
+À cause d'une décision antitrust, AT&T n'a pas le droit de commercialiser des logiciels. L'entreprise distribue donc UNIX aux universités pour un prix symbolique, **avec son code source**. Après la publication de l'article *The UNIX Time-Sharing System* en 1974, UNIX se répand dans les universités du monde entier, où des générations d'étudiants l'étudient et l'améliorent. La **Version 7** (1979), qui introduit le Bourne shell (`sh`) et `awk`, est l'ancêtre commun de tous les UNIX.
+
+### BSD, l'UNIX de Berkeley
+
+À partir de 1977, l'université de Californie à Berkeley distribue ses propres améliorations d'UNIX sous le nom de **BSD** (*Berkeley Software Distribution*). L'étudiant **Bill Joy** y écrit l'éditeur `vi` et le C shell (`csh`). BSD fonctionne sur les **VAX** de DEC avec une gestion de la mémoire virtuelle (3BSD, 1979).
+
+Financé par l'armée américaine (DARPA), BSD intègre en 1983 (4.2BSD) une **pile TCP/IP** et l'interface des *sockets* : c'est grâce à BSD que les protocoles d'Internet se diffusent sur les ordinateurs du monde entier.
+
+Au début des années 1990, un procès intenté par AT&T freine BSD pendant deux ans. Il se conclut en 1994 par la publication de 4.4BSD-Lite, libéré de tout code AT&T, dont dérivent **FreeBSD**, **NetBSD** et **OpenBSD**.
+
+### Les UNIX commerciaux et la normalisation
+
+Au début des années 1980, AT&T commercialise UNIX sous le nom de **System V** (1983), puis son démantèlement en 1984 lui ouvre pleinement le marché de l'informatique. Les constructeurs développent alors leur propre UNIX à partir de System V ou de BSD : SunOS puis **Solaris** (Sun Microsystems, cofondée par Bill Joy), **HP-UX** (HP), **AIX** (IBM), **IRIX** (SGI) ou encore Xenix (Microsoft).
+
+Ces UNIX propriétaires deviennent peu à peu incompatibles entre eux : c'est la « guerre des UNIX ». Pour y remédier, l'IEEE publie en 1988 la norme **POSIX** (*Portable Operating System Interface*), qui définit l'interface commune (appels système, shell, commandes) que doit offrir un système de type UNIX. Aujourd'hui, le nom « UNIX » est une marque déposée de l'**Open Group**, qui certifie les systèmes conformes à la *Single UNIX Specification*.
+
+### Le projet GNU et le logiciel libre
+
+En 1983, **Richard Stallman**, chercheur au MIT, annonce le projet **GNU** (*GNU's Not UNIX*) : écrire un système d'exploitation complet, compatible avec UNIX, mais entièrement **libre**. Il crée en 1985 la *Free Software Foundation* (FSF) puis, en 1989, la licence **GNU GPL** qui garantit les quatre libertés présentées plus haut.
+
+Le projet GNU produit les outils essentiels d'un système UNIX : le compilateur GCC, le débogueur GDB, l'éditeur GNU Emacs, le shell `bash`, les commandes de base (`ls`, `cp`, `grep`, ...), la bibliothèque C... Au début des années 1990, il ne manque plus que le **noyau** : GNU Hurd, commencé en 1990, n'est toujours pas utilisable.
+
+### Linux
+
+En 1987, le professeur **Andrew Tanenbaum** publie **Minix**, un petit UNIX destiné à l'enseignement. En l'utilisant, **Linus Torvalds**, étudiant à l'université d'Helsinki, écrit son propre noyau et l'annonce le 25 août 1991 sur le forum de Minix :
+
+> « Je fais un système d'exploitation (gratuit) (juste un passe-temps, ce ne sera pas gros et professionnel comme GNU) pour les clones AT 386(486). »
+
+En 1992, Linux passe sous licence GPL. Le noyau Linux associé aux outils GNU forme enfin un système complet et libre : **GNU/Linux**. Les **distributions** apparaissent rapidement : Slackware et Debian (1993), Red Hat (1994), puis Ubuntu (2004)...
+
+### La famille UNIX aujourd'hui
+
+UNIX désigne une super-famille de systèmes (souvent notée **\*NIX**) qui se compose de trois grandes branches :
+
+```mermaid
+flowchart TD
+    UNIX["UNIX<br/>Bell Labs (AT&T), 1969"]
+    UNIX --> SYSV["System V<br/>AT&T, 1983"]
+    UNIX --> BSD["BSD<br/>Université de Berkeley, 1977"]
+    SYSV --> COMM["AIX (IBM), HP-UX (HP),<br/>Solaris (Sun puis Oracle), IRIX (SGI)"]
+    BSD --> LIBRES["FreeBSD, NetBSD, OpenBSD"]
+    BSD --> NEXT["NeXTSTEP<br/>NeXT, 1988"]
+    NEXT --> MACOS["Darwin, macOS, iOS<br/>Apple, 2001"]
+    LIBRES --> PS["PlayStation 4 et 5"]
+    UNIX -. inspire .-> MINIX["Minix<br/>Tanenbaum, 1987"]
+    UNIX -. inspire .-> GNU["Projet GNU<br/>Stallman, 1983"]
+    MINIX -. inspire .-> LINUX["Noyau Linux<br/>Torvalds, 1991"]
+    GNU --> GNULINUX["GNU/Linux<br/>Debian, Ubuntu, Red Hat, Fedora, Arch..."]
+    LINUX --> GNULINUX
+    LINUX --> ANDROID["Android, 2008<br/>noyau Linux sans GNU"]
+```
+
+| Branche | Origine | Systèmes actuels | Utilisation |
+|---|---|---|---|
+| **System V** | AT&T | AIX, HP-UX, Solaris | serveurs d'entreprise (en déclin) |
+| **BSD** | Université de Berkeley | FreeBSD, NetBSD, OpenBSD, macOS, iOS | serveurs, réseau, sécurité, ordinateurs et téléphones Apple, consoles de jeu |
+| **Clones** (*Unix-like*) | réécrits sans le code d'AT&T | Minix, GNU/Linux, Android | serveurs, cloud, superordinateurs, embarqué, smartphones |
+
+On nomme « famille UNIX », « systèmes de type UNIX » (*Unix-like*) ou simplement « systèmes UNIX » l'ensemble de ces systèmes. Ils respectent plus ou moins les normes **POSIX** et la *Single UNIX Specification* : macOS est officiellement certifié UNIX, alors que Linux, sans être certifié, est largement compatible POSIX.
+
+Linux est aujourd'hui le plus répandu de la famille : il équipe la majorité des serveurs du web et du cloud, la totalité des 500 superordinateurs les plus puissants du monde (depuis 2017), une grande partie des objets connectés (box, télévisions, voitures...) et, avec **Android**, la majorité des smartphones.
+
+> **Remarque** : Android utilise le noyau Linux mais pas les outils GNU (il a sa propre bibliothèque C, *Bionic*). C'est pourquoi on parle de système « basé sur Linux mais pas sur GNU ».
+
+Un arbre généalogique complet des UNIX est maintenu par Éric Lévénez : [www.levenez.com/unix](http://www.levenez.com/unix/).
+
+### Les grandes figures
+
+| Personne | Contributions |
+|---|---|
+| [Ken Thompson](https://fr.wikipedia.org/wiki/Ken_Thompson) | UNIX, langage B, [Plan 9](https://fr.wikipedia.org/wiki/Plan_9_from_Bell_Labs), [UTF-8](https://fr.wikipedia.org/wiki/UTF-8), langage Go |
+| [Dennis Ritchie](https://fr.wikipedia.org/wiki/Dennis_Ritchie) | UNIX, langage C, Plan 9 |
+| [Brian Kernighan](https://fr.wikipedia.org/wiki/Brian_Kernighan) | le nom « UNIX », le livre *The C Programming Language* (avec Dennis Ritchie), `awk` (le « k » de awk) |
+| Doug McIlroy | les tubes (*pipes*), la philosophie UNIX |
+| [Bill Joy](https://fr.wikipedia.org/wiki/Bill_Joy) | BSD, `vi`, `csh`, la pile TCP/IP de BSD, cofondateur de Sun Microsystems (Java) |
+| Richard Stallman | projet GNU, licence GPL, FSF, GNU Emacs, GCC, GDB, GNU make, GNU Hurd |
+| Andrew Tanenbaum | Minix |
+| Steve Jobs | Apple, NeXT (NeXTcube, NeXTSTEP), puis macOS |
+| Linus Torvalds | noyau Linux, Git |
+
+> **Remarque** : Ken Thompson et Dennis Ritchie ont reçu en 1983 le prix Turing, la plus haute distinction en informatique, pour la création d'UNIX.
+
+### Chronologie
+
+| Année | Événement |
+|---|---|
+| 1964 | Lancement de Multics (MIT, General Electric, Bell Labs) |
+| 1969 | Ken Thompson et Dennis Ritchie écrivent le premier UNIX sur un PDP-7 aux Bell Labs d'AT&T |
+| 1971 | UNIX fonctionne sur PDP-11 ; première édition du manuel UNIX |
+| 1972 | Dennis Ritchie crée le langage C |
+| 1973 | Le noyau UNIX est réécrit en C ; apparition des tubes (*pipes*) |
+| 1974 | Publication de l'article *The UNIX Time-Sharing System* : UNIX se diffuse dans les universités |
+| 1976 | Apple I de Steve Jobs et Steve Wozniak : débuts de la micro-informatique |
+| 1977 | Début de BSD à l'université de Berkeley |
+| 1978 | Brian Kernighan et Dennis Ritchie publient *The C Programming Language* |
+| 1979 | UNIX Version 7 (Bourne shell, `awk`) ; 3BSD fonctionne sur les VAX de DEC |
+| 1982 | Fondation de Sun Microsystems ; AT&T tourne le film *The UNIX System* |
+| 1983 | System V d'AT&T ; 4.2BSD intègre TCP/IP ; Richard Stallman annonce le projet GNU |
+| 1985 | Création de la Free Software Foundation ; Steve Jobs fonde NeXT |
+| 1987 | Andrew Tanenbaum publie Minix |
+| 1988 | Norme POSIX |
+| 1989 | Licence GNU GPL ; shell `bash` |
+| 1990 | Tim Berners-Lee crée le Web au CERN sur une station NeXT |
+| 1991 | Linus Torvalds annonce Linux (25 août) |
+| 1992 | Linux passe sous licence GPL ; Ken Thompson et Rob Pike conçoivent l'encodage UTF-8 |
+| 1993 | Slackware, Debian, FreeBSD, NetBSD |
+| 1994 | Linux 1.0 ; 4.4BSD-Lite |
+| 1995 | OpenBSD |
+| 1997 | Apple rachète NeXT |
+| 1998 | Apparition du terme « open source » |
+| 2001 | Mac OS X, basé sur Darwin (BSD) |
+| 2004 | Ubuntu |
+| 2005 | Linus Torvalds crée Git |
+| 2007 | Licence GPL version 3 ; iPhone |
+| 2008 | Premier smartphone Android |
+| 2017 | Linux équipe les 500 superordinateurs les plus puissants du monde |
+| 2019 | UNIX fête ses 50 ans |
+
+> **Remarque** : UNIX compte le temps en secondes écoulées depuis le 1er janvier 1970 à 0 h UTC (l'*epoch*). La commande `date +%s` affiche cette valeur.
+
+### Culture du logiciel libre
+
+Quelques textes fondateurs de la culture UNIX, Internet et logiciel libre :
+
+- **La licence GPL** (*GNU General Public License*, 1989, version 3 en 2007) : elle garantit les quatre libertés du logiciel libre et impose le *copyleft* : toute version modifiée et redistribuée d'un logiciel sous GPL doit rester sous GPL. Les licences BSD ou MIT sont au contraire dites **permissives** : elles autorisent la réutilisation du code dans un logiciel propriétaire (ce qu'ont fait Apple pour macOS ou Sony pour la PlayStation).
+  [opensource.org/licenses/GPL-3.0](https://opensource.org/licenses/GPL-3.0) - [Wikipédia : Licence publique générale GNU](https://fr.wikipedia.org/wiki/Licence_publique_g%C3%A9n%C3%A9rale_GNU)
+- **La cathédrale et le bazar** (Eric S. Raymond, 1997) : compare le développement « cathédrale », mené par un petit groupe fermé, au modèle « bazar » de Linux, ouvert à tous avec des publications fréquentes. Le texte énonce la « loi de Linus » : « avec suffisamment d'yeux, tous les bugs sont superficiels ».
+  [Texte original](http://www.catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/index.html) - [Wikipédia : La Cathédrale et le Bazar](https://fr.wikipedia.org/wiki/La_Cath%C3%A9drale_et_le_Bazar)
+- **Homesteading the Noosphere** (« À la conquête de la noosphère », Eric S. Raymond, 1998) : analyse les règles implicites de propriété et la culture du don dans les projets open source (réputation, droit de modifier un projet, *forks*).
+  [Wikipédia (en)](https://en.wikipedia.org/wiki/Homesteading_the_Noosphere) - [Article (archive)](https://web.archive.org/web/20100701065515/http://opensource.mit.edu/papers/stewartgosain2.pdf)
+- **Déclaration d'indépendance du cyberespace** (John Perry Barlow, 1996) : texte fondateur de la culture libertaire d'Internet, écrit par l'un des fondateurs de l'EFF (*Electronic Frontier Foundation*).
+  [eff.org/cyberspace-independence](https://www.eff.org/cyberspace-independence) - [Wikipédia : Déclaration d'indépendance du cyberespace](https://fr.wikipedia.org/wiki/D%C3%A9claration_d'ind%C3%A9pendance_du_cyberespace)
+
+### UNIX en images et en vidéos
+
+- Vidéo : [AT&T Archives: The UNIX Operating System](https://www.youtube.com/watch?v=tc4ROCJYbm0) : le film d'AT&T de 1982, avec Ken Thompson, Dennis Ritchie et Brian Kernighan
+- Vidéo : [Where GREP Came From - Computerphile](https://www.youtube.com/watch?v=NTfOnGZUZDk) : Brian Kernighan raconte la naissance de `grep`
+- Les machines d'UNIX : le [PDP-7](https://fr.wikipedia.org/wiki/PDP-7) (1969), le [PDP-11](https://fr.wikipedia.org/wiki/PDP-11) (1970) et le [VAX](https://fr.wikipedia.org/wiki/VAX) de BSD ([photo d'un VAX 11/780](https://virtuallyfun.com/wp-content/uploads/2009/06/vax.jpg))
+- [L'Apple I](https://i0.wp.com/www.apple2history.org/wp-content/uploads/2008/11/applei.jpg?ssl=1) (1976)
+- [Le NeXT de Tim Berners-Lee](https://static.techno-science.net/illustration/Definitions/1200px/f/first-web-server_0451b7775b0ff60c530e897c31ea3ad1.jpg), premier serveur web de l'histoire
+- [L'annonce de Linux](https://next.ink/wp-content/uploads/2025/08/image-97.png) par Linus Torvalds (1991)
+- [Wikipédia : Unix](https://fr.wikipedia.org/wiki/Unix)
+
 ---
 
 ## Philosophie UNIX
@@ -107,7 +358,7 @@ De manière générale, un système d'exploitation :
 
 UNIX a marqué à jamais l'histoire de l'informatique et continue à le faire, ceci pour une raison très simple : derrière cette famille de systèmes, il y a une idée ou plutôt un ensemble d'idées et de préceptes. Derrière UNIX, il y a une philosophie qui sert de ligne de conduite et de fil d'Ariane. Comprendre cette philosophie et la respecter le mieux possible assure une stabilité et une pérennité sans précédent.
 
-Résumer la philosophie d'UNIX n'est pas chose évidente. Il s'agit d'un ensemble de principes. Nombreux sont ceux qui ont essayé de les résumer ou les lister (taper « philisophie UNIX » ou « *less is more* » dans un moteur de recherche).
+Résumer la philosophie d'UNIX n'est pas chose évidente. Il s'agit d'un ensemble de principes. Nombreux sont ceux qui ont essayé de les résumer ou les lister (taper « philosophie UNIX » ou « *less is more* » dans un moteur de recherche).
 
 ### Des programmes qui effectuent une seule chose et qui le font bien
 
@@ -127,11 +378,13 @@ Les flux de texte représentent une interface universelle (la seule ?). La notio
 
 ### Citations
 
+> « Il est plus facile de définir un système d'exploitation par ce qu'il fait que par ce qu'il est. » **J.L. Peterson**
+
 > « Unix est convivial. Cependant Unix ne précise pas vraiment avec qui. » **Steven King**
 
 > « Unix ne dit jamais 's'il vous plaît'. » **Rob Pike**
 
-> « Unix est simple. Il faut juste être un génie pour comprendre sa simplicité. » **Denis Ritchie**
+> « Unix est simple. Il faut juste être un génie pour comprendre sa simplicité. » **Dennis Ritchie**
 
 > « Unix n'a pas été conçu pour empêcher ses utilisateurs de commettre des actes stupides, car cela les empêcherait aussi des actes ingénieux. » **Doug Gwyn**
 
@@ -140,7 +393,7 @@ Les flux de texte représentent une interface universelle (la seule ?). La notio
 Si je devais répondre à la question « Qu'est-ce qu'un UNIX? », je répondrais par ce type de commande (pleine de magie et d'intelligence) :
 
 ```bash
-$ history | grep -v " h" | sed 's/[ \t]*$ //' | sort -k 2 -r | uniq -f 1 | sort -n
+$ history | grep -v " h" | sed 's/[ \t]*$//' | sort -k 2 -r | uniq -f 1 | sort -n
 ```
 
 *[Extrait d'un article de Denis Bodor dans GNU/Linux Magazine HS n°46]*
@@ -153,7 +406,7 @@ $ history | grep -v " h" | sed 's/[ \t]*$ //' | sort -k 2 -r | uniq -f 1 | sort 
 
 L'interface homme-machine (IHM) permet à un utilisateur de dialoguer avec la machine. On distingue deux types d'IHM :
 
-- **GUI** (*Graphical User Interface*) ou « interface utilisateur graphique » : les parties les plus typiques de ce type d'environnement sont le pointeur de souris, les fenêtres, le bureau, les icônes, les boutons, les menus, les barres de défilement... Les systèmes d'exploitation grand public (Windows, MacOS, GNU/Linux, etc.) sont pourvus d'une interface graphique qui, dans un soucis d'ergonomie, se veut conviviale, simple d'utilisation et accessible au plus grand nombre pour l'usage d'un ordinateur personnel.
+- **GUI** (*Graphical User Interface*) ou « interface utilisateur graphique » : les parties les plus typiques de ce type d'environnement sont le pointeur de souris, les fenêtres, le bureau, les icônes, les boutons, les menus, les barres de défilement... Les systèmes d'exploitation grand public (Windows, MacOS, GNU/Linux, etc.) sont pourvus d'une interface graphique qui, dans un souci d'ergonomie, se veut conviviale, simple d'utilisation et accessible au plus grand nombre pour l'usage d'un ordinateur personnel.
 
 - **CLI** (*Command Line Interface*) ou « interface en ligne de commande » est encore utilisée en raison de sa puissance, de sa grande rapidité, son uniformité, sa stabilité et du peu de ressources nécessaires à son fonctionnement. Le système d'exploitation permet cette possibilité par l'intermédiaire d'un interpréteur de commandes (le *shell*). Beaucoup de serveurs ne s'administrent qu'en ligne de commande.
 
@@ -204,7 +457,7 @@ $ ls -l $HOME/tmp
 
 ### Différents types de commande
 
-Il existe plusieurs type de commandes :
+Il existe plusieurs types de commandes :
 
 - les **commandes internes** (au *shell*) : comme `history`, `test`, ...
 - les **commandes externes** (donc des programmes) : comme `ls`, `mkdir`, ...
@@ -249,7 +502,7 @@ Pour obtenir la page de manuel sur une commande, il faut taper par exemple :
 $ man cat
 ```
 
-On utilise les flèches pour se déplacer, la barre « espace » pour avancer d'une page et la touche `b` (*back*) pour reculer. La touche `q` (*quit*) permet de quitter. Vous pouvez faire une recherche en tapant `/motif` puis, vous pouvez vous déplacer sur les occurences de motif en utilisant les touches `n` (*next*, en avant) et `N` (en arrière). La touche « Echap » `Esc` permet d'annuler la recherche.
+On utilise les flèches pour se déplacer, la barre « espace » pour avancer d'une page et la touche `b` (*back*) pour reculer. La touche `q` (*quit*) permet de quitter. Vous pouvez faire une recherche en tapant `/motif` puis, vous pouvez vous déplacer sur les occurrences de motif en utilisant les touches `n` (*next*, en avant) et `N` (en arrière). La touche « Echap » `Esc` permet d'annuler la recherche.
 
 La commande `man` donne accès aux pages de manuel qui sont réparties selon des sections comme suit :
 
@@ -282,15 +535,30 @@ $ cat --help
 $ help echo
 ```
 
+En résumé, **consultez le manuel** (*RTFM : Read The Fine Manual*) :
+
+- `man` : les pages de manuel (`man man`, `man ls`, ...) ;
+- `apropos` : recherche un mot-clé dans la totalité du manuel ;
+- `whatis` : affiche la description courte d'une page de manuel ;
+- `help` : affiche un court résumé des commandes internes du *shell* ;
+- l'option `--help` : affiche l'aide-mémoire d'une commande ;
+- `info` : la documentation au format *info* du projet GNU (`info info`, `info ls`, ...).
+
 ### Environnement de travail
 
 Il vous faut ouvrir une **session** sur votre poste de travail. Vous pouvez utiliser soit le mode console (CLI) soit l'interface graphique (GUI). Dans les deux cas, vous pouvez travailler **« en ligne de commande »** (CLI).
 
 > **Remarque** : Une « session » est l'ensemble des actions effectuées par l'utilisateur d'un système informatique, entre le moment où il se connecte à celui-ci et le moment où il s'en déconnecte.
 
+- ouvrir une session locale : `login` (en mode console), `su` (changer d'utilisateur) ;
+- ouvrir une session distante : `ssh` (connexion chiffrée ; l'ancien `telnet` transmettait tout en clair, y compris le mot de passe) ;
+- l'invite de commande (*prompt*), définie par la variable `PS1`, se termine par `$` pour un utilisateur et par `#` pour *root* ;
+- la variable `PATH` indique où chercher les commandes, la variable `SHELL` le *shell* de l'utilisateur ;
+- fermer une session : `logout`, `exit` ou `Ctrl + D`.
+
 ### Shell Bash
 
-Bash (*Bourne-again shell*) est le shell du projet GNU. Bash est un logiciel libre publié sous GNU GPL. Il est l'interprète par défaut sur de nombreux Unix libres, notamment sur les systèmes GNU/Linux. C'est aussi le shell par défaut de Mac OS X et il a été porté sous Windows par le projet Cygwin.
+Bash (*Bourne-again shell*) est le shell du projet GNU. Bash est un logiciel libre publié sous GNU GPL. Il est l'interprète par défaut sur de nombreux Unix libres, notamment sur les systèmes GNU/Linux. Ce fut aussi le shell par défaut de Mac OS X (remplacé par `zsh` depuis macOS 10.15 en 2019) et il a été porté sous Windows par le projet Cygwin ; il est aussi disponible sous Windows avec WSL.
 
 Aujourd'hui `bash` est le shell le plus répandu, bien qu'il existe beaucoup d'autres interpréteurs de commandes, comme `sh`, `ksh`, `csh`, `tcsh`, `zsh`, `ash`, ...
 
@@ -298,7 +566,7 @@ Un shell Unix, aussi nommé interface en ligne de commande Unix, est un shell de
 
 Dans les différents systèmes d'exploitation Microsoft Windows, le programme analogue est `command.com` ou `cmd.exe`.
 
-Le shell (coquille) est une interface permetttant d'accéder au noyau (kernel) d'un système d'exploitation.
+Le shell (coquille) est une interface permettant d'accéder au noyau (kernel) d'un système d'exploitation.
 
 Tout processus Unix/Linux démarre avec 3 flux déjà ouverts :
 
@@ -312,7 +580,9 @@ Par défaut, ces flux sont :
 
 - 0 : le **clavier** (*stdin* : *standard input*)
 - 1 : l'**écran** (*stdout* : *standard output*)
-- 2 : `/dev/null` (*stderr* : *standard error*)
+- 2 : l'**écran** (*stderr* : *standard error*)
+
+> **Remarque** : `/dev/null` est un fichier spécial qui fait disparaître tout ce qu'on y écrit. On l'utilise pour se débarrasser des messages d'erreur d'une commande : `commande 2> /dev/null`.
 
 Il est possible de **rediriger ces flux** vers des fichiers (en utilisant les opérateurs `<`, `>`, `<<` et `>>`) ou vers des processus en utilisant un tube (*pipe*). Un tube (`|`) est un canal entre deux processus (redirection de la sortie d'un processus vers l'entrée d'un autre processus).
 
@@ -355,9 +625,9 @@ $ man bash
 # puis on se déplace avec n (en avant) ou N (en arrière)
 
 # Ou :
-$ man bash | colcrt | egrep -A 5 history
+$ man bash | colcrt | grep -E -A 5 history
 
-# Les options -A (After) -B (Before) -C (autour) -n (numéro de ligne) de la commande egrep
+# Les options -A (After) -B (Before) -C (autour) -n (numéro de ligne) de la commande grep
 ```
 
 ### Groupement de commandes
@@ -401,7 +671,7 @@ $ test -x test.log && echo "le fichier est executable"
 $ help test
 ```
 
-Tous les processus se terminant renvoie un **code de retour** au *shell*. Ce code de retour est accessible par la variable **`$?`** et traduit (le plus souvent) l'état de l'exécution du programme. On utilise un programme pour remplir une tâche (processus) et celui-ci nous donne un rapport booléen par le code retour : VRAI (la tâche a été accomplie avec succès) et FAUX (la tâche a rencontré une erreur). Au minimum sous Unix/Linux, le code de retour sera 0 (ok) ou 1 (erreur), mais dans le cas d'une autre valeur numérique, il pourra aussi traduire un type d'erreur :
+Tous les processus se terminant renvoient un **code de retour** au *shell*. Ce code de retour est accessible par la variable **`$?`** et traduit (le plus souvent) l'état de l'exécution du programme. On utilise un programme pour remplir une tâche (processus) et celui-ci nous donne un rapport booléen par le code retour : VRAI (la tâche a été accomplie avec succès) et FAUX (la tâche a rencontré une erreur). Au minimum sous Unix/Linux, le code de retour sera 0 (ok) ou 1 (erreur), mais dans le cas d'une autre valeur numérique, il pourra aussi traduire un type d'erreur :
 
 ```bash
 $ ls ; echo $?
@@ -414,9 +684,66 @@ $ ls zzz ; echo $?
 2
 ```
 
+### Gérer les processus
+
+Une commande, une fois lancée, devient un **processus** : l'image en cours d'exécution d'un programme (son code, ses données et les informations que le noyau conserve sur lui).
+
+Chaque processus est identifié par un **PID** (*Process IDentifier*) et connaît le PID de son parent, le **PPID** (*Parent Process IDentifier*). Les processus sont donc organisés en arbre : chacun d'eux a un seul et unique parent, et l'ancêtre de tous les autres porte le PID 1 (historiquement le programme `init`, aujourd'hui `systemd` sur la plupart des distributions). Dans un système multitâche, c'est l'**ordonnanceur** (*scheduler*) du noyau qui répartit le temps processeur entre les processus.
+
+```bash
+$ ps -ef                  # liste tous les processus (voir aussi ps aux)
+$ pstree                  # affiche l'arbre des processus
+$ top                     # affiche les processus en temps réel (q pour quitter)
+$ pidof bash              # affiche le PID des processus bash (voir aussi pgrep)
+
+$ sleep 300 &             # lance une commande en arrière-plan
+[1] 12345
+$ jobs                    # liste les tâches lancées depuis ce shell
+[1]+  En cours d'exécution   sleep 300 &
+$ kill %1                 # envoie le signal TERM à la tâche n°1 (ou kill 12345)
+$ kill -l                 # liste les signaux disponibles
+```
+
+- `kill`, `killall`, `pkill` : envoient un **signal** à un ou plusieurs processus pour l'interrompre, le stopper, le terminer (`TERM`, par défaut) ou le tuer (`KILL`, `kill -9`) ;
+- `&` à la fin de la ligne de commande : lance la commande en arrière-plan ;
+- `nohup` : détache le processus du terminal (il continue après la fermeture de la session) ;
+- `Ctrl + C` interrompt la commande au premier plan, `Ctrl + Z` la met en pause ; `fg` et `bg` la relancent au premier plan ou en arrière-plan ;
+- `at` : lance des commandes à une heure précise (exécution différée) ;
+- `batch` : exécute des commandes lorsque la charge du système le permet ;
+- `cron` (`crontab -e`) : planifie l'exécution périodique de commandes.
+
+### Installer des logiciels : les paquets
+
+Sous Linux, les logiciels sont fournis sous forme de **paquets** (*packages*), téléchargés depuis les **dépôts** (*repositories*) de la distribution. Sur Debian et Ubuntu, ce sont des fichiers `.deb`. Un paquet contient :
+
+- des fichiers qui le décrivent (description, version, signature, dépendances, ...) ;
+- les fichiers à installer ;
+- des scripts qui s'exécutent avant ou après l'installation ou la suppression.
+
+Les gestionnaires de paquets Debian :
+
+- `dpkg` : l'outil de base pour installer, créer, supprimer et gérer des paquets `.deb` ;
+- **APT** (`apt`, `apt-get`) : télécharge les paquets depuis les dépôts et gère automatiquement les dépendances ;
+- `aptitude` : une autre interface en ligne de commande à APT ;
+- `synaptic` : une interface graphique à APT.
+
+```bash
+# apt update              # met à jour la liste des paquets disponibles
+# apt upgrade             # met à jour les paquets installés
+$ apt search htop         # recherche un paquet
+# apt install htop        # installe un paquet et ses dépendances
+# apt remove htop         # supprime un paquet
+$ dpkg -l                 # liste les paquets installés
+$ dpkg -L htop            # liste les fichiers installés par un paquet
+```
+
+> **Remarque** : les commandes précédées de `#` nécessitent les droits *root* : on les lance avec `sudo` (par exemple `sudo apt install htop`).
+
+D'autres familles de distributions utilisent d'autres formats : **RPM** (*Red Hat Package Manager*) avec `dnf` sur Red Hat et Fedora, `pacman` sur Arch Linux, `.tgz` sur Slackware... Voir aussi [le mémo apt](serveur_LAMP/apt.md).
+
 ### Une liste de commandes de base
 
-Voir l'[Annexe n°1](#annexe-1--une-liste-de-commandes-de-base).
+Voir l'[Annexe n°1](#annexe-1--une-liste-de-commandes-de-base) et le mémento des [commandes de base](linux_commandes_base.md).
 
 ---
 
@@ -435,6 +762,8 @@ Une telle gestion des fichiers permet de traiter, de conserver des quantités im
 Pour l'utilisateur, un système de fichiers est vu comme une arborescence : les fichiers sont regroupés dans des répertoires (concept utilisé par la plupart des systèmes d'exploitation). Ces répertoires contiennent soit des fichiers, soit d'autres répertoires. Il y a donc un répertoire racine et des sous-répertoires. Une telle organisation génère une hiérarchie de répertoires et de fichiers organisés en arbre.
 
 Il existe de très nombreux systèmes de fichiers différents : FAT, NTFS, HFS, ext2, ext3, UFS, reiserfs, ISO 9660, etc.
+
+Sous Linux, le plus courant est aujourd'hui **ext4** ; on rencontre aussi Btrfs et XFS, ainsi que exFAT sur les clés USB et APFS sur les Mac. La commande `df -Th` affiche le type des systèmes de fichiers montés.
 
 ### Chemin d'accès
 
@@ -456,14 +785,14 @@ On distingue deux types de chemins d'accès :
 **Quel est le chemin d'accès à "hello.c"?**
 
 - Avec un chemin d'accès absolu : `/home/tv/hello.c`
-- Avec un chemin d'accès relatif : tout dépend de l'endroit où on exécute la commande, c'est à dire le répertoire de travail (ou répertoire courant). Pour cela, on peut utiliser deux références connus du système d'exploitation : le répertoire courant (noté `.`) ou le répertoire parent (noté `..`) :
+- Avec un chemin d'accès relatif : tout dépend de l'endroit où on exécute la commande, c'est-à-dire le répertoire de travail (ou répertoire courant). Pour cela, on peut utiliser deux références connues du système d'exploitation : le répertoire courant (noté `.`) ou le répertoire parent (noté `..`) :
   - Supposons que le répertoire courant est `prof`, on pourra désigner `hello.c` par `../tv/hello.c`
   - Supposons que le répertoire courant est `tv`, on pourra désigner `hello.c` par `./hello.c`
 
 **Quel est le chemin d'accès à "bonjour.txt"?**
 
 - Avec un chemin d'accès absolu : `/home/tv/tmp/bonjour.txt`
-- Avec un chemin d'accès relatif : tout dépend de l'endroit où on exécute la commande, c'est à dire le répertoire de travail (ou répertoire courant). Pour cela, on peut utiliser deux références connus du système d'exploitation : le répertoire courant (noté `.`) ou le répertoire parent (noté `..`) :
+- Avec un chemin d'accès relatif : tout dépend de l'endroit où on exécute la commande, c'est-à-dire le répertoire de travail (ou répertoire courant). Pour cela, on peut utiliser deux références connues du système d'exploitation : le répertoire courant (noté `.`) ou le répertoire parent (noté `..`) :
   - Supposons que le répertoire courant est `prof`, on pourra désigner `bonjour.txt` par `../tv/tmp/bonjour.txt`
   - Supposons que le répertoire courant est `tv`, on pourra désigner `bonjour.txt` par `./tmp/bonjour.txt`
 
@@ -515,6 +844,10 @@ Le terme **inode** désigne le **descripteur d'un fichier** sous UNIX/Linux. Les
 - le type de fichier : fichier simple, lien symbolique, répertoire, périphérique, etc.
 
 > **Remarque** : par défaut, un bloc a une taille de 4096 octets (4 KiO).
+
+> **Remarque** : l'inode ne contient pas le nom du fichier. C'est le répertoire qui associe un nom à un numéro d'inode : un même inode peut donc avoir plusieurs noms (liens physiques, créés avec `ln`).
+
+> **Attention** : la commande `stat` compte les blocs en unités de 512 octets (`stat --printf="%b blocs de %B octets\n" fichier`). Dans l'exemple ci-dessous, « Blocs : 8 » correspond donc à 8 × 512 = 4096 octets, soit un seul bloc du système de fichiers.
 
 ```bash
 # Crée un fichier vide
@@ -608,6 +941,13 @@ On distingue en général deux types de fichiers : **texte** et **binaire**.
 
 > **Remarque** : "Un fichier binaire est un fichier informatique qui n'est pas assimilable à un fichier texte." (source wikipedia). Donc, tout ce qui n'est pas un fichier texte est un fichier binaire.
 
+Le contenu d'un fichier binaire correspond souvent à un format précis lié à l'usage d'un logiciel : fichiers exécutables (code machine), bases de données, images, sons, vidéos, documents de traitement de texte, etc.
+
+Deux cas particuliers de fichiers binaires sont très courants :
+
+- un fichier **compressé** est un fichier (texte ou binaire) transformé par un algorithme pour diminuer sa taille (`gzip`, `bzip2`, `xz`, `zip`, ...) ;
+- une **archive** regroupe en un seul fichier plusieurs fichiers ou le contenu de toute une arborescence, données et descriptions comprises (`tar`). Les archives sont souvent compressées (`.tar.gz`, `.tar.xz`).
+
 Les fichiers texte ont un contenu pouvant être interprété directement comme du texte (une suite de bits représentant un caractère), la plupart du temps en codage ASCII (*American Standard Code for Information Interchange*).
 
 > **Remarque** : L'ASCII est la norme de codage de caractères en informatique la plus ancienne et la plus connue. Avec l'avènement de la mondialisation des systèmes d'information, son usage se restreint progressivement à des domaines très techniques.
@@ -644,7 +984,7 @@ Le besoin de supporter de multiples écritures demandait un nombre nettement plu
 
 L'UTF-8, spécifié dans le RFC 3629, est le plus commun pour les applications Unix/Linux et Internet. L'UTF-16 est utilisé par Java et Windows.
 
-La norme internationale ISO/CEI 10646 définit l'*Universal Character Set* (UCS) comme un jeu de caractères universel (représenter sans ambiguïté tous les signes écrits de toutes les langues humaines connues). Ce standard est le fondement d'Unicode. Environ 10 000 caractères (symboles, lettres, nombres, idéogrammes, logogrammes) sont recensés dans l'UCS.
+La norme internationale ISO/CEI 10646 définit l'*Universal Character Set* (UCS) comme un jeu de caractères universel (représenter sans ambiguïté tous les signes écrits de toutes les langues humaines connues). Ce standard est le fondement d'Unicode. Plus de 150 000 caractères (symboles, lettres, nombres, idéogrammes, logogrammes, émojis) sont aujourd'hui recensés dans l'UCS.
 
 > **Remarque** : L'ASCII (jeu standard sur 7 bits) n'est pas modifié par UTF-8, et les gens utilisant uniquement l'ASCII ne remarqueront aucun changement : ni dans le codage, ni dans les tailles de fichiers.
 
@@ -684,7 +1024,7 @@ Par précaution (et le technicien informatique est prudent !), il est donc conse
 
 ### Créer un répertoire (dossier) et se déplacer dans l'arborescence
 
-La commande `mkdir` premet de créer un nouveau répertoire et la commande `cd` de se déplacer à l'intérieur de celui-ci :
+La commande `mkdir` permet de créer un nouveau répertoire et la commande `cd` de se déplacer à l'intérieur de celui-ci :
 
 ```bash
 $ mkdir tmp
@@ -711,9 +1051,9 @@ alias ll='ls -halF'
 
 > **Remarque** : La commande `ls` permet de lister le contenu d'un répertoire. `ll` est un alias sur la commande `ls -halF`.
 
-Le nom de répertoire "`..`" indique, où que vous soyez, le répertoire qui se trouve immédiatement au dessus. On l'appelle le répertoire parent. Un autre nom de répertoire particulier est "`.`" : c'est le répertoire dans lequel vous êtes actuellement. On l'appelle le répertoire courant. Il sont très utilisés pour créer des chemins relatifs dans l'arborescence.
+Le nom de répertoire "`..`" indique, où que vous soyez, le répertoire qui se trouve immédiatement au-dessus. On l'appelle le répertoire parent. Un autre nom de répertoire particulier est "`.`" : c'est le répertoire dans lequel vous êtes actuellement. On l'appelle le répertoire courant. Ils sont très utilisés pour créer des chemins relatifs dans l'arborescence.
 
-Si vous voulez connaître le chemin absolu où vous vous trouvez, vous pouvez utilisez la commande `pwd` :
+Si vous voulez connaître le chemin absolu où vous vous trouvez, vous pouvez utiliser la commande `pwd` :
 
 ```bash
 $ pwd
@@ -790,7 +1130,8 @@ La norme ASCII (*American Standard Code for Information Interchange*) est la nor
 Pour en savoir plus :
 
 - `man ascii`
-- fr.wikipedia.org/wiki/Ascii
+- [fr.wikipedia.org/wiki/Ascii](http://fr.wikipedia.org/wiki/Ascii)
+- [la table ASCII complète](https://fr.wikipedia.org/wiki/Fichier:ASCII-Table-wide.svg)
 
 Pour afficher le contenu brut d'un fichier (texte ou binaire), on utilisera soit la commande `od` soit la commande `hexdump` :
 
@@ -869,7 +1210,7 @@ P                    : copie ce qui a été mémorisé avant le curseur
 /mot                 : recherche le mot mot (on se déplace avec n ou N ou *)
 ```
 
-> **Remarque** : Il existe en réalité une quantité astronomiques de commandes dans `vi`, et en particulier dans `vim`, et chaque personne utilise, en général, qu'un petite partie d'entre elles en fonction de ses habitudes (et souvent, pas les mêmes que vous...).
+> **Remarque** : Il existe en réalité une quantité astronomique de commandes dans `vi`, et en particulier dans `vim`, et chaque personne n'utilise, en général, qu'une petite partie d'entre elles en fonction de ses habitudes (et souvent, pas les mêmes que vous...).
 
 ### Manipuler des fichiers et des répertoires
 
@@ -911,11 +1252,13 @@ $ less listeUtilisateurs.txt
 
 # Rechercher un fichier dans son répertoire personnel :
 $ find $HOME -name listeUtilisateurs.txt -print
-$ find $HOME -name *.txt -print
-$ find $HOME -name *.txt -exec ls -l {} \;
+$ find $HOME -name "*.txt" -print
+$ find $HOME -name "*.txt" -exec ls -l {} \;
 ```
 
 > **Remarque** : l'étoile `*` est un caractère joker qui a la particularité de remplacer n'importe quel caractère autant de fois que nécessaire
+
+> **Attention** : le motif `"*.txt"` doit être entre guillemets pour être transmis tel quel à `find`. Sans guillemets, le shell remplacerait `*.txt` par la liste des fichiers `.txt` du répertoire courant avant de lancer `find` (voir [Caractères spéciaux et filtres](#caractères-spéciaux-et-filtres)).
 
 ```bash
 # Effacer un fichier :
@@ -952,11 +1295,46 @@ $ rm -rf $HOME/tmp/temp
 $ rm $HOME/passwd.bak
 ```
 
-### Contrôler l'accès à vos fichiers
+---
+
+## Gestion des droits
 
 Sous UNIX, il existe deux types de sécurité pour les fichiers et répertoires : les droits et permissions UNIX, disponibles sur tous les UNIX et les ACL (*Access Control List*), plus complets.
 
 Il est primordial de connaître la sécurité UNIX standard, dont le fonctionnement est très simple, car elle suffit le plus souvent.
+
+### Utilisateurs et groupes
+
+UNIX est un système multi-utilisateur : les droits d'accès reposent sur l'identité de l'utilisateur qui lance une commande.
+
+Chaque utilisateur est identifié par un nom et par un **UID** (*User IDentifier*), et rattaché à un groupe principal identifié par un **GID** (*Group IDentifier*). Il peut appartenir à plusieurs groupes, eux-mêmes identifiés par un nom et par un GID. Le super-utilisateur *root* a l'UID 0 : il n'est soumis à aucune restriction de droits.
+
+Les comptes locaux sont définis dans trois fichiers :
+
+- `/etc/passwd` : la liste des comptes (nom, UID, GID, répertoire personnel, *shell*), lisible par tous ;
+- `/etc/shadow` : les mots de passe hachés, lisible seulement par *root* ;
+- `/etc/group` : la liste des groupes et de leurs membres.
+
+```bash
+$ id
+uid=1000(tv) gid=1000(tv) groupes=1000(tv),4(adm),27(sudo)
+
+$ groups
+tv adm sudo
+
+# Format : nom:x:UID:GID:commentaire:répertoire personnel:shell
+$ grep tv /etc/passwd
+tv:x:1000:1000:,,,:/home/tv:/bin/bash
+
+$ ls -l /etc/shadow
+-rw-r----- 1 root shadow 1450 sept. 26 10:12 /etc/shadow
+```
+
+> **Remarque** : le `x` du deuxième champ de `/etc/passwd` indique que le mot de passe est stocké dans `/etc/shadow`.
+
+Commandes utiles : `id`, `groups`, `whoami`, `who`, `who am i`, `w`, `last`, `users`.
+
+### Afficher les permissions
 
 Pour afficher les permissions, il faut utiliser la commande `ls` avec l'option `-l` :
 
@@ -974,10 +1352,17 @@ Le premier caractère (ici '`-`') correspond au type de fichier :
 - '`s`' pour une *socket* ;
 - '`c`' pour un fichier spécial de type "périphérique caractère" ;
 - '`b`' pour un fichier spécial de type "périphérique bloc" ;
+- '`p`' pour un tube nommé (*named pipe* ou FIFO).
 
-> **Remarque** : sous Unix, TOUT EST FICHIER. Ce principe offre une interface générique pour manipuler n'importe quelle rerssource (cf. les appels `open`, `read`, `write` et `close`).
+Le type de fichier est enregistré dans l'inode (voir la commande `stat`).
+
+> **Remarque** : sous Unix, TOUT EST FICHIER. Ce principe offre une interface générique pour manipuler n'importe quelle ressource (cf. les appels `open`, `read`, `write` et `close`).
 
 `rwxrwxrwx` correspond aux droits, de, respectivement : l'utilisateur propriétaire (rwx), le groupe propriétaire (rwx) et "les autres" (rwx). Les fichiers, dans cet exemple, appartiennent à l'utilisateur `root` et au groupe `wheel`.
+
+> **Remarque** : cet exemple provient d'un système FreeBSD, où l'administrateur appartient au groupe `wheel`.
+
+### Les permissions de base
 
 Il y a trois types de permissions :
 
@@ -985,9 +1370,15 @@ Il y a trois types de permissions :
 - `w` : accès en écriture (*write*)
 - `x` : possibilité d'exécution pour un fichier ou de "traversée" pour un répertoire
 
-> **Remarque** : il faut distinguer les permissions qui s'appliquent aux fichiers et aux répertoire. Par exemple : pour modifier le contenu d'un fichier (cad "écrire dedans"), il vous faut le droit `w` sur ce fichier. Par contre, pour créer, supprimer ou renommer un fichier, il vous faudra le droit `w` sur le répertoire dans lequel vous voulez faire l'opération.
+> **Remarque** : il faut distinguer les permissions qui s'appliquent aux fichiers et aux répertoires. Par exemple : pour modifier le contenu d'un fichier (c'est-à-dire "écrire dedans"), il vous faut le droit `w` sur ce fichier. Par contre, pour créer, supprimer ou renommer un fichier, il vous faudra le droit `w` sur le répertoire dans lequel vous voulez faire l'opération.
 
-Chacune de ces permissions peuvent être attribuée à :
+| Droit | Sur un fichier | Sur un répertoire |
+|---|---|---|
+| `r` | lire le contenu | lister le contenu (`ls`) |
+| `w` | modifier le contenu | créer, supprimer ou renommer des fichiers dans le répertoire |
+| `x` | exécuter le fichier (programme ou script) | traverser le répertoire (`cd`, accès aux fichiers qu'il contient) |
+
+Chacune de ces permissions peut être attribuée à :
 
 - `u` : *user*, l'utilisateur
 - `g` : *group*, le groupe
@@ -996,9 +1387,11 @@ Chacune de ces permissions peuvent être attribuée à :
 
 > **Remarque** : attention, la vérification des droits d'accès se fait dans l'ordre `u` `g` `o`. Dès qu'une concordance est trouvée, elle s'applique!
 
+### Les droits spéciaux : SUID, SGID et sticky bit
+
 En plus de ces droits de base, il existe aussi des droits spéciaux pour les fichiers :
 
-- le droit `s` (dans le bloc `u`) : utilise l'UID (identifiant) du propriétaire (*Set-UID* ou *SUID*) lors de l'exécution du fichier à la place l'UID de l'utilisateur
+- le droit `s` (dans le bloc `u`) : utilise l'UID (identifiant) du propriétaire (*Set-UID* ou *SUID*) lors de l'exécution du fichier à la place de l'UID de l'utilisateur
 - le droit `s` (dans le bloc `g`) : utilise l'ID (identifiant) du groupe propriétaire (*Set-GID* ou *SGID*) lors de l'exécution du fichier
 - le droit `t` (dans le bloc `o`) : pour la conservation du code en mémoire lors de l'arrêt de l'exécution
 
@@ -1009,12 +1402,25 @@ $ ls -l /usr/bin/sudo
 -rwsr-xr-x 2 root root 70K mars  12 17:35 /usr/bin/sudo
 ```
 
-> **Attention** : attribuer le droit `s` (Set-User-ID) abusivement peut entraîner de sérieuses failles de sécurité (par exemple ne jamais le faire pour le programme `cat` par exemple sinon n'importe qui pourra visualiser TOUS les fichiers du système !).
+> **Attention** : attribuer le droit `s` (Set-User-ID) abusivement peut entraîner de sérieuses failles de sécurité (par exemple ne jamais le faire pour le programme `cat`, sinon n'importe qui pourra visualiser TOUS les fichiers du système !).
 
 Des droits spéciaux s'appliquent aussi pour les répertoires :
 
 - le droit `s` (dans le bloc `g`) : (*SGID bit*) lorsqu'un répertoire sera créé, il le sera avec le GID du répertoire parent et non avec celui du propriétaire qui le crée (modification du fonctionnement par défaut et permet un travail collaboratif)
 - le droit `t` (dans le bloc `o`) : (*sticky bit*) seul le propriétaire d'un fichier pourra le supprimer (restriction du droit `w` pour tous)
+
+C'est le cas du répertoire `/tmp`, où tout le monde peut écrire mais où chacun ne peut supprimer que ses propres fichiers :
+
+```bash
+$ ls -ld /tmp
+drwxrwxrwt 20 root root 4096 sept. 26 10:12 /tmp
+```
+
+> **Remarque** : avec le SGID sur un répertoire, tous les fichiers et sous-répertoires créés à l'intérieur héritent du groupe du répertoire : c'est la base d'un répertoire partagé par une équipe. Le SUID n'a aucun effet sur un répertoire. Enfin, le sticky bit sur un fichier est un usage historique : Linux l'ignore aujourd'hui.
+
+> **Remarque** : un `S` ou un `T` majuscule dans l'affichage de `ls -l` indique que le droit spécial est positionné sans le droit `x` correspondant (par exemple `-rwSr--r--`).
+
+### Modifier les permissions : chmod
 
 La commande `chmod` permet de changer les permissions en utilisant un mode littéral :
 
@@ -1035,7 +1441,7 @@ $ ls -l .Xdefaults
 -r-xr-----  1 calimero  promo00  61 Aug  1 13:29 .Xdefaults
 ```
 
-Vous pouvez aussi utiliser le mode octal pour changer les permissions. Les valeur possibles sont :
+Vous pouvez aussi utiliser le mode octal pour changer les permissions. Les valeurs possibles sont :
 
 ```
 0 → ---  : aucun droit
@@ -1062,6 +1468,18 @@ $ ls -l .Xdefaults
 ```
 
 > **Remarque** : Pour la valeur du mode, on peut fournir 3 ou 4 chiffres (le premier chiffre étant facultatif). Le premier chiffre (facultatif) correspond au droit `s` ou `t`, le deuxième chiffre à `u`, le troisième à `g` et le quatrième à `o`.
+
+Les droits spéciaux se positionnent de la même façon :
+
+| Droit spécial | Valeur octale | Mode littéral | Exemple |
+|---|---|---|---|
+| SUID | 4 | `u+s` | `chmod 4755 programme` → `rwsr-xr-x` |
+| SGID | 2 | `g+s` | `chmod 2775 projet` → `rwxrwsr-x` (répertoire d'équipe) |
+| sticky bit | 1 | `+t` | `chmod 1777 partage` → `rwxrwxrwt` (comme `/tmp`) |
+
+L'option `-R` applique la modification récursivement à toute une arborescence : `chmod -R g+w projet`.
+
+### Les droits par défaut : umask
 
 Lorsqu'un nouveau fichier est créé, on distingue deux situations particulières :
 
@@ -1101,21 +1519,50 @@ b) Puis le système applique le masque défini par `umask` pour créer les droit
 
 Soit l'opération suivante : 666 & ~022 = 644 = rw- r-- r--
 
+De même, pour un répertoire (créé avec les droits 777) : 777 & ~022 = 755 = rwx r-x r-x
+
 Lors de la copie d'un fichier, c'est le même principe qui est appliqué en utilisant cette fois les droits du fichier source. Il existe des options (`-p`, `-a`, ...) qui modifient ce comportement et permettent de préserver les propriétés du fichier source.
 
 > **Remarque** : par contre si le fichier destination existe (écrasement), le masque n'est pas utilisé et à la place on utilise les droits du fichier destination : droits fichier source & droits fichier destination
 
+### Changer de propriétaire : chown et chgrp
+
 Les commandes `chown` et `chgrp` permettent de changer, respectivement, l'utilisateur propriétaire et le groupe.
 
-### Caractères spéciaux
+```bash
+# chown tv fichier             # change le propriétaire
+# chown tv:promo00 fichier     # change le propriétaire et le groupe
+$ chgrp promo00 fichier        # change le groupe
+# chown -R tv:tv /home/tv      # récursivement sur toute une arborescence
+```
 
-Les caractères spéciaux ou génériques (*wildcard characters*) permettent de désigner un ensemble d'objet et notamment un ensemble de noms de fichiers (le caractère `*` étant le plus connu et le plus utilisé).
+> **Remarque** : seul *root* peut changer le propriétaire d'un fichier. Un utilisateur peut changer le groupe de ses propres fichiers, uniquement vers un groupe auquel il appartient.
+
+### Pour aller plus loin sur les droits
+
+- **`sudo`** : permet à un utilisateur autorisé (membre du groupe `sudo` ou `wheel`, voir `/etc/sudoers`) d'exécuter une commande en tant que *root*. On préfère `sudo` à une session *root* permanente : chaque commande privilégiée est volontaire et journalisée.
+- **Les ACL** (*Access Control List*) : elles complètent les droits UNIX en donnant des droits à des utilisateurs ou des groupes supplémentaires (`getfacl`, `setfacl`). Un `+` à la fin des permissions affichées par `ls -l` (`-rw-rw-r--+`) signale la présence d'ACL.
+- La partie « Droits & permissions » du mémento des [commandes de base](linux_commandes_base.md) et le [TP4 - Gestion des droits](tp/tp4-gestion-des-droits.md).
+
+Vidéos :
+
+- [Sticky bit, SetUID, SetGID](https://www.youtube.com/watch?v=Wuv5S2IqiWQ) - Thomas Boutry
+- [Special Linux Permissions (Linux Permissions Part 4)](https://www.youtube.com/watch?v=zU43cReOBsc) - Ed Walsh
+- [umask: Linux Permissions Part 5](https://www.youtube.com/watch?v=cbNoaC6CSO0)
+
+---
+
+## Caractères spéciaux et filtres
+
+Les caractères spéciaux ou génériques (*wildcard characters*) permettent de désigner un ensemble d'objets et notamment un ensemble de noms de fichiers (le caractère `*` étant le plus connu et le plus utilisé).
 
 Ils peuvent aussi désigner un ensemble de chaînes de caractères. On parle alors d'**expressions rationnelles** (ou **expressions régulières**) qui s'appliquent aux commandes d'édition (`vi`, `sed`, ...) ou à des filtres (`grep`, `egrep`, `awk`, ...).
 
 Une expression rationnelle (ou expression régulière) est une chaîne de caractères que l'on appelle parfois un motif et qui décrit un ensemble de chaînes de caractères possibles selon une syntaxe précise. Elles sont notamment aujourd'hui utilisées dans l'édition et le contrôle de texte.
 
 En savoir plus : `$ man 7 regex`
+
+### Les caractères génériques du shell
 
 **Les caractères associés aux noms de fichier sont interprétés par le shell avant le lancement de la commande :**
 
@@ -1168,25 +1615,106 @@ $ ls *.{c,txt}
 codage.c  fichier.txt
 ```
 
+### Les expressions régulières
+
+Les expressions régulières (*regular expressions*) sont beaucoup utilisées sous UNIX, notamment avec les éditeurs de texte et les filtres (`grep`, `sed`, `awk`, ...). Une expression régulière est une suite de caractères, appelée **motif** (*pattern*), qui permet de trouver une correspondance (*match*) dans un texte, pour une recherche ou un remplacement. Un motif se construit avec des caractères spéciaux de substitution, de groupement et de quantification.
+
 **Les caractères associés aux expressions régulières :**
 
 ```
 .         désigne un caractère
 *         remplace zéro fois ou n fois le caractère qui le précède
 \+        remplace 1 fois ou n fois le caractère qui le précède
-\?        remplace 0 zéro fois ou 1 fois le caratcère qui le précède
+\?        remplace zéro fois ou une fois le caractère qui le précède
 \b        désigne la chaîne vide (en début ou en fin de ligne)
 [...]     désigne un caractère quelconque appartenant à la liste
 ^         désigne le début de la ligne
 $         désigne la fin de la ligne
 [^...]    désigne une liste de caractères à exclure
-\{m\}     désigne un nombre exact m d'occurences d'un caractère
-\{m,\}    désigne un nombre minimum m d'occurences d'un caractère
-\{m,n\}   désigne un nombre d'occurences d'un caractère compris entre un min m et un max n
+\{m\}     désigne un nombre exact m d'occurrences d'un caractère
+\{m,\}    désigne un nombre minimum m d'occurrences d'un caractère
+\{m,n\}   désigne un nombre d'occurrences d'un caractère compris entre un min m et un max n
 \(...\)   désigne une chaîne de caractère ou une expression régulière
 \|        désigne une alternative
 \<mot\>   délimitation d'un mot
 ```
+
+**Les quantificateurs** indiquent combien de fois l'élément qui les précède doit apparaître (ici en notation étendue, voir plus bas) :
+
+| Quantificateur | Signification | Exemple | Correspond à | Ne correspond pas à |
+|---|---|---|---|---|
+| `?` | zéro ou une fois | `toto?` | « tot », « toto » | « totoo » |
+| `*` | zéro, une ou plusieurs fois | `toto*` | « tot », « toto », « totoo », ... | |
+| `+` | une ou plusieurs fois | `toto+` | « toto », « totoo », ... | « tot » |
+| `{n}` | exactement n fois | `a{3}` | « aaa » | « aa », « aaaa » |
+| `{n,m}` | entre n et m fois | `a{2,4}` | « aa », « aaa », « aaaa » | « a », « aaaaa » |
+| `{n,}` | au moins n fois | `a{3,}` | « aaa », « aaaa », ... | « aa » |
+
+**Les opérateurs de base :**
+
+| Opérateur | Signification | Exemple | Correspond à | Ne correspond pas à |
+|---|---|---|---|---|
+| (concaténation) | une expression suivie d'une autre | `ab` | « ab » | « a », « b » |
+| `.` | un caractère quelconque, et un seul | `.` | « a », « b », ... | chaîne vide, « ab » |
+| `\|` | alternative : l'une ou l'autre des expressions | `a\|b` | « a », « b » | « ab », « c » |
+| `[...]` | un des caractères de la liste (classe de caractères) | `[aeiou]`, `[a-d]` | « a », « e », ... | « b », « ae » |
+| `[^...]` | un caractère qui n'est pas dans la liste | `[^aeiou]` | « b », ... | « a », « bc » |
+| `(...)` | groupement | `(détecté)` | « détecté » | « détect », « détectés » |
+| `^` | début de ligne | `^a` | « a » en début de ligne | « ba » |
+| `$` | fin de ligne | `a$` | « a » en fin de ligne | « ab » |
+
+Entre crochets `[]`, les caractères spéciaux perdent leur signification : `[.?*]` désigne l'un des trois caractères « . », « ? » ou « * ». Pour neutraliser un caractère spécial ailleurs, il faut l'« échapper » en le faisant précéder d'un `\` (anti-slash). Enfin, les groupes placés entre `(` et `)` peuvent être rappelés par leur numéro d'ordre précédé de `\` : `\1`, `\2`, ...
+
+### Les standards BRE, ERE et PCRE
+
+La norme POSIX définit deux syntaxes d'expressions régulières :
+
+- **BRE** (*Basic Regular Expressions*) : la syntaxe par défaut de `grep` et `sed`. Les caractères `?`, `+`, `{`, `}`, `(`, `)` et `|` n'y sont pas spéciaux : pour leur donner leur rôle, il faut les échapper (`\?`, `\+`, `\{m\}`, `\(...\)`, `\|`). C'est la notation utilisée dans le tableau des caractères ci-dessus.
+- **ERE** (*Extended Regular Expressions*) : ces caractères y sont spéciaux sans échappement (et doivent être échappés pour être utilisés littéralement). C'est l'option `-E` de `grep` et de `sed` (ou `-r` pour `sed`). Les tableaux des quantificateurs et des opérateurs ci-dessus utilisent cette notation.
+
+Les expressions régulières de **Perl** sont également un standard de fait, en raison de leur richesse (elles ont donné la bibliothèque PCRE, utilisée par de nombreux langages) : c'est l'option `-P` de `grep`.
+
+**Exemple :** rechercher les villes du Vaucluse (84) et des Bouches-du-Rhône (13) dans un fichier de codes postaux :
+
+```bash
+$ cat liste.txt
+Sarrians 84260
+Avignon 84000
+Carpentras 84200
+Jonquières 84150
+Marseille 13000
+Istres 13800
+Vitrolles 13127
+Paris 75000
+
+# grep en mode BRE (par défaut) :
+$ grep '\(84\|13\)[[:digit:]]\{3\}' liste.txt
+
+# grep en mode ERE :
+$ grep -E '(84|13)[[:digit:]]{3}' liste.txt
+
+# sed en mode ERE :
+$ sed -En '/(84|13)[[:digit:]]{3}/p' liste.txt
+
+# Les trois commandes affichent :
+Sarrians 84260
+Avignon 84000
+Carpentras 84200
+Jonquières 84150
+Marseille 13000
+Istres 13800
+Vitrolles 13127
+```
+
+Avec `[[`, le shell `bash` permet aussi de tester une expression régulière (ERE) grâce à l'opérateur `=~` :
+
+```bash
+$ cp=84260
+$ [[ $cp =~ ^(84|13)[0-9]{3}$ ]] && echo "Vaucluse ou Bouches-du-Rhône"
+Vaucluse ou Bouches-du-Rhône
+```
+
+### Protéger les caractères spéciaux
 
 Il est possible d'annuler l'interprétation d'un caractère spécial ou de contrôle de trois manières en utilisant des caractères de protection :
 
@@ -1196,13 +1724,19 @@ Il est possible d'annuler l'interprétation d'un caractère spécial ou de contr
 "..."     : les doubles quotes annulent tous les caractères sauf ', \ et $
 ```
 
+### Les filtres grep, sed et awk
+
 `grep`, `egrep`, `fgrep` permettent d'afficher les lignes correspondant à un motif donné. C'est l'une des commandes les plus utilisées (notamment dans des tubes) pour des recherches dans du texte.
+
+> **Remarque** : `egrep` et `fgrep` sont aujourd'hui obsolètes : on utilise `grep -E` (expressions régulières étendues) et `grep -F` (recherche d'une chaîne fixe). Le nom `grep` vient de la commande `g/re/p` de l'éditeur `ed` (*global / regular expression / print*) : voir la vidéo [Where GREP Came From - Computerphile](https://www.youtube.com/watch?v=NTfOnGZUZDk).
 
 `grep` peut utiliser des classes de caractères prédéfinies comme : `[:digit:]` (chiffres), `[:lower:]` (minuscules), `[:print:]` (affichables), `[:punct:]` (ponctuation), `[:space:]` (espace), `[:upper:]` (majuscules), et `[:xdigit:]` (chiffres hexadécimaux).
 
 Par exemple, `[[:alnum:]]` correspond à `[0-9A-Za-z]`.
 
-`sed` est un éditeur ligne non interactif. Il reçoit du texte en entrée, que ce soit à partir de stdin ou d'un fichier, réalise certaines opérations sur les lignes spécifiées de l'entrée, une ligne à la fois, puis sort le résultat vers stdout ou vers un fichier. A l'intérieur d'un script shell, `sed` est habituellement un des différents outils composant un tube. De toutes les opérations de la boîte à outil `sed`, on utilise principalement : *printing* (affichage vers stdout), *deletion* (suppression) et *substitution* (substitution).
+D'autres classes POSIX sont disponibles : `[:alpha:]` (lettres), `[:alnum:]` (lettres et chiffres) et `[:blank:]` (espace et tabulation). Une classe s'utilise toujours entre crochets : `[[:digit:]]`.
+
+`sed` est un éditeur ligne non interactif. Il reçoit du texte en entrée, que ce soit à partir de stdin ou d'un fichier, réalise certaines opérations sur les lignes spécifiées de l'entrée, une ligne à la fois, puis sort le résultat vers stdout ou vers un fichier. À l'intérieur d'un script shell, `sed` est habituellement un des différents outils composant un tube. De toutes les opérations de la boîte à outil `sed`, on utilise principalement : *printing* (affichage vers stdout), *deletion* (suppression) et *substitution* (substitution).
 
 **Quelques exemples avec `sed` :**
 
@@ -1212,16 +1746,16 @@ Par exemple, `[[:alnum:]]` correspond à `[0-9A-Za-z]`.
 /Linux/p               : affiche seulement les lignes contenant Linux
 s/Windows/Linux/       : substitue Linux à chaque première instance de Windows
 s/Windows/Linux/g      : substitue Linux à chaque instance de Windows
-s/ *$ //               : supprime tous les espaces à la fin de toutes les lignes.
+s/ *$//                : supprime tous les espaces à la fin de toutes les lignes.
 s/00*/0/g              : compresse toutes les séquences consécutives de zéros en un seul zéro.
 /Windows/d             : supprime toutes les lignes contenant Windows.
 s/Windows //g          : supprime toutes les instances de Windows, en laissant le reste de la ligne intact.
 ```
 
-`awk` est un langage d'examen et de traitement de motifs. `awk` possède un langage de manipulation de texte plein de fonctionnalités avec une syntaxe proche du C. `awk` casse chaque ligne d'entrée en champs. Par défaut, un champ est une chaîne de caractères consécutifs délimités par des espaces (bien qu'il existe des options pour changer le délimiteur). `awk` analyse et opère sur chaque champ, ce qui le rend idéal pour gérer des fichiers texte structurés, particulièrement des tableaux, des données organisées en ensembles cohérents, tels que des lignes et des colonnes.
+`awk` est un langage d'examen et de traitement de motifs. `awk` possède un langage de manipulation de texte plein de fonctionnalités avec une syntaxe proche du C. `awk` découpe chaque ligne d'entrée en champs. Par défaut, un champ est une chaîne de caractères consécutifs délimités par des espaces (bien qu'il existe des options pour changer le délimiteur). `awk` analyse et opère sur chaque champ, ce qui le rend idéal pour gérer des fichiers texte structurés, particulièrement des tableaux, des données organisées en ensembles cohérents, tels que des lignes et des colonnes.
 
 ```bash
-# Taille des partitions montés :
+# Taille des partitions montées :
 $ df | sed 1d | awk '{print $1 " = " $2}'
 /dev/sda5 = 12G
 /dev/sda7 = 34G
@@ -1229,7 +1763,7 @@ $ df | sed 1d | awk '{print $1 " = " $2}'
 /dev/sda2 = 49G
 /dev/sda4 = 51G
 
-# Espace disponible sur les partitions montés :
+# Espace disponible sur les partitions montées :
 $ df | sed 1d | awk '{print $1 " = " $4}'
 /dev/sda5 = 912M
 ...
@@ -1254,13 +1788,14 @@ $ getent passwd | grep '\(bash\|sh\)\+'
 $ echo "thierry.vaira@orange.fr" | sed 's/\(.*\)\@\(.*\)/nom:\1 domain:\2/'
 nom:thierry.vaira domain:orange.fr
 
-$ ifconfig | sed -e "s/^ * //g" | grep -Eo "([0-9]{1,3}\.){3}[0-9]{1,3}"
+# Extraire les adresses IPv4 de la machine :
+$ ip -4 addr | grep -Eo "([0-9]{1,3}\.){3}[0-9]{1,3}"
+127.0.0.1
 192.168.52.2
 192.168.52.255
-255.255.255.0
-127.0.0.1
-255.0.0.0
 ```
+
+> **Remarque** : l'ancienne commande `ifconfig` a été remplacée par `ip` et n'est plus installée par défaut sur la plupart des distributions.
 
 ---
 
@@ -1275,7 +1810,7 @@ Les administrateurs (ou parfois les programmeurs) ont souvent le besoin d'automa
 
 L'automatisation des tâches est un domaine dans lequel les scripts shell prennent toute leur importance. Il peut s'agir de préparer des travaux que l'on voudra exécuter ultérieurement (voir `at`, `batch`) grâce à un système de programmation horaire (voir `crontab`) mais on utilise aussi les scripts pour simplifier l'utilisation de logiciels complexes ou écrire de véritables petites applications.
 
-Les scripts sont aussi très utiles lorsqu'il s'agit de faire coopérer plusieurs utilitaires système pour réaliser une tâche complète. On peut ainsi écrire un script qui parcoure le disque à la recherche des fichiers modifiés depuis moins d'une semaine, en stocke le nom dans un fichier, puis prépare une archive `tar` contenant les données modifiées, les sauvegarde sur une bande, puis envoie un e-mail à l'administrateur pour rendre compte de son action, etc ... Ce genre de programme est couramment employé pour automatiser les tâches administratives répétitives.
+Les scripts sont aussi très utiles lorsqu'il s'agit de faire coopérer plusieurs utilitaires système pour réaliser une tâche complète. On peut ainsi écrire un script qui parcourt le disque à la recherche des fichiers modifiés depuis moins d'une semaine, en stocke le nom dans un fichier, puis prépare une archive `tar` contenant les données modifiées, les sauvegarde sur une bande, puis envoie un e-mail à l'administrateur pour rendre compte de son action, etc ... Ce genre de programme est couramment employé pour automatiser les tâches administratives répétitives.
 
 Les shells proposent un véritable langage de programmation, comprenant toutes les structures de contrôle, les tests et les opérateurs arithmétiques nécessaires pour réaliser de petites applications. En revanche, il faut être conscient que les shells n'offrent qu'une bibliothèque de routines internes très limitée. Nous ferons alors fréquemment appel à des utilitaires système externes.
 
@@ -1357,7 +1892,7 @@ De manière générale, la plupart des langages de scripts admettent :
 - qu'une variable puisse changer de type au cours de son existence. On parle de **typage faible**.
 - que ce ne sont pas les variables qui ont un type, mais les valeurs. On parle de **typage dynamique**.
 
-Dans un shell Unix/Linux, une variable existe dès qu'on lui attribue une valeur (par défaut le type sera une chaînes de caractères). Une chaîne vide est une valeur valide. Une fois qu'une variable existe, elle ne peut être détruite qu'en utilisant la commande interne `unset`.
+Dans un shell Unix/Linux, une variable existe dès qu'on lui attribue une valeur (par défaut le type sera une chaîne de caractères). Une chaîne vide est une valeur valide. Une fois qu'une variable existe, elle ne peut être détruite qu'en utilisant la commande interne `unset`.
 
 Une variable peut recevoir une valeur par une affectation de la forme :
 
@@ -1556,7 +2091,7 @@ Comme n'importe quel programme, il est possible de passer des paramètres (argum
 ```bash
 # Afficher quelques variables internes :
 #!/bin/bash
-echo "Ce sript se nomme : $0"
+echo "Ce script se nomme : $0"
 echo "Il a reçu $# paramètre(s)"
 echo "Les paramètres sont : $@"
 echo
@@ -1565,14 +2100,14 @@ echo "Le PID du shell est $$"
 $ chmod +x variablesInternes.sh
 
 $ ./variablesInternes.sh
-Ce sript se nomme : ./variablesInternes.sh
+Ce script se nomme : ./variablesInternes.sh
 Il a reçu 0 paramètre(s)
 Les paramètres sont :
 
 Le PID du shell est 8807
 
 $ ./variablesInternes.sh le petit chat est mort
-Ce sript se nomme : ./variablesInternes.sh
+Ce script se nomme : ./variablesInternes.sh
 Il a reçu 5 paramètre(s)
 Les paramètres sont : le petit chat est mort
 
@@ -1635,9 +2170,24 @@ echo $TOUCHE
 exit 0
 ```
 
+### Les commandes internes utiles
+
+Un certain nombre de commandes sont exécutées directement par le shell et ne sont pas des programmes externes (`help` affiche leur aide). Les plus utiles dans un script :
+
+- `echo`, `printf` : affichent sur la sortie standard ;
+- `read` : lit l'entrée standard et stocke dans des variables les mots tapés au clavier ;
+- `exit` : termine le script immédiatement en retournant un code de retour (`0` par défaut) ;
+- `let`, `(( ))` : évaluent des expressions arithmétiques ;
+- `eval` : exécute ses arguments comme s'ils formaient une commande ;
+- `shift` : décale les paramètres (`$2` devient `$1`, ...) ;
+- `export`, `unset` : exportent ou suppriment une variable ;
+- `source` (ou `.`) : exécute un script dans le shell courant.
+
+Quelques commandes externes sont aussi très utilisées dans les scripts : `test` (tests sur les fichiers, les chaînes de caractères et les nombres), `expr` (évaluation d'expressions) et `bc` (calculatrice pour des calculs complexes ou sur des réels).
+
 ### Les tests et conditions
 
-Les tests peuvent être lancé par la commande interne `test` qui prend en argument les conditions, et renvoie `0` si le test est vrai, et `1` sinon.
+Les tests peuvent être lancés par la commande interne `test` qui prend en argument les conditions, et renvoie `0` si le test est vrai, et `1` sinon.
 
 La forme la plus courante est l'utilisation de crochets (`[` ou `[[` depuis la version 2) qui encadrent le test.
 
@@ -1649,6 +2199,8 @@ help [[
 ```
 
 > **Remarque** : Chaque élément du test, et les crochets, doivent être bien délimités par au moins un espace. C'est une erreur courante que d'oublier les espaces.
+
+Avec `[[`, l'opérateur `=~` permet de tester une expression régulière étendue (voir [Les standards BRE, ERE et PCRE](#les-standards-bre-ere-et-pcre)).
 
 ### Les structures conditionnelles
 
@@ -1938,7 +2490,7 @@ do
 done
 ```
 
-> **Remarque** : Les commandes de contrôle de boucle `break` et `continue` correspondent exactement à leur contre partie dans d'autres langages de programmation. La commande `break` termine la boucle (en sort), alors que `continue` fait un saut à la prochaine itération de la boucle, oubliant les commandes restantes dans ce cycle particulier de la boucle.
+> **Remarque** : Les commandes de contrôle de boucle `break` et `continue` correspondent exactement à leur contrepartie dans d'autres langages de programmation. La commande `break` termine la boucle (en sort), alors que `continue` fait un saut à la prochaine itération de la boucle, oubliant les commandes restantes dans ce cycle particulier de la boucle.
 
 ### Les fonctions
 
@@ -1994,17 +2546,18 @@ fi
 exit 0
 ```
 
-> **Remarque** : on utilise ici des commandes d'échappement (Echap ou Esc dont le code ascii est `0x1B`) qui permet de personnaliser le terminal notamment en utilisant des couleurs.
+> **Remarque** : on utilise ici des commandes d'échappement (Echap ou Esc dont le code ascii est `0x1B`) qui permettent de personnaliser le terminal notamment en utilisant des couleurs.
 
 ---
 
 ## Annexe 1 : Une liste de commandes de base
 
-Voici quelques commandes usuels :
+Voici quelques commandes usuelles :
 
 ```
 dpkg          : un gestionnaire de paquet pour Debian
 apt-get       : utilitaire APT pour la gestion des paquets (voir aussi aptitude)
+apt           : interface APT simplifiée pour un usage interactif (apt install, apt search, ...)
 alias         : crée ou supprime des alias de commandes
 pwd           : affiche le chemin d'accès au répertoire courant
 man           : permet de consulter les manuels de référence
@@ -2032,7 +2585,7 @@ paste         : concatène les lignes des fichiers
 tail          : affiche les n dernières lignes d'un fichier
 tac           : concatène les fichiers en inversant l'ordre des lignes
 uniq          : élimine les doublons d'un fichier trié
-rev           : inverse l'ordre des lignes d'un fichier
+rev           : inverse l'ordre des caractères de chaque ligne
 diff          : compare des fichiers texte
 cmp           : compare deux fichiers octet par octet
 tr            : remplace ou efface des caractères
@@ -2067,7 +2620,7 @@ stat          : affiche des informations sur un fichier ou un système de fichie
 lsof          : affiche des informations sur les fichiers ouverts
 fuser         : identifie les processus utilisant des fichiers
 fdisk         : gère les tables de partitions pour Linux
-cfdisk        : manipule les table de partitions pour Linux (voir aussi sfdisk)
+cfdisk        : manipule les tables de partitions pour Linux (voir aussi sfdisk)
 dd            : convertit et copie un fichier physiquement
 sync          : vider les tampons du système de fichiers (finalise les opérations d'écriture)
 id            : affiche les identifiants d'utilisateur et de groupe effectifs et réels
@@ -2079,7 +2632,7 @@ sudo          : exécute une commande sous un autre compte (voir /etc/sudoers)
 uname         : affiche des informations sur le système
 ps            : affiche les processus en cours
 top           : affiche les tâches
-kill          : envoye un signal à un processus
+kill          : envoie un signal à un processus
 at            : permet d'exécuter ultérieurement des commandes (voir aussi batch, atq, atrm et cron)
 time          : exécute un programme et affiche un résumé des ressources utilisées
 uptime        : indique depuis quand le système a été mis en route
@@ -2087,6 +2640,9 @@ free          : affiche les quantités de mémoire libre et utilisée du systèm
 vmstat        : affiche des statistiques sur la mémoire virtuelle
 env           : exécute un programme dans un environnement modifié, liste les variables d'environnement
 printenv      : affiche l'ensemble ou une partie des variables d'environnement
+ip            : affiche et configure les interfaces réseau (remplace ifconfig)
+ssh           : ouvre une session chiffrée sur une machine distante
+systemctl     : gère les services (démons) avec systemd
 ```
 
 **Exemples (on suppose le fichier `bonjour.txt` non vide) :**
@@ -2122,7 +2678,7 @@ Voici quelques répertoires usuels à la racine d'un système GNU/Linux :
 
 /dev       : fichiers spéciaux d'accès aux périphériques
 
-/etc       : fichiers de configuration système spécifique à la machine
+/etc       : fichiers de configuration système spécifiques à la machine
              (ce sont tous des fichiers textes ASCII)
 
 /home      : répertoires personnels des utilisateurs
@@ -2143,11 +2699,17 @@ Voici quelques répertoires usuels à la racine d'un système GNU/Linux :
 
 /root      : répertoire personnel du superutilisateur
 
+/run       : données temporaires des processus depuis le démarrage (PID, sockets, ...)
+
 /sbin      : commandes systèmes réservées au superutilisateur
+
+/srv       : données des services fournis par la machine (web, ftp, ...)
+
+/sys       : système de fichiers virtuel donnant accès aux périphériques et aux pilotes
 
 /tmp       : fichiers temporaires
 
-/usr       : hierarchie secondaire (on retrouve des sous-répertoires comme bin, lib ...)
+/usr       : hiérarchie secondaire (on retrouve des sous-répertoires comme bin, lib ...)
 
 /usr/local : hiérarchie tertiaire pour les données locales, spécifiques à l'ordinateur
              (on retrouve des sous-répertoires comme bin, lib ...)
@@ -2155,5 +2717,7 @@ Voici quelques répertoires usuels à la racine d'un système GNU/Linux :
 /var       : données variables de la machine sous forme de fichiers (base de données,
              logs, boîte aux lettres de messagerie, ...)
 ```
+
+> **Remarque** : sur les distributions récentes (Debian, Ubuntu, Fedora, Arch, ...), `/bin`, `/sbin` et `/lib` ne sont plus que des liens symboliques vers `/usr/bin`, `/usr/sbin` et `/usr/lib` (fusion de `/usr`, *usrmerge*). Vérifiez avec `ls -l /`.
 
 Voir [fr.wikipedia.org/wiki/Filesystem_Hierarchy_Standard](https://fr.wikipedia.org/wiki/Filesystem_Hierarchy_Standard)
