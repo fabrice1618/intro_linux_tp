@@ -1,0 +1,13 @@
+flowchart TB
+    subgraph T1["Type 1 : Hyper-V"]
+        direction TB
+        W1["Windows"] --> H1["Hyperviseur Hyper-V"]
+        L1["Linux"] --> H1
+        H1 --> M1["Matériel"]
+    end
+    subgraph T2["Type 2 : VirtualBox"]
+        direction TB
+        L2["Linux (système invité)"] --> V2["Hyperviseur VirtualBox"]
+        V2 --> W2["Windows (système hôte)"]
+        W2 --> M2["Matériel"]
+    end

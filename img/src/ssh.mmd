@@ -1,0 +1,3 @@
+flowchart LR
+    P["Poste de travail<br/>$ ssh fab@serveur"] -->|"connexion chiffrée<br/>port 22"| S["Serveur Linux<br/>démon sshd"]
+    S --> B["Session bash<br/>sur le serveur"]

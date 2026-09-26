@@ -37,6 +37,9 @@ style: |
     box-sizing: border-box !important;
   }
   footer, section::after { font-size: 14px; color: #7b8794; }
+  section h6 { font-size: 18px; color: #7b8794; font-weight: normal; font-style: italic; margin-top: 0.8em; }
+  section.credits { font-size: 18px; }
+  section.credits table { font-size: 15px; }
 ---
 
 <!-- _class: lead -->
@@ -44,6 +47,8 @@ style: |
 <!-- _footer: "" -->
 
 # Cours GNU/Linux
+
+![bg right:32% contain](img/photos/tux.svg)
 
 Introduction à GNU/Linux
 
@@ -84,20 +89,12 @@ Le cours complet : [README.md](README.md)
 
 ---
 
-# Travaux pratiques
+# Machines virtuelles
 
-| Ressource | Contenu |
-|---|---|
-| [Commandes de base](linux_commandes_base.md) | Mémento des commandes de base |
-| [TP « Commandes de base Linux »](tp_start/readme.md) | Parcours guidé, vérifié automatiquement |
-| [TP1 - Les fichiers textes](tp/tp1-fichiers-texte.md) | Manipuler des fichiers « texte » |
-| [TP2 - Les fichiers exécutables](tp/tp2-fichiers-executables.md) | `vim`, scripts et programmes |
-| [TP3 - Ligne de commande](tp/tp3-ligne-de-commande.md) | Arborescence, informations système |
-| [TP4 - Gestion des droits](tp/tp4-gestion-des-droits.md) | Droits sur les fichiers et répertoires |
-| [TP5 - Commandes](tp/tp5-commandes.md) | Utilisation avancée des commandes |
-| [Serveur LAMP](serveur_LAMP/README.md) | Linux, Apache, MySQL, PHP |
+- **type 1** : l'hyperviseur s'exécute directement sur le matériel (Hyper-V, VMware ESXi, KVM)
+- **type 2** : l'hyperviseur est une application du système hôte (VirtualBox, VMware Workstation)
 
-Première séance : commandes de base, TP1, puis TP2 (en partie).
+![h:420](img/hyperviseurs.svg)
 
 ---
 
@@ -167,13 +164,21 @@ UNIX est **multitâche** et **multi-utilisateur**.
 
 # Aux origines (1964-1969)
 
+![bg right:40% vertical contain](img/photos/thompson-ritchie-1973.jpg)
+![bg contain](img/photos/pdp-7.jpg)
+
 - **Multics** (MIT, General Electric, Bell Labs) : un système à temps partagé trop complexe, abandonné par les Bell Labs en 1969
 - **1969** : **Ken Thompson** et **Dennis Ritchie** écrivent un système beaucoup plus simple sur un **PDP-7** inutilisé
 - Brian Kernighan le baptise *Unics*, par jeu de mots avec Multics : **UNIX** est né
 
+###### Photos : Ken Thompson (à gauche) et Dennis Ritchie ; un PDP-7
+
 ---
 
 # UNIX et le langage C (1970-1979)
+
+![bg right:38% vertical contain](img/photos/pdp-11-40.jpg)
+![bg contain](img/photos/unix-v7.png)
 
 - 1970 : portage sur **PDP-11**
 - **1973** : le noyau est réécrit en **C** (créé par Dennis Ritchie) : UNIX devient **portable**
@@ -181,15 +186,21 @@ UNIX est **multitâche** et **multi-utilisateur**.
 - AT&T n'a pas le droit de vendre de logiciels : UNIX est distribué aux universités **avec son code source**
 - **1979** : la **Version 7** (Bourne shell `sh`, `awk`), ancêtre commun de tous les UNIX
 
+###### Photos : un PDP-11/40 ; UNIX Version 7 dans l'émulateur SIMH
+
 ---
 
 # BSD, l'UNIX de Berkeley
+
+![bg right:28% contain](img/photos/vax-11-780.jpg)
 
 - **1977** : l'université de Berkeley distribue **BSD** (*Berkeley Software Distribution*)
 - **Bill Joy** écrit `vi` et le C shell `csh` ; BSD fonctionne sur les **VAX** de DEC
 - **1983** : 4.2BSD intègre la **pile TCP/IP** et les *sockets* : Internet se diffuse
 - Procès d'AT&T (1992-1994), puis **4.4BSD-Lite**, libéré du code AT&T
 - Descendants : **FreeBSD**, **NetBSD**, **OpenBSD**... et **macOS**
+
+###### Photo : un VAX-11/780 de DEC
 
 ---
 
@@ -205,14 +216,22 @@ UNIX est **multitâche** et **multi-utilisateur**.
 
 # Le projet GNU
 
+![bg right:32% vertical contain](img/photos/gnu.svg)
+![bg contain](img/photos/richard-stallman.jpg)
+
 - **1983** : **Richard Stallman** annonce le projet **GNU** (*GNU's Not UNIX*) : un UNIX entièrement **libre**
 - 1985 : *Free Software Foundation* ; **1989** : licence **GNU GPL**
 - GNU écrit les outils : GCC, GDB, Emacs, `bash`, `ls`, `cp`, `grep`, la bibliothèque C...
 - Il manque le **noyau** : GNU Hurd n'aboutit pas
 
+###### Le logo du projet GNU ; Richard Stallman
+
 ---
 
 # Linux (1991)
+
+![bg right:28% vertical contain](img/photos/tux.svg)
+![bg contain](img/photos/linus-torvalds.jpg)
 
 - 1987 : **Minix**, un petit UNIX d'enseignement (Andrew Tanenbaum)
 - **25 août 1991** : **Linus Torvalds**, étudiant à Helsinki, annonce son noyau :
@@ -221,6 +240,8 @@ UNIX est **multitâche** et **multi-utilisateur**.
 
 - 1992 : Linux passe sous **GPL** : noyau Linux + outils GNU = **GNU/Linux**
 - Distributions : Slackware, Debian (1993), Red Hat (1994), Ubuntu (2004)...
+
+###### Tux, la mascotte de Linux ; Linus Torvalds
 
 ---
 
@@ -325,12 +346,17 @@ Prix Turing 1983 : Ken Thompson et Dennis Ritchie, pour UNIX.
 
 # UNIX en images et en vidéos
 
+![bg right:40% vertical contain](img/photos/apple-1.jpg)
+![bg contain](img/photos/nextcube-premier-serveur-web.jpg)
+
 - Vidéo : [AT&T Archives: The UNIX Operating System](https://www.youtube.com/watch?v=tc4ROCJYbm0) (1982)
 - Vidéo : [Where GREP Came From - Computerphile](https://www.youtube.com/watch?v=NTfOnGZUZDk)
-- Les machines d'UNIX : [PDP-7](https://fr.wikipedia.org/wiki/PDP-7), [PDP-11](https://fr.wikipedia.org/wiki/PDP-11), [VAX](https://fr.wikipedia.org/wiki/VAX) ([photo d'un VAX 11/780](https://virtuallyfun.com/wp-content/uploads/2009/06/vax.jpg))
-- [L'Apple I](https://i0.wp.com/www.apple2history.org/wp-content/uploads/2008/11/applei.jpg?ssl=1) (1976)
-- [Le NeXT de Tim Berners-Lee](https://static.techno-science.net/illustration/Definitions/1200px/f/first-web-server_0451b7775b0ff60c530e897c31ea3ad1.jpg), premier serveur web
+- L'**Apple I** (1976) de Steve Jobs et Steve Wozniak
+- Le **NeXTcube** de Tim Berners-Lee au CERN : le premier serveur web (1990)
+- Les machines d'UNIX : [PDP-7](https://fr.wikipedia.org/wiki/PDP-7), [PDP-11](https://fr.wikipedia.org/wiki/PDP-11), [VAX](https://fr.wikipedia.org/wiki/VAX)
 - [L'annonce de Linux](https://next.ink/wp-content/uploads/2025/08/image-97.png) (1991)
+
+###### Photos : un Apple I ; le NeXTcube, premier serveur web
 
 ---
 
@@ -398,32 +424,22 @@ Dans les exemples, l'invite (*prompt*) indique les droits nécessaires :
 
 ---
 
-# Conseils
-
-- **Tab** : complétion des commandes, des options, des noms de fichiers et des variables
-- **↑** et **↓** : parcourir l'historique des commandes
-- **Ctrl + R** : rechercher dans l'historique
-- Travailler en **plein écran**, sans souris
-- Utiliser **plusieurs terminaux** : un pour les commandes, un pour le manuel
-  - onglets : `Ctrl + Page↑` / `Ctrl + Page↓` ; fenêtres : `Alt + Tab`
-
----
-
 # Structure d'une commande
 
 ```
 $ commande [options] <paramètres>
 ```
 
-- des mots séparés par des espaces
-- `[ ]` : facultatif (on ne tape pas les crochets)
-- options courtes `-l` ou longues `--all` (standard GNU)
-- l'ordre des options a rarement de l'importance
+| `ls` | `-l --all` | `/etc` |
+|---|---|---|
+| commande | options | paramètre |
+
+- des mots séparés par des espaces ; `[ ]` signale ce qui est facultatif (on ne tape pas les crochets)
+- options courtes `-l` ou longues `--all` (standard GNU), dans un ordre quelconque :
 
 ```bash
 $ ls --all -l --si
 $ ls -l --si --all
-$ ls -l $HOME/tmp
 ```
 
 ---
@@ -442,8 +458,19 @@ $ type strings
 strings est /usr/bin/strings
 $ type ll
 ll est un alias vers « ls -halF »
+```
+
+---
+
+# Comment le shell trouve une commande
+
+![w:1150](img/resolution-commande.svg)
+
+```bash
 $ echo $PATH
 /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+$ which ls
+/usr/bin/ls
 ```
 
 ---
@@ -466,6 +493,10 @@ $ echo $PATH
 - ouvrir une session : `login`, `su` (changer d'utilisateur), **`ssh`** (à distance, chiffré)
 - l'invite est définie par la variable `PS1`
 - fermer une session : `exit`, `logout` ou **Ctrl + D**
+
+> On ne tape pas `login` : sur une console texte (`Ctrl + Alt + F3`), le système le lance pour vérifier l'identifiant et le mot de passe, puis démarre le shell.
+
+![w:900](img/ssh.svg)
 
 ---
 
@@ -564,6 +595,8 @@ $ top             # en temps réel
 $ pidof bash      # PID d'un programme
 ```
 
+###### Dans l'arbre, `login` a authentifié l'utilisateur sur une console texte et lancé son `bash` ; `sshd` fait de même pour une connexion à distance. En mode graphique, on verrait `gdm` et `gnome-terminal`.
+
 ---
 
 # Gérer les tâches
@@ -624,6 +657,18 @@ $ df -Th       # systèmes de fichiers montés et leur type
 
 ---
 
+# Partitions et montage
+
+Chaque partition formatée est **montée** sur un répertoire de l'arborescence unique :
+
+![w:1100](img/partitions.svg)
+
+```bash
+$ lsblk -f     # disques, partitions, types et points de montage
+```
+
+---
+
 # L'arborescence
 
 ![w:1150](img/arborescence-diapo.svg)
@@ -645,9 +690,9 @@ Norme **FHS** (*Filesystem Hierarchy Standard*)
 
 | Répertoire courant | hello.c | bonjour.txt |
 |---|---|---|
-| (n'importe lequel) | `/home/tv/hello.c` | `/home/tv/tmp/bonjour.txt` |
-| `/home/tv` | `./hello.c` | `./tmp/bonjour.txt` |
-| `/home/prof` | `../tv/hello.c` | `../tv/tmp/bonjour.txt` |
+| (n'importe lequel) | `/home/fab/hello.c` | `/home/fab/tmp/bonjour.txt` |
+| `/home/fab` | `./hello.c` | `./tmp/bonjour.txt` |
+| `/home/prof` | `../fab/hello.c` | `../fab/tmp/bonjour.txt` |
 
 ```bash
 $ pwd          # affiche le répertoire courant
@@ -679,9 +724,13 @@ $ ls -i fichier ; stat fichier
 - fins de ligne : **LF** (UNIX), **CRLF** (Windows, protocoles Internet), CR (anciens Mac)
 
 ```bash
-$ od -c bonjour.txt          # voir les octets, dont le \n final
+$ echo "Hello world" > bonjour.txt
 $ hexdump -C bonjour.txt
+00000000  48 65 6c 6c 6f 20 77 6f  72 6c 64 0a              |Hello world.|
+0000000c
 ```
+
+Chaque caractère occupe un octet : `48` = « H », `20` = espace, `0a` = fin de ligne LF
 
 ---
 
@@ -702,11 +751,36 @@ $ man ascii
 
 ---
 
+# La table ASCII
+
+![h:520](img/photos/table-ascii.svg)
+
+---
+
+# Un caractère, plusieurs encodages
+
+| Caractère | ASCII | ISO 8859-1 (latin1) | ISO 8859-15 (latin9) | UTF-8 |
+|---|---|---|---|---|
+| `A` | `41` | `41` | `41` | `41` |
+| `é` | absent | `e9` | `e9` | `c3 a9` |
+| `€` | absent | absent | `a4` | `e2 82 ac` |
+
+```bash
+$ echo -n "é" | od -An -tx1
+ c3 a9
+$ echo -n "é" | iconv -f UTF-8 -t ISO8859-1 | od -An -tx1
+ e9
+```
+
+> Un texte UTF-8 lu comme du latin1 affiche « Ã© » au lieu de « é ».
+
+---
+
 # Créer et afficher
 
 ```bash
 $ mkdir tmp ; cd tmp ; pwd
-/home/tv/tmp
+/home/fab/tmp
 $ touch vide                          # fichier vide
 $ echo "Hello world" > bonjour.txt    # fichier avec un contenu
 $ echo "by $USER" >> bonjour.txt      # ajout à la fin
@@ -738,7 +812,7 @@ $ find $HOME -name "*.txt" -exec ls -l {} \;
 
 # L'éditeur vim
 
-- mode **normal** au démarrage ; `i` : mode **insertion** ; `Esc` : retour au mode normal ; `:` : mode **commande**
+![w:760](img/vim-modes.svg)
 
 | Commande | Action |
 |---|---|
@@ -766,10 +840,14 @@ $ find $HOME -name "*.txt" -exec ls -l {} \;
 
 ```bash
 $ id
-uid=1000(tv) gid=1000(tv) groupes=1000(tv),4(adm),27(sudo)
-$ grep tv /etc/passwd
-tv:x:1000:1000:,,,:/home/tv:/bin/bash
+uid=1000(fab) gid=1000(fab) groupes=1000(fab),4(adm),27(sudo)
+$ grep fab /etc/passwd
+fab:x:1000:1000:,,,:/home/fab:/bin/bash
 ```
+
+| `fab` | `x` | `1000` | `1000` | `,,,` | `/home/fab` | `/bin/bash` |
+|---|---|---|---|---|---|---|
+| nom | mot de passe (dans `/etc/shadow`) | UID | GID | commentaire | répertoire personnel | shell |
 
 Commandes : `id`, `groups`, `whoami`, `who`, `w`, `last`
 
@@ -779,12 +857,12 @@ Commandes : `id`, `groups`, `whoami`, `who`, `w`, `last`
 
 ```bash
 $ ls -l script.sh
--rwxr-x--- 1 tv promo00 38 sept. 26 10:12 script.sh
+-rwxr-x--- 1 fab promo00 38 sept. 26 10:12 script.sh
 ```
 
 | Type | Utilisateur (`u`) | Groupe (`g`) | Autres (`o`) | Propriétaire | Groupe propriétaire |
 |---|---|---|---|---|---|
-| `-` | `rwx` | `r-x` | `---` | `tv` | `promo00` |
+| `-` | `rwx` | `r-x` | `---` | `fab` | `promo00` |
 
 Types : `-` fichier · `d` répertoire · `l` lien symbolique · `c` / `b` périphérique · `s` socket · `p` tube nommé
 
@@ -817,19 +895,34 @@ Attribuées à : `u` l'utilisateur · `g` le groupe · `o` les autres · `a` tou
 
 # Modifier les permissions : chmod
 
+| Qui | Opération | Droits |
+|---|---|---|
+| `u` utilisateur · `g` groupe · `o` autres · `a` tous | `+` ajouter · `-` retirer · `=` fixer | `r` `w` `x` |
+
 ```bash
 $ chmod g+rx fichier     # ajoute r et x au groupe
 $ chmod a-x fichier      # retire x à tout le monde
 $ chmod u=rw fichier     # fixe les droits de l'utilisateur
-$ chmod 750 fichier      # rwxr-x---
 $ chmod -R g+w projet    # récursivement
 ```
+
+---
+
+# chmod : le mode octal
 
 | Octal | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
 |---|---|---|---|---|---|---|---|---|
 | Droits | `---` | `--x` | `-w-` | `-wx` | `r--` | `r-x` | `rw-` | `rwx` |
 
-`r` = 4, `w` = 2, `x` = 1 : 644 = `rw-r--r--`, 755 = `rwxr-xr-x`
+Exemple : `chmod 750 fichier`
+
+| | Utilisateur | Groupe | Autres |
+|---|---|---|---|
+| Droits | `rwx` | `r-x` | `---` |
+| Calcul (`r` = 4, `w` = 2, `x` = 1) | 4 + 2 + 1 | 4 + 0 + 1 | 0 + 0 + 0 |
+| Octal | **7** | **5** | **0** |
+
+Courants : **644** `rw-r--r--` (fichiers) · **755** `rwxr-xr-x` (scripts, répertoires) · **600** `rw-------` (fichiers privés)
 
 ---
 
@@ -879,15 +972,14 @@ Fichier : 666 & ~022 = **644** · répertoire : 777 & ~022 = **755**
 # chown, chgrp et pour aller plus loin
 
 ```bash
-# chown tv fichier             # propriétaire (root uniquement)
-# chown tv:promo00 fichier     # propriétaire et groupe
+# chown fab fichier            # propriétaire (root uniquement)
+# chown fab:promo00 fichier    # propriétaire et groupe
 $ chgrp promo00 fichier        # groupe (dont on est membre)
 ```
 
 - **sudo** : exécuter une commande en tant que root (`/etc/sudoers`)
 - **ACL** : des droits pour d'autres utilisateurs ou groupes (`getfacl`, `setfacl`)
 - Vidéos : [Sticky bit, SetUID, SetGID](https://www.youtube.com/watch?v=Wuv5S2IqiWQ) · [Special Linux Permissions](https://www.youtube.com/watch?v=zU43cReOBsc) · [umask](https://www.youtube.com/watch?v=cbNoaC6CSO0)
-- [TP4 - Gestion des droits](tp/tp4-gestion-des-droits.md)
 
 ---
 
@@ -977,8 +1069,8 @@ Avignon 84000
 | `"..."` | annule tout sauf `$`, `` ` `` et `\` |
 
 ```bash
-$ nom=tv
-$ echo "hello $nom"      # hello tv
+$ nom=fab
+$ echo "hello $nom"      # hello fab
 $ echo 'hello $nom'      # hello $nom
 $ echo "hello \$nom"     # hello $nom
 ```
@@ -1059,8 +1151,8 @@ $ source monscript   # shell courant
 ```bash
 $ chaine=bonjour           # pas d'espace autour de =
 $ echo $chaine ${chaine}
-$ nom=tv
-$ echo "hello $nom"        # hello tv
+$ nom=fab
+$ echo "hello $nom"        # hello fab
 $ unset chaine             # détruit la variable
 $ export EDITOR=vim        # visible par les programmes lancés
 $ echo $HOME $USER $PATH   # variables d'environnement
@@ -1068,6 +1160,21 @@ $ echo $HOME $USER $PATH   # variables d'environnement
 
 - une variable existe dès qu'on lui donne une valeur
 - par défaut, tout est **chaîne de caractères** (typage faible)
+
+---
+
+# Variables locales et d'environnement
+
+Seules les variables **exportées** sont transmises aux programmes lancés par le shell :
+
+![h:250](img/export-variables.svg)
+
+```bash
+$ COULEUR=bleu
+$ export EDITOR=vim
+$ bash -c 'echo "couleur=$COULEUR éditeur=$EDITOR"'
+couleur= éditeur=vim
+```
 
 ---
 
@@ -1250,6 +1357,27 @@ Paramètres `$1`, `$2`... · variables locales (`local`) · `return` pour le cod
 
 [Commandes de base](linux_commandes_base.md) · [TP « Commandes de base Linux »](tp_start/readme.md)
 
-[TP1](tp/tp1-fichiers-texte.md) · [TP2](tp/tp2-fichiers-executables.md) · [TP3](tp/tp3-ligne-de-commande.md) · [TP4](tp/tp4-gestion-des-droits.md) · [TP5](tp/tp5-commandes.md) · [Serveur LAMP](serveur_LAMP/README.md)
-
 Le cours complet : [README.md](README.md)
+
+---
+
+<!-- _class: credits -->
+
+# Crédits des images
+
+Photos et logos issus de [Wikimedia Commons](https://commons.wikimedia.org)
+
+| Image | Auteur | Licence |
+|---|---|---|
+| [Ken Thompson et Dennis Ritchie](https://commons.wikimedia.org/wiki/File:Ken_Thompson_and_Dennis_Ritchie--1973.jpg) | auteur inconnu | domaine public |
+| [PDP-7](https://commons.wikimedia.org/wiki/File:Pdp-7-oslo-2004.jpeg) | Matiashf | CC BY-SA 3.0 |
+| [PDP-11/40](https://commons.wikimedia.org/wiki/File:Pdp-11-40.jpg) | Stefan Kögl | CC BY-SA 3.0 |
+| [UNIX Version 7 (SIMH)](https://commons.wikimedia.org/wiki/File:Version_7_Unix_SIMH_PDP11_Emulation_DMR.png) | Huihermit | CC0 |
+| [VAX-11/780](https://commons.wikimedia.org/wiki/File:VAX_11-780_intero.jpg) | Emiliano Russo, VerdeBinario | domaine public |
+| [Logo GNU](https://commons.wikimedia.org/wiki/File:Heckert_GNU_white.svg) | Aurelio A. Heckert | CC BY-SA 2.0 |
+| [Richard Stallman](https://commons.wikimedia.org/wiki/File:Richard_Stallman_(124442297).jpeg) | Frank Karlitschek | CC BY-SA 3.0 |
+| [Tux](https://commons.wikimedia.org/wiki/File:Tux.svg) | Larry Ewing (lewing@isc.tamu.edu, avec The GIMP), Simon Budig, Garrett LeSage | attribution |
+| [Linus Torvalds](https://commons.wikimedia.org/wiki/File:LinuxCon_Europe_Linus_Torvalds_03_(cropped).jpg) | Krd, Von Sprat | CC BY-SA 4.0 |
+| [Apple I](https://commons.wikimedia.org/wiki/File:Apple-1,_1976,_Computer_History_Museum.jpg) | The wub | CC BY-SA 4.0 |
+| [NeXTcube, premier serveur web](https://commons.wikimedia.org/wiki/File:NeXTcube_first_webserver.JPG) | Geni | CC BY-SA 4.0 |
+| [Table ASCII](https://commons.wikimedia.org/wiki/File:ASCII-Table-wide.svg) | ZZT32, Yufeng Huang | domaine public |

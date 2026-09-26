@@ -1,0 +1,14 @@
+flowchart TD
+    P1["/dev/sda1<br/>FAT32 (EFI)"]
+    P2["/dev/sda2<br/>ext4"]
+    P3["/dev/sda3<br/>swap"]
+    U["clé USB /dev/sdb1<br/>exFAT"]
+    subgraph A["Arborescence unique"]
+        R["/"] --> B["/boot/efi"]
+        R --> H["/home"]
+        R --> M["/media/fab/cle"]
+    end
+    P2 -->|"monté sur"| R
+    P1 -->|"monté sur"| B
+    U -->|"monté sur"| M
+    P3 -.->|"utilisée comme"| SW["mémoire virtuelle"]

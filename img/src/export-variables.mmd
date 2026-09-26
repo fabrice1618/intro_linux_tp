@@ -1,0 +1,7 @@
+flowchart LR
+    subgraph P["Shell parent"]
+        V1["COULEUR=bleu<br/>variable locale"]
+        V2["export EDITOR=vim<br/>variable d'environnement"]
+    end
+    V2 -->|"héritée"| E["Processus enfant<br/>script, programme"]
+    V1 -.-x|"non transmise"| E

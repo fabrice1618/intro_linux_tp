@@ -1,0 +1,11 @@
+stateDiagram-v2
+    direction LR
+    state "Mode normal" as N
+    state "Mode insertion" as I
+    state "Mode commande" as C
+    [*] --> N : vim fichier
+    N --> I : i, a ou o
+    I --> N : Esc
+    N --> C : deux-points
+    C --> N : Entrée ou Esc
+    C --> [*] : wq ou q!

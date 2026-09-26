@@ -586,6 +586,8 @@ Il vous faut ouvrir une **session** sur votre poste de travail. Vous pouvez util
 - la variable `PATH` indique où chercher les commandes, la variable `SHELL` le *shell* de l'utilisateur ;
 - fermer une session : `logout`, `exit` ou `Ctrl + D`.
 
+> **Remarque** : on ne tape pas soi-même la commande `login` (lancée depuis un *shell*, elle échoue sans les droits *root*). C'est le système qui la lance : sur chaque console texte (accessible depuis l'interface graphique par `Ctrl + Alt + F3` à `F6`), le programme `getty` affiche l'invite `login:` puis passe la main à `login`, qui vérifie l'identifiant et le mot de passe avant de démarrer le *shell* de l'utilisateur. En mode graphique, c'est le gestionnaire de connexion (`gdm`, `sddm`, ...) qui joue ce rôle.
+
 ### Shell Bash
 
 Bash (*Bourne-again shell*) est le shell du projet GNU. Bash est un logiciel libre publié sous GNU GPL. Il est l'interprète par défaut sur de nombreux Unix libres, notamment sur les systèmes GNU/Linux. Ce fut aussi le shell par défaut de Mac OS X (remplacé par `zsh` depuis macOS 10.15 en 2019) et il a été porté sous Windows par le projet Cygwin ; il est aussi disponible sous Windows avec WSL.
@@ -756,6 +758,8 @@ flowchart TD
     B1 --> PS["ps -ef<br/>PID 4630, PPID 4501"]
 ```
 
+> **Remarque** : dans cet arbre, `login` est le processus qui a authentifié un utilisateur sur une console texte, puis lancé son `bash` ; de la même façon, `sshd` a lancé le `bash` d'une connexion à distance. Dans une session graphique, `pstree` affiche à la place le gestionnaire de connexion (`gdm`) et le terminal graphique (`gnome-terminal`).
+
 ```bash
 $ ps -ef                  # liste tous les processus (voir aussi ps aux)
 $ pstree                  # affiche l'arbre des processus
@@ -888,7 +892,7 @@ flowchart TD
     R["/"] --> HOME["home"]
     R --> ETC["etc"]
     HOME --> PROF["prof"]
-    HOME --> TV["tv"]
+    HOME --> TV["fab"]
     TV --> HELLO("hello.c")
     TV --> TMP["tmp"]
     TMP --> BONJOUR("bonjour.txt")
@@ -896,17 +900,17 @@ flowchart TD
 
 **Quel est le chemin d'accès à "hello.c"?**
 
-- Avec un chemin d'accès absolu : `/home/tv/hello.c`
+- Avec un chemin d'accès absolu : `/home/fab/hello.c`
 - Avec un chemin d'accès relatif : tout dépend de l'endroit où on exécute la commande, c'est-à-dire le répertoire de travail (ou répertoire courant). Pour cela, on peut utiliser deux références connues du système d'exploitation : le répertoire courant (noté `.`) ou le répertoire parent (noté `..`) :
-  - Supposons que le répertoire courant est `prof`, on pourra désigner `hello.c` par `../tv/hello.c`
-  - Supposons que le répertoire courant est `tv`, on pourra désigner `hello.c` par `./hello.c`
+  - Supposons que le répertoire courant est `prof`, on pourra désigner `hello.c` par `../fab/hello.c`
+  - Supposons que le répertoire courant est `fab`, on pourra désigner `hello.c` par `./hello.c`
 
 **Quel est le chemin d'accès à "bonjour.txt"?**
 
-- Avec un chemin d'accès absolu : `/home/tv/tmp/bonjour.txt`
+- Avec un chemin d'accès absolu : `/home/fab/tmp/bonjour.txt`
 - Avec un chemin d'accès relatif : tout dépend de l'endroit où on exécute la commande, c'est-à-dire le répertoire de travail (ou répertoire courant). Pour cela, on peut utiliser deux références connues du système d'exploitation : le répertoire courant (noté `.`) ou le répertoire parent (noté `..`) :
-  - Supposons que le répertoire courant est `prof`, on pourra désigner `bonjour.txt` par `../tv/tmp/bonjour.txt`
-  - Supposons que le répertoire courant est `tv`, on pourra désigner `bonjour.txt` par `./tmp/bonjour.txt`
+  - Supposons que le répertoire courant est `prof`, on pourra désigner `bonjour.txt` par `../fab/tmp/bonjour.txt`
+  - Supposons que le répertoire courant est `fab`, on pourra désigner `bonjour.txt` par `./tmp/bonjour.txt`
 
 ### Structure de l'arborescence Unix/Linux
 
@@ -924,7 +928,7 @@ flowchart LR
     R --> TMP["tmp<br/>fichiers temporaires"]
     R --> USR["usr<br/>programmes"]
     R --> VAR["var<br/>données variables"]
-    HOME --> TV["tv"]
+    HOME --> TV["fab"]
     HOME --> PROF["prof"]
     USR --> UBIN["bin"]
     USR --> ULIB["lib"]
@@ -983,7 +987,7 @@ Le terme **inode** désigne le **descripteur d'un fichier** sous UNIX/Linux. Les
 
 ```mermaid
 flowchart LR
-    subgraph REP["Répertoire /home/tv"]
+    subgraph REP["Répertoire /home/fab"]
         E1["hello.c → inode 655480"]
         E2["lien_hello.c → inode 655480"]
     end
@@ -1002,7 +1006,7 @@ $ touch fichier
 
 # Affiche le numéro d'inode (-i)
 $ ls -il fichier
-655480 -rw-rw-r-- 1 tv tv 11 sept. 5 12:14 fichier
+655480 -rw-rw-r-- 1 fab fab 11 sept. 5 12:14 fichier
 
 # Écrit dans un fichier
 $ echo "helloworld" >> fichier
@@ -1015,7 +1019,7 @@ $ stat fichier
 Fichier : «fichier»
 Taille : 11         Blocs : 8          Blocs d'E/S : 4096   fichier
 Périphérique : 812h/2066d	Inœud : 655480      Liens : 1
-Accès : (0664/-rw-rw-r--)  UID : ( 1026/      tv)   GID : (65536/      tv)
+Accès : (0664/-rw-rw-r--)  UID : ( 1026/     fab)   GID : (65536/     fab)
 Accès : 2015-09-05 12:13:05.615190874 +0200
 Modif. : 2015-09-05 12:14:08.019191386 +0200
 Changt : 2015-09-05 12:14:08.019191386 +0200
@@ -1177,20 +1181,20 @@ La commande `mkdir` permet de créer un nouveau répertoire et la commande `cd` 
 $ mkdir tmp
 
 $ ls -l
-drwxrwxr-x 2 tv tv 4096 sept.  2 18:27 tmp
+drwxrwxr-x 2 fab fab 4096 sept.  2 18:27 tmp
 
 $ cd tmp
 
 $ ls -al
-drwxrwxr-x 2 tv tv 4096 sept.  2 18:27 .
-drwxrwxr-x 3 tv tv 4096 sept.  2 18:27 ..
+drwxrwxr-x 2 fab fab 4096 sept.  2 18:27 .
+drwxrwxr-x 3 fab fab 4096 sept.  2 18:27 ..
 
 $ cd ..
 
 $ ll
-drwxrwxr-x  3 tv tv 4,0K sept.  2 18:27 ./
-drwx------ 13 tv tv 4,0K sept.  2 18:27 ../
-drwxrwxr-x  2 tv tv 4,0K sept.  2 18:27 tmp/
+drwxrwxr-x  3 fab fab 4,0K sept.  2 18:27 ./
+drwx------ 13 fab fab 4,0K sept.  2 18:27 ../
+drwxrwxr-x  2 fab fab 4,0K sept.  2 18:27 tmp/
 
 $ alias
 alias ll='ls -halF'
@@ -1204,7 +1208,7 @@ Si vous voulez connaître le chemin absolu où vous vous trouvez, vous pouvez ut
 
 ```bash
 $ pwd
-/home/tv/tmp
+/home/fab/tmp
 ```
 
 > **Remarque** : un chemin absolu est toujours référencé par rapport à la racine de votre arborescence et commence donc toujours par un slash `/`.
@@ -1217,7 +1221,7 @@ $ pwd
 $ touch vide
 
 $ ls -l vide
--rw-r--r-- 1 tv tv 0 2010-07-17 15:56 vide
+-rw-r--r-- 1 fab fab 0 2010-07-17 15:56 vide
 
 $ file vide
 vide: empty
@@ -1228,7 +1232,7 @@ vide: empty
 ```bash
 $ echo "Hello world" > bonjour.txt
 $ ls -l bonjour.txt
--rw-r--r-- 1 tv tv 12 2010-07-17 15:55 bonjour.txt
+-rw-r--r-- 1 fab fab 12 2010-07-17 15:55 bonjour.txt
 
 $ file bonjour.txt
 bonjour.txt: ASCII text
@@ -1464,14 +1468,14 @@ Les comptes locaux sont définis dans trois fichiers :
 
 ```bash
 $ id
-uid=1000(tv) gid=1000(tv) groupes=1000(tv),4(adm),27(sudo)
+uid=1000(fab) gid=1000(fab) groupes=1000(fab),4(adm),27(sudo)
 
 $ groups
-tv adm sudo
+fab adm sudo
 
 # Format : nom:x:UID:GID:commentaire:répertoire personnel:shell
-$ grep tv /etc/passwd
-tv:x:1000:1000:,,,:/home/tv:/bin/bash
+$ grep fab /etc/passwd
+fab:x:1000:1000:,,,:/home/fab:/bin/bash
 
 $ ls -l /etc/shadow
 -rw-r----- 1 root shadow 1450 sept. 26 10:12 /etc/shadow
@@ -1564,12 +1568,12 @@ $ ls -l /usr/bin/sudo
 
 ```mermaid
 sequenceDiagram
-    actor TV as tv (UID 1000)
+    actor TV as fab (UID 1000)
     participant S as sudo (SUID root)
     participant A as apt
     TV->>S: sudo apt update
     Note over S: grâce au bit SUID, sudo s'exécute<br/>avec l'UID effectif 0 (root)
-    S->>S: vérifie /etc/sudoers et le mot de passe de tv
+    S->>S: vérifie /etc/sudoers et le mot de passe de fab
     S->>A: lance apt avec les droits de root
     A-->>TV: résultat de la commande
 ```
@@ -1708,10 +1712,10 @@ Lors de la copie d'un fichier, c'est le même principe qui est appliqué en util
 Les commandes `chown` et `chgrp` permettent de changer, respectivement, l'utilisateur propriétaire et le groupe.
 
 ```bash
-# chown tv fichier             # change le propriétaire
-# chown tv:promo00 fichier     # change le propriétaire et le groupe
+# chown fab fichier            # change le propriétaire
+# chown fab:promo00 fichier    # change le propriétaire et le groupe
 $ chgrp promo00 fichier        # change le groupe
-# chown -R tv:tv /home/tv      # récursivement sur toute une arborescence
+# chown -R fab:fab /home/fab   # récursivement sur toute une arborescence
 ```
 
 > **Remarque** : seul *root* peut changer le propriétaire d'un fichier. Un utilisateur peut changer le groupe de ses propres fichiers, uniquement vers un groupe auquel il appartient.
@@ -2026,7 +2030,7 @@ $ chmod ugo+x script.sh
 
 # Vérification
 $ ls -l script.sh
--rwxr-xr-x 1 tv tv 38 2010-08-05 11:22 script.sh
+-rwxr-xr-x 1 fab fab 38 2010-08-05 11:22 script.sh
 
 # Exécution du script
 $ ./script.sh
@@ -2116,7 +2120,7 @@ $ unset chaine
 $ echo $chaine
 
 # Manipuler des chaînes de caractères :
-$ nom=tv
+$ nom=fab
 $ echo $nom
 $ chaine="hello $nom"
 $ echo $chaine
@@ -2173,7 +2177,7 @@ $ echo ${#PASSWORD}
 $ echo ${nom_utilisateur:='whoami'}
 
 # Utiliser des tableaux :
-$ tableau[1]=tv
+$ tableau[1]=fab
 $ echo ${tableau[1]}
 
 # Supprimer une partie d'une variable :

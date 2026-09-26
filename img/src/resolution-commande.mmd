@@ -1,0 +1,9 @@
+flowchart LR
+    C["Le shell lit<br/>la commande ls"] --> A{"alias ?"}
+    A -->|oui| AR["remplacée par<br/>sa définition"]
+    AR --> I
+    A -->|non| I{"commande<br/>interne ?"}
+    I -->|oui| IE["exécutée par le shell<br/>cd, echo, history..."]
+    I -->|non| P["recherche dans les<br/>répertoires du PATH,<br/>dans l'ordre"]
+    P -->|trouvée| E["exécute<br/>/usr/bin/ls"]
+    P -->|introuvable| N["ls : commande<br/>introuvable"]

@@ -1,9 +1,9 @@
 sequenceDiagram
-    actor TV as tv (UID 1000)
+    actor TV as fab (UID 1000)
     participant S as sudo (SUID root)
     participant A as apt
     TV->>S: sudo apt update
     Note over S: grâce au bit SUID, sudo s'exécute<br/>avec l'UID effectif 0 (root)
-    S->>S: vérifie /etc/sudoers et le mot de passe de tv
+    S->>S: vérifie /etc/sudoers et le mot de passe de fab
     S->>A: lance apt avec les droits de root
     A-->>TV: résultat de la commande
