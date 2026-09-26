@@ -70,7 +70,7 @@ Concepts clés :
   4) Afficher la date et l'heure actuelles
 
 **Indices** :
-  - man man : lisez la section "SEARCHING" pour apprendre à chercher dans une page man
+  - man man : consultez l'option -K pour apprendre à chercher dans les pages man
   - `history` est une commande intégrée (builtin) de Bash
   - Pour limiter l'historique : `history 10` ou `history | tail -10`
   - `date` fonctionne partout
