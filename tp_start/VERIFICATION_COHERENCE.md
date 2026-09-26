@@ -1,6 +1,6 @@
-# Vérification de cohérence readme.md ↔ verify.py
+# Vérification de cohérence énoncé (etapes/) ↔ verify.py
 
-Pour chaque étape : les tâches de l'énoncé, ce que `verify.py` contrôle, et les erreurs courantes qu'il reconnaît et explique. Une tâche = une ligne ✔/✘ dans le script (38 tâches au total).
+Pour chaque étape : les tâches de l'énoncé (`etapes/NN-*.md`), ce que `verify.py` contrôle, et les erreurs courantes qu'il reconnaît et explique. Une tâche = une ligne ✔/✘ dans le script (38 tâches au total).
 
 Les tâches notées *(question)* sont vérifiées par une question posée lors de `python3 verify.py N` ; la réponse s'obtient en exécutant les commandes, et les bonnes réponses sont mémorisées dans `workspace/.verify/reponses.json`.
 

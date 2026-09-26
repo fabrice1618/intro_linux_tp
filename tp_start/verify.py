@@ -1024,6 +1024,12 @@ ETAPES = [
 ]
 
 
+def enonce(num):
+    """Page de l'énoncé d'une étape, par exemple « etapes/03-creer.md »."""
+    pages = sorted((BASE / "etapes").glob(f"{num:02d}-*.md"))
+    return rel(pages[0]) if pages else "readme.md"
+
+
 def evaluer(tache):
     try:
         return tache()
@@ -1058,7 +1064,7 @@ def verifier_etape(num, suggerer_suite=True):
         afficher(r)
         reussies += r.ok
     if reussies == len(taches):
-        suite = f" Étape suivante : {num + 1}." if suggerer_suite and num < len(ETAPES) else ""
+        suite = f" Étape suivante : {num + 1} ({enonce(num + 1)})." if suggerer_suite and num < len(ETAPES) else ""
         print(VERT(f"  → Étape {num} validée ({reussies}/{len(taches)}).") + suite)
         return True
     print(JAUNE(f"  → {reussies}/{len(taches)} : corrigez les points ✘ puis relancez "
@@ -1081,6 +1087,7 @@ def tableau():
         print(VERT("  Toutes les étapes sont validées. Bravo !"))
         return True
     print(f"  Prochaine étape : {prochaine}  →  python3 verify.py {prochaine}")
+    print(f"  Énoncé          : {enonce(prochaine)}")
     return False
 
 

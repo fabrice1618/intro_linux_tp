@@ -24,12 +24,19 @@ This is a progressive Linux command-line tutorial (TP - "Travaux Pratiques") des
   - Observation questions (`question()`) check tasks that leave no file (secret word, PID of the shell...); correct answers are stored in `workspace/.verify/reponses.json`
   - Warns when `data/` differs from the checksums written by setup.sh
 
-- **readme.md**: Complete tutorial with 10 progressive exercises
-  - Each step includes: concept introduction, tasks, real excerpts of `man`/`help` pages (English man, French `help`), validation instructions
+- **readme.md**: Landing page of the tutorial: presentation, setup, table of the 10 steps, working method, links to the help pages
   - No quiz: quiz questions are managed in a separate system
   - No `sudo` required; all work happens in user's home directory
 
-- **readme_correction.md** (git-ignored): teacher's solutions, must stay in sync with readme.md
+- **etapes/NN-*.md**: One page per step (01 to 10), all with the same plan
+  - Header (objective, commands, what to produce, help links), then `## Comprendre`, `## À réaliser`, `## Documentation`, `## Valider`, and navigation links (previous / summary / next) at top and bottom
+  - Each task (`### Tâche N — ...`) gives its expected result, links to its documentation anchor (`#man-find`), an optional "Pour contrôler" command and an optional `<details>` hint taken from verify.py's hints
+  - `## Documentation` has one `### \`man cmd\`` heading per command: real excerpts of `man`/`help` pages (English man, French `help`), kept verbatim
+  - The two-digit prefix is used by verify.py (`enonce()`) to print the page of the next step
+
+- **aide/**: Help pages linked from every step: `memo.md` (cheat sheet), `man.md` (man guide), `verification.md` (verify.py output), `depannage.md` (troubleshooting)
+
+- **readme_correction.md** (git-ignored): teacher's solutions, must stay in sync with etapes/
 
 ### Directory Structure
 
@@ -46,9 +53,11 @@ This is a progressive Linux command-line tutorial (TP - "Travaux Pratiques") des
 ├── workspace/              # Student working directory
 │   ├── preuves/            # Outputs saved with > so verify.py can check them
 │   └── .verify/            # data.sha256 (setup.sh) and reponses.json (verify.py)
+├── etapes/                 # Tutorial instructions, one page per step (01-aide-historique.md ... 10-processus.md)
+├── aide/                   # Help pages: memo.md, man.md, verification.md, depannage.md
 ├── setup.sh                # Environment setup script
 ├── verify.py               # Automated verification script
-└── readme.md               # Complete tutorial instructions
+└── readme.md               # Landing page: presentation, setup, list of steps
 ```
 
 ## Common Commands
@@ -101,7 +110,7 @@ bash setup.sh --reset
 - Compute expected values from `data/` files (word count, column...), never hard-code them, so setup.sh stays the single source of truth
 - `absent(path)` is the standard KO for a missing file: it also looks for a file of the same name elsewhere (wrong current directory)
 - Hints point to the relevant option or concept, not to the full command
-- When changing tasks, update readme.md, readme_correction.md and VERIFICATION_COHERENCE.md together
+- When changing tasks, update the step page in etapes/, readme_correction.md and VERIFICATION_COHERENCE.md together; the "Quand tout est juste" block of each step page shows the exact success line printed by `verifier_etape()`
 
 ### Expected Student Work Products
 
