@@ -1,0 +1,17 @@
+flowchart TB
+    U(["Utilisateur"])
+    subgraph US["Espace utilisateur"]
+        SH["Shell<br/>bash"]
+        APP["Applications<br/>vim, gcc, firefox, ..."]
+        D["Démons<br/>sshd, cron, ..."]
+        LIB["Bibliothèques<br/>glibc"]
+    end
+    K["Noyau Linux<br/>processus (scheduler), mémoire virtuelle,<br/>systèmes de fichiers, pilotes (drivers)"]
+    HW["Matériel<br/>processeur, RAM, disques, réseau"]
+    U --> SH
+    U --> APP
+    SH --> LIB
+    APP --> LIB
+    D --> LIB
+    LIB -->|"appels système"| K
+    K --> HW

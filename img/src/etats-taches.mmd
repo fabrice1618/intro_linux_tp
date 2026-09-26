@@ -1,0 +1,13 @@
+stateDiagram-v2
+    direction LR
+    state "Premier plan" as PP
+    state "Arrière-plan" as AP
+    state "Stoppée" as ST
+    [*] --> PP : commande
+    [*] --> AP : commande &
+    PP --> ST : Ctrl + Z
+    ST --> PP : fg
+    ST --> AP : bg
+    AP --> PP : fg
+    PP --> [*] : fin ou Ctrl + C
+    AP --> [*] : fin ou kill

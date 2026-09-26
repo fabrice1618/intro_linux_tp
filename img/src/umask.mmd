@@ -1,0 +1,3 @@
+flowchart LR
+    P["Droits demandés<br/>par le programme<br/>fichier : 666 rw-rw-rw-<br/>répertoire : 777 rwxrwxrwx"] --> M{"masque umask 022<br/>retire w à g et o"}
+    M --> F["Droits obtenus<br/>fichier : 644 rw-r--r--<br/>répertoire : 755 rwxr-xr-x"]

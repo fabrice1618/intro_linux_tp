@@ -1,0 +1,6 @@
+flowchart TD
+    D(["for variable in liste"]) --> C{"reste-t-il un élément<br/>dans la liste ?"}
+    C -->|oui| V["variable = élément suivant"]
+    V --> B["do : liste de commandes"]
+    B --> C
+    C -->|non| F(["done"])

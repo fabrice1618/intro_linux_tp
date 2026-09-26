@@ -1,0 +1,5 @@
+flowchart TD
+    D(["while"]) --> C{"condition<br/>vraie ?"}
+    C -->|oui| B["do : liste de commandes"]
+    B --> C
+    C -->|non| F(["done"])

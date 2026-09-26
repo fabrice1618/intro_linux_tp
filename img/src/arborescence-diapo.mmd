@@ -1,0 +1,14 @@
+%%{init: {"flowchart": {"nodeSpacing": 15, "rankSpacing": 40}}}%%
+flowchart TD
+    R["/"] --> ETC["etc<br/>configuration"]
+    R --> HOME["home<br/>utilisateurs"]
+    R --> USR["usr<br/>programmes"]
+    R --> VAR["var<br/>données"]
+    R --> DEV["dev<br/>périphériques"]
+    R --> TMP["tmp<br/>temporaires"]
+    HOME --> TV["tv"]
+    HOME --> PROF["prof"]
+    USR --> UBIN["bin<br/>commandes"]
+    USR --> ULIB["lib<br/>bibliothèques"]
+    USR --> ULOCAL["local"]
+    VAR --> LOG["log<br/>journaux"]

@@ -1,0 +1,6 @@
+flowchart LR
+    A["history<br/>liste les commandes"] --> B["grep -v<br/>élimine des lignes"]
+    B --> C["sed<br/>supprime les espaces<br/>en fin de ligne"]
+    C --> D["sort -k 2 -r<br/>trie par commande"]
+    D --> E["uniq -f 1<br/>supprime les doublons"]
+    E --> F["sort -n<br/>remet dans l'ordre<br/>chronologique"]

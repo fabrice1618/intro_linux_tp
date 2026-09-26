@@ -1,0 +1,15 @@
+flowchart TD
+    UNIX["UNIX<br/>Bell Labs (AT&T), 1969"]
+    UNIX --> SYSV["System V<br/>AT&T, 1983"]
+    UNIX --> BSD["BSD<br/>Université de Berkeley, 1977"]
+    SYSV --> COMM["AIX (IBM), HP-UX (HP),<br/>Solaris (Sun puis Oracle), IRIX (SGI)"]
+    BSD --> LIBRES["FreeBSD, NetBSD, OpenBSD"]
+    BSD --> NEXT["NeXTSTEP<br/>NeXT, 1988"]
+    NEXT --> MACOS["Darwin, macOS, iOS<br/>Apple, 2001"]
+    LIBRES --> PS["PlayStation 4 et 5"]
+    UNIX -. inspire .-> MINIX["Minix<br/>Tanenbaum, 1987"]
+    UNIX -. inspire .-> GNU["Projet GNU<br/>Stallman, 1983"]
+    MINIX -. inspire .-> LINUX["Noyau Linux<br/>Torvalds, 1991"]
+    GNU --> GNULINUX["GNU/Linux<br/>Debian, Ubuntu, Red Hat, Fedora, Arch..."]
+    LINUX --> GNULINUX
+    LINUX --> ANDROID["Android, 2008<br/>noyau Linux sans GNU"]

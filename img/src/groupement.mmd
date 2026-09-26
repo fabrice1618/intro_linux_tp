@@ -1,0 +1,4 @@
+flowchart LR
+    C1["cmd1"] --> T{"code retour $?<br/>égal à 0 ?"}
+    T -->|"oui : VRAI"| A["cmd1 && cmd2<br/>cmd2 est exécutée"]
+    T -->|"non : FAUX"| B["cmd1 || cmd2<br/>cmd2 est exécutée"]

@@ -1,0 +1,7 @@
+flowchart TD
+    S["systemd<br/>PID 1"] --> SSHD["sshd<br/>PID 812"]
+    S --> CRON["cron<br/>PID 790"]
+    S --> LOGIN["login<br/>PID 1020"]
+    SSHD --> B1["bash<br/>PID 4501, PPID 812"]
+    LOGIN --> B2["bash<br/>PID 3310, PPID 1020"]
+    B1 --> PS["ps -ef<br/>PID 4630, PPID 4501"]

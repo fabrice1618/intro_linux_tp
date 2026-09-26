@@ -1,0 +1,8 @@
+flowchart LR
+    A["Accès à un fichier"] --> R{"root ?"}
+    R -->|oui| OK["Accès autorisé"]
+    R -->|non| U{"propriétaire<br/>du fichier ?"}
+    U -->|oui| DU["droits du bloc u"]
+    U -->|non| G{"membre du groupe<br/>du fichier ?"}
+    G -->|oui| DG["droits du bloc g"]
+    G -->|non| DO["droits du bloc o"]

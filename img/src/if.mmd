@@ -1,0 +1,9 @@
+flowchart TD
+    D(["if"]) --> C1{"condition 1<br/>vraie ?"}
+    C1 -->|oui| A1["then : commandes 1"]
+    C1 -->|non| C2{"elif : condition 2<br/>vraie ?"}
+    C2 -->|oui| A2["then : commandes 2"]
+    C2 -->|non| A3["else : commandes 3"]
+    A1 --> F(["fi"])
+    A2 --> F
+    A3 --> F

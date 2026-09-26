@@ -1,0 +1,5 @@
+flowchart LR
+    F[("fichier.txt")] -->|"#lt; : stdin"| C1["cmd1"]
+    C1 -->|"tube : stdout vers stdin"| C2["cmd2"]
+    C2 -->|"#gt; : stdout"| S[("resultat.txt")]
+    C1 -.->|"2#gt; : stderr"| ERR[("erreurs.txt")]

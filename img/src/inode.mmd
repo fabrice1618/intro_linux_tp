@@ -1,0 +1,10 @@
+flowchart LR
+    subgraph REP["Répertoire /home/tv"]
+        E1["hello.c → inode 655480"]
+        E2["lien_hello.c → inode 655480"]
+    end
+    I["Inode 655480<br/>type, droits, propriétaire,<br/>taille, dates, 2 liens,<br/>numéros des blocs"]
+    B[("Bloc 2656872<br/>contenu du fichier")]
+    E1 --> I
+    E2 --> I
+    I --> B

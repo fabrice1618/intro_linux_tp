@@ -1,0 +1,6 @@
+flowchart TD
+    SH["Shell courant<br/>bash"]
+    SH -->|"./monscript ou sh monscript"| SUB["Nouveau processus : sous-shell<br/>qui exécute le script"]
+    SUB --> X["À la fin du script, les variables<br/>et le répertoire courant modifiés<br/>par le script sont perdus"]
+    SH -->|"source monscript"| CUR["Le shell courant exécute<br/>lui-même le script"]
+    CUR --> Y["Les variables et le répertoire<br/>courant modifiés par le script<br/>restent en place"]

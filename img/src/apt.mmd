@@ -1,0 +1,12 @@
+sequenceDiagram
+    actor U as Utilisateur
+    participant APT as apt
+    participant DEP as Dépôts (Internet)
+    participant DPKG as dpkg
+    U->>APT: sudo apt update
+    APT->>DEP: télécharge la liste des paquets disponibles
+    U->>APT: sudo apt install htop
+    APT->>APT: calcule les dépendances
+    APT->>DEP: télécharge htop et ses dépendances (.deb)
+    APT->>DPKG: installe les paquets .deb
+    DPKG-->>U: logiciel installé
