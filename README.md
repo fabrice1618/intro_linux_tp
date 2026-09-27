@@ -121,7 +121,10 @@ Plusieurs solutions permettent de disposer d'un système Linux pour suivre le co
 | [TP5 - Commandes](tp/tp5-commandes.md) | Codes de retour, caractères génériques, expressions régulières, `grep`, `sed` et `awk` |
 | [Serveur LAMP](serveur_LAMP/README.md) | Installer un serveur de développement Linux, Apache, MySQL, PHP |
 
-Progression conseillée pour la première séance : le mémento des [commandes de base](linux_commandes_base.md), le [TP1](tp/tp1-fichiers-texte.md), puis le [TP2](tp/tp2-fichiers-executables.md) (en partie).
+Deux progressions pédagogiques organisent ces ressources en séances :
+
+- [Progression 1](progression_pedagogique1.md) : initiation à la ligne de commande en 2 séances (présentation sans les expressions régulières ni les scripts shell, mémento des commandes de base, TP « Commandes de base Linux ») ;
+- [Progression 2](progression_pedagogique2.md) : de la ligne de commande au serveur LAMP en 5 séances (progression 1, puis expressions régulières, scripts shell et TP Serveur LAMP).
 
 ---
 
