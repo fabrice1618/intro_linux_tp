@@ -1,209 +1,239 @@
-# TP OS n° 1  - Les fichiers textes
+[Cours GNU/Linux](../README.md#travaux-pratiques) · **TP 1 / 5** · [TP 2 →](tp2-fichiers-executables.md)
 
-**Les objectifs de ce premier tp sont d’être capable, en utilisant des commandes de base sous GNU/Linux, de manipuler des fichiers « texte » et d’en comprendre leur contenu.**
+# TP 1 — Les fichiers texte
+
+- **Objectifs** : créer, afficher, examiner et modifier des fichiers « texte » avec les commandes de base ; comprendre qu’un fichier texte n’est qu’une suite d’octets qui codent des caractères ; repérer les deux pièges des échanges de fichiers : les fins de ligne et l’encodage des caractères
+- **Prérequis** : savoir ouvrir un terminal et taper une commande
+- **Durée indicative** : 2 h
+- **Commandes** : `touch` · `echo` · `cat` · `less` · `head` · `tail` · `wc` · `file` · `hexdump` · `hexedit` · `tr` · `md5sum` · `iconv`
+- **Cours** : [Shell Bash](../README.md#shell-bash) · [Les Fichiers « texte »](../README.md#les-fichiers--texte-) · [L’encodage des caractères](../README.md#lencodage-des-caractères)
 
 _Remarque : les tp ont pour but d’établir ou de renforcer vos compétences pratiques. Vous pouvez penser que vous comprenez tout ce que vous lisez ou tout ce que vous a dit votre enseignant mais la répétition et la pratique sont nécessaires pour développer des compétences en informatique. Ceci est comparable au sport ou à la musique ou à tout autre métier demandant un long entraînement pour acquérir l’habileté nécessaire. Imaginez quelqu’un qui voudrait disputer une compétition dans l’un de ces domaines sans pratique régulière. Vous savez bien quel serait le résultat._
 
-## Introduction
+---
 
-### Shell Bash
+## Avant de commencer
 
-**Bash** ( _Bourne-again shell_ ) est le shell du projet GNU. Bash est un logiciel libre publié sous GNU GPL.
-Il est l’interprète par défaut sur de nombreux Unix libres, notamment sur les systèmes GNU/Linux. C’est aussi le shell par défaut de Mac OS X et il a été porté sous Windows par le projet Cygwin.
+### Espace de travail
 
-Aujourd’hui, bash est le shell le plus répandu, bien qu’il existe beaucoup d’autres interpréteurs de commandes, comme sh, ksh, csh, tcsh, zsh, ash...
+Créez un répertoire pour ce TP et placez-vous dedans : tous les fichiers du TP y seront créés.
 
-Un **shell** Unix, aussi nommé **interface en ligne de commande** Unix, est un shell destiné au système d’exploitation Unix et de type Unix. L’utilisateur lance des commandes sous forme d’une entrée texte exécutée ensuite par le shell. Celui-ci est utilisable en conjonction avec un terminal (souvent virtuel).
-Dans les différents systèmes d’exploitation Microsoft Windows, le programme analogue est command.com ou cmd.exe.
-
-```
-Le shell (coquille) est une interface permetttant d’accéder au noyau (kernel) d’un système d’exploitation
+```bash
+$ mkdir -p ~/tpos/tpos1
+$ cd ~/tpos/tpos1
 ```
 
-Tout processus Unix/Linux démarre avec 3 flux déjà ouverts :
+### Conventions
 
-- un pour l’ **entrée des données** (canal 0)
-- un pour la **sortie des données** (canal 1)
-- un pour les **messages d’erreur** (canal 2)
+- `$` représente l’invite (_prompt_) du shell : ne la tapez pas.
+- Les lignes qui ne commencent pas par `$` montrent ce qu’affiche la commande. Votre affichage peut différer (date, taille, nom d’utilisateur) : c’est normal.
+- Les **questions** sont numérotées. Notez vos réponses dans un compte rendu : sur papier, ou dans le fichier texte `~/tpos/reponses_tp1.txt` avec l’éditeur `nano` (`Ctrl+O` pour enregistrer, `Ctrl+X` pour quitter).
 
-Remarque : un processus (identifié par un PID) est un programme en cours d’exécution.
+### Méthode : prédire, exécuter, expliquer
 
-Par défaut, ces flux sont :
+Avant de taper une commande, essayez de **prédire** ce qu’elle va afficher. Exécutez-la, puis **expliquez** ce que vous observez, surtout quand le résultat vous surprend : c’est là que l’on apprend.
 
-- 0 : le **clavier** ( _stdin_ : _standard input_ )
-- 1 : l’ **écran** ( _stdout_ : _standard output_ )
-- 2 :/dev/null( _stderr_ : _standard error_ )
+### Astuce : l’historique des commandes
 
+Le _shell_ garde la liste des commandes déjà tapées. Inutile de retaper une longue commande :
 
-Il est possible de rediriger ces flux (en utilisant les opérateurs <, >, << et >>). Un tube (|) est un canal entre deux processus (redirection de la sortie d’un processus vers l’entrée d’un autre processus).
+| Touche ou commande | Effet |
+|---|---|
+| flèches **HAUT** et **BAS** | parcourent les commandes précédentes |
+| `Ctrl+R` puis un mot | recherche la dernière commande contenant ce mot |
+| `history` | affiche tout l’historique, numéroté |
+| `!!` | réexécute la dernière commande |
+| `!100` | réexécute la commande n° 100 |
+| `!ls` | réexécute la dernière commande commençant par `ls` |
+| `!$` | remplacé par le dernier argument de la commande précédente |
 
-### Les Fichiers « texte »
+L’aide des commandes internes du shell s’obtient avec `help` : `help history`, `help echo`.
+
+---
+
+## Rappels
+
+### Le shell et les flux standard
+
+**Bash** (_Bourne-again shell_) est le shell du projet GNU et l’interpréteur de commandes par défaut de la plupart des distributions GNU/Linux. L’utilisateur tape une commande sous forme de texte ; le shell l’interprète et demande au noyau de l’exécuter. Il existe d’autres shells : sh, dash, ksh, zsh (le shell par défaut de macOS depuis 2019)…
+
+Tout processus (programme en cours d’exécution) démarre avec **3 flux** déjà ouverts :
+
+| N° | Nom | Rôle | Par défaut |
+|---|---|---|---|
+| 0 | _stdin_ (_standard input_) | entrée des données | le clavier |
+| 1 | _stdout_ (_standard output_) | sortie des données | l’écran |
+| 2 | _stderr_ (_standard error_) | messages d’erreur | l’écran |
+
+![Les trois flux standard d’un processus](../img/flux-standard.svg)
+
+Le shell permet de **rediriger** ces flux vers (ou depuis) un fichier, ou de les relier entre deux commandes :
+
+| Syntaxe | Effet |
+|---|---|
+| `cmd > fichier` | écrit la sortie standard dans `fichier` (le fichier est **vidé** s’il existait, créé sinon) |
+| `cmd >> fichier` | **ajoute** la sortie standard à la fin de `fichier` |
+| `cmd < fichier` | la commande lit son entrée standard dans `fichier` au lieu du clavier |
+| `cmd 2> fichier` | écrit les messages d’erreur dans `fichier` |
+| `cmd1 \| cmd2` | tube (_pipe_) : la sortie standard de `cmd1` devient l’entrée standard de `cmd2` |
+
+### Fichiers texte et fichiers binaires
 
 On distingue en général deux types de fichiers : **texte** et **binaire**.
 
-_Remarque : "Un fichier binaire est un fichier informatique qui n’est pas assimilable à un fichier texte."
-(source wikipedia). Donc, tout ce qui n’est pas un fichier texte est un fichier binaire._
+- Un fichier **texte** ne contient que des octets qui codent des caractères selon un codage standard (ASCII, UTF-8…) : il est lisible directement. Exemples : code source d’un programme, fichiers de configuration (`/etc`), pages web, scripts, journaux (_logs_).
+- Un fichier **binaire** est un fichier informatique qui n’est pas assimilable à un fichier texte : image, programme compilé, archive, document Word ou LibreOffice.
 
-Les fichiers texte ont un contenu pouvant être interprété directement comme du texte (une suite de bits représentant un caractère), la plupart du temps en codage ASCII ( American Standard Code for Information Interchange ).
+On manipule un fichier texte avec un **éditeur de texte** (nano, vim, emacs, VS Code…), à ne pas confondre avec un **traitement de texte** (Word, LibreOffice Writer), dont les documents sont des fichiers binaires.
 
-Remarque : L’ASCII est la norme de codage de caractères en informatique la plus ancienne et la plus connue. Avec l’avènement de la mondialisation des systèmes d’information, son usage se restreint progressivement à des domaines très techniques.
+_Remarque : L’éditeur de texte est le programme le plus important et le plus utilisé par un informaticien dans l’exercice de son métier (administration, programmation)._
 
-Remarque : Comment sera interprété en ASCII l’octet 0x0A? La réponse (et bien plus) est accessible dans le manuel en ligne de commande en faisant:
+---
 
-```bash
-$ man ascii.
-```
+## Manipulations
 
-### éditeur de texte
+### Étape 1 — Créer un fichier texte
 
-On utilise généralement un **éditeur de texte** (vi, **vim** , emacs, **nano**, Notepad, Notepad++, VS Code, ...) pour manipuler ce type de fichiers.
-
-_Remarque : L’éditeur de texte est le programme le plus important et le plus utilisé par un informaticien dans l’exercice de son métier (administration, programmation). Comme on le verra par la suite, il ne faut pas confondre éditeur de texte et traitement de texte._
-
-Quelques exemples de fichiers textes : code source d’un programme, fichiers de configuration, etc.
-
-_Remarque : Un fichier “Word” ou “OpenOffice” ne sera pas considéré comme un fichier texte par un informaticien._
-
-Autres termes utilisés: fichier texte ou fichier texte brut ou fichier texte simple ou fichier ASCII.
-
-### Historique des commandes
-
-Le _shell_ permet de rappeler les commandes précédemment exécutées. Pour cela, vous pouvez utiliser les **flèches HAUT et BAS**.
-
-Visualiser l’ensemble de l’historique :
-
-```bash
-$ history
-$ history | more
-```
-
-Rechercher une commande :
-```bash
-$ history | grep commande_recherchée
-```
-
-Rappeler une commande et l’exécuter :
-
-```bash
-$ !ls       : rappelle la dernière commande commençant par ls
-$ !100      : rappelle la commande n° 100
-$ !!        : rappelle la dernière commande
-$ !10:p     : rappelle la commande n°10 et l’affiche (aucune exécution)
-```
-
-```bash
-$ !$        : correspond au dernier argument de la dernière commande
-$ !*        : représente tous les arguments de la dernière commande sauf le premier
-```
-
-L’aide des commandes internes se trouve dans :
-
-```bash
-$ help history
-$ help cd
-```
-
-Pour rechercher dans l’aide faire : 
-- /history puis on se déplace avec n (en avant) ou N (en arrière)
-- Les options -A (After) -B (Before) -C (autour) -n (numéro de ligne) de la commande egrep
-
-```bash
-$ man bash
-$ man bash | colcrt | egrep -A 5 history
-```
-
-### Objectifs
-
-L’objectif de cette partie est d’être capable de réaliser les manipulations de base sur des fichiers « texte » sous GNU/Linux. Il est important de savoir que l’interaction de l’utilisateur (clavier-écran) avec le système d’exploitation Unix/Linux se fait au format texte.
-Remarque : Avant d’utiliser un éditeur de texte, on va utiliser quelques commandes de bases bien utiles.
-
-### Étape n°1 : créer un fichier texte
-
-créer un fichier vide :
+Créer un fichier vide :
 
 ```bash
 $ touch vide
 $ ls -l vide
--rw-r--r-- 1 tv tv 0 2010-07-17 15:56 vide
+-rw-rw-r-- 1 fab fab 0 sept. 26 23:32 vide
 $ file vide
 vide: empty
 ```
-créer un fichier avec un contenu :
+
+Créer un fichier avec un contenu, grâce à la redirection `>` :
+
 ```bash
 $ echo "Hello world" > bonjour.txt
 $ ls -l bonjour.txt
--rw-r--r-- 1 tv tv 12 2010-07-17 15:55 bonjour.txt
+-rw-rw-r-- 1 fab fab 12 sept. 26 23:32 bonjour.txt
 $ file bonjour.txt
 bonjour.txt: ASCII text
 ```
-**Les redirections d’entrées/sorties**
 
-Par défaut, les commandes récupèrent les données tapées par l’utilisateur au clavier (stdin). Le résultat de leur exécution s’affiche à l’écran (stdout). En cas d’erreur à l’exécution, les messages d’erreur apparaissent aussi à l’écran (stderr). 
+> **Question 1** — Quelle est la taille du fichier `vide` ? Et celle de `bonjour.txt` ? Comptez les caractères de « Hello world » : que remarquez-vous ? (l’explication viendra à l’étape 3)
 
-Il est possible d’indiquer à l’interpréteur de commandes de rediriger ces flux d’E/S vers (ou depuis) un fichier. 
-
-Par exemple : > sortie signifie que les données générées par la commande seront écrites dans le fichier de nom sortie plutôt qu’à l’écran. Si le fichier sortie existait déjà, son ancien contenu est effacé, sinon ce fichier est créé au lancement de la commande.
-
-Un exemple qui illustre bien la philosophie UNIX/Linux :
-
-Ici l’utilisation de < permet de rediriger le flux d’E/S depuis un fichier (bonjour.txt).
+La commande `file` ne se fie pas au nom du fichier : elle examine son **contenu**.
 
 ```bash
-$while read ligne ;do echo "contenu : $ligne"; done < bonjour.txt
+$ cp bonjour.txt bonjour.jpg
+$ file bonjour.jpg
 ```
 
-### Étape n°2 : afficher le contenu d’un fichier texte
+> **Question 2** — Que répond `file` ? Que signifie l’extension `.txt` (ou `.jpg`) pour le système Linux ?
 
-Il existe de nombreuses possibilités pour afficher le contenu d’un fichier texte. En voici quelques-unes :
+L’entrée standard peut, elle aussi, venir d’un fichier :
 
 ```bash
-$ cat bonjour.txt
-$ cat -n bonjour.txt ; nl bonjour.txt
-$ strings bonjour.txt
-$ more bonjour.txt
-$ less bonjour.txt
+$ wc -l bonjour.txt
+1 bonjour.txt
+$ wc -l < bonjour.txt
+1
 ```
 
-**Utilisation d’un tube (pipe) pour “relier” des commandes**
+> **Question 3** — Pourquoi le nom du fichier n’apparaît-il pas dans le second cas ? Qui ouvre le fichier `bonjour.txt` : la commande `wc` ou le shell ?
 
-Le shell Unix dispose d’un mécanisme appelé **tube** (ou pipe). Ce mécanisme permet de chaîner des processus (commandes en cours d’exécution) de sorte que la sortie d’un processus (stdout) alimente directement l’entrée (stdin) du suivant. Le symbole utilisé pour créer des tubes dans les shells Unix est la barre verticale |, appelée communément pipe. Le pipe est très utilisé sur Unix pour associer plusieurs  commandes dont on enchaîne les traitements. C’est un mécanisme de communication inter-processus (IPC).
+Les messages d’erreur empruntent un flux séparé :
 
 ```bash
-$ cat bonjour.txt | wc -c
+$ ls bonjour.txt absent.txt > resultat.txt
+ls: impossible d'accéder à 'absent.txt': Aucun fichier ou dossier de ce nom
+$ cat resultat.txt
+bonjour.txt
+$ ls bonjour.txt absent.txt > resultat.txt 2> erreurs.txt
+$ cat erreurs.txt
 ```
 
-### Étape n°3 : examiner le contenu d’un fichier texte
+> **Question 4** — Pourquoi le message d’erreur de la première commande s’affiche-t-il à l’écran alors que la sortie est redirigée vers `resultat.txt` ? Que fait `2>` ?
 
-Un fichier texte contient fondamentalement une suite de bits. La particularité d’un fichier texte est que l’ensemble du fichier respecte un codage de caractères standard. Il existe de nombreux standards de codage de caractères, ce qui peut rendre problématique la compatibilité des fichiers texte.
+### Étape 2 — Afficher le contenu d’un fichier texte
 
-La norme ASCII ( American Standard Code for Information Interchange ) est la norme de codage de caractères en informatique la plus connue et la plus largement compatible. L’ASCII définit 128 caractères numérotés de 0 à 127 et codés en binaire de 0000000 à 1111111. Sept bits suffisent donc pour représenter un caractère codé en ASCII. Toutefois, les ordinateurs travaillant (presque) tous sur huit bits (un octet), chaque caractère d’un texte en ASCII est stocké dans un octet dont le 8e bit est 0. 
+Il existe de nombreuses possibilités pour afficher le contenu d’un fichier texte. Essayez-les sur le fichier `/etc/passwd`, qui contient la liste des comptes de la machine :
 
-Les caractères 0 à 31 et le 127 ne sont pas affichables. Ils correspondent à des caractères (commandes) de contrôle de terminal informatique.
+| Commande | Affiche |
+|---|---|
+| `cat /etc/passwd` | tout le fichier d’un coup |
+| `cat -n /etc/passwd` ou `nl /etc/passwd` | tout le fichier, avec les numéros de ligne |
+| `less /etc/passwd` | page par page : `Espace` page suivante, `b` page précédente, `/mot` recherche, `q` quitte |
+| `head -n 3 /etc/passwd` | les 3 premières lignes |
+| `tail -n 3 /etc/passwd` | les 3 dernières lignes |
 
-Pour en savoir plus :
-- man ascii
-- fr.wikipedia.org/wiki/Ascii
+**Utilisation d’un tube (_pipe_) pour « relier » des commandes**
 
-Pour afficher le contenu brut d’un fichier (texte ou binaire):
+Le mécanisme de **tube** (symbole `|`) chaîne des processus de sorte que la sortie d’un processus (stdout) alimente directement l’entrée (stdin) du suivant. C’est un mécanisme de communication inter-processus (IPC), très utilisé pour enchaîner des traitements avec des commandes simples.
 
 ```bash
-$ od -ca -t x1 bonjour.txt
+$ ls /usr/bin | wc -l
+$ history | tail -5
+```
+
+> **Question 5** — Que calcule `ls /usr/bin | wc -l` ? Décrivez le rôle de chacune des deux commandes, puis celui du tube.
+
+### Étape 3 — Examiner les octets d’un fichier texte
+
+Un fichier texte contient fondamentalement une suite d’octets. Sa particularité est que l’ensemble du fichier respecte un **codage de caractères** standard.
+
+La norme **ASCII** (_American Standard Code for Information Interchange_) est la plus ancienne et la plus connue. Elle définit 128 caractères numérotés de 0 à 127 : sept bits suffisent donc pour coder un caractère, et chaque caractère est stocké dans un octet dont le 8e bit est 0. Les caractères 0 à 31 et le 127 ne sont pas affichables : ce sont des caractères de contrôle (fin de ligne, tabulation, bip…). La table complète s’affiche avec `man ascii`.
+
+Pour afficher le contenu brut d’un fichier (texte ou binaire) :
+
+```bash
 $ hexdump -C bonjour.txt
+00000000  48 65 6c 6c 6f 20 77 6f  72 6c 64 0a              |Hello world.|
+0000000c
+$ od -c bonjour.txt
+0000000   H   e   l   l   o       w   o   r   l   d  \n
+0000014
 ```
 
-### Étape n°4 : modifier le contenu d’un fichier texte
+Chaque ligne de `hexdump -C` donne : la position du premier octet (en hexadécimal), jusqu’à 16 octets en hexadécimal, puis les mêmes octets en caractères (un `.` remplace les caractères non affichables).
 
-Le système d’exploitation ne permet que de très simples modifications d’un fichier : on peut soit modifier un (ou plusieurs) octet soit ajouter des octets en fin de fichier.
-Vous pouvez modifier ’w’ en ’W’ :
+> **Question 6** — Combien d’octets contient le fichier ? Quel est le code hexadécimal du dernier octet, et à quel caractère correspond-il (`man ascii`) ? Expliquez maintenant la taille observée à la question 1.
+
+> **Question 7** — Quel est le code hexadécimal de l’espace ? De la lettre `H` ? De la lettre `h` (cherchez dans `man ascii`) ? Quel écart y a-t-il entre une majuscule et sa minuscule ?
+
+```bash
+$ wc -c bonjour.txt
+12 bonjour.txt
+$ echo -n "Hello world" | wc -c
+11
+```
+
+> **Question 8** — D’après `help echo`, que fait l’option `-n` ? Expliquez la différence entre les deux résultats.
+
+### Étape 4 — Modifier le contenu d’un fichier
+
+Le système d’exploitation ne permet que de très simples modifications d’un fichier : on peut soit modifier un (ou plusieurs) octet, soit ajouter des octets en fin de fichier.
+
+**Remplacer un octet** : avec l’éditeur hexadécimal `hexedit`, remplacez le `w` de `bonjour.txt` par un `W`, puis affichez le fichier.
 
 ```bash
 $ hexedit bonjour.txt
 $ cat bonjour.txt
+Hello World
 ```
+
+> **Mode d’emploi de `hexedit`** : les flèches déplacent le curseur ; `Tab` passe de la colonne hexadécimale à la colonne texte ; tapez le nouveau caractère (ou sa valeur hexadécimale) ; `Ctrl+X` enregistre et quitte, `Ctrl+C` quitte sans enregistrer. Si la commande est absente : `sudo apt install hexedit`.
+
+<details>
+<summary>Sans <code>hexedit</code></summary>
+
+La commande `dd` sait écrire un octet à une position donnée, sans tronquer le fichier (`conv=notrunc`) :
+
+```bash
+$ printf 'W' | dd of=bonjour.txt bs=1 seek=6 conv=notrunc
+```
+
+</details>
+
+> **Question 9** — À quelle position (en comptant à partir de 0) se trouve le `w` ? Quelle valeur hexadécimale avez-vous écrite à sa place ?
 
 Remarque : il est impossible en utilisant les services de l’OS de supprimer ou d’insérer du texte dans un fichier (sauf à la fin). Ce sont des opérations bien trop complexes car elles nécessiteraient un décalage d’un ensemble d’octets dans le fichier. Pour réaliser cela, il faut soit utiliser un éditeur de texte soit écrire soi-même un programme équivalent.
 
-Ou on peut ajouter du texte à la fin du fichier :
+**Ajouter du texte à la fin du fichier** avec la redirection `>>` :
 
 ```bash
 $ date +"le %A %d %B %Y à %T" >> bonjour.txt
@@ -211,230 +241,220 @@ $ echo "by $USER" >> bonjour.txt
 $ cat bonjour.txt
 ```
 
-Remarque : Les redirections d’entrées/sorties >> sortie semblable à la redirection > sauf que si le fichier sortie existait déjà, son ancien contenu est conservé et les nouvelles données sont copiées à la suite.
+> **Question 10** — Quelle est la différence entre `>` et `>>` ? Donnez une ligne de commande qui **vide** le fichier `bonjour.txt` sans le supprimer.
 
-## Questions de révision
+### Étape 5 — Les fins de ligne : Unix ou Windows ?
 
-L’idée de base des questions de révision est de vous donner une chance de voir si vous avez identifié et compris les points clés de ce TP.
+Les fichiers texte n’ont pas de structure : ce ne sont qu’une suite d’octets encodant des caractères. La notion de « fin de ligne » est pourtant ambiguë. Historiquement, les premiers terminaux (des imprimantes) avaient besoin de deux actions pour passer à la ligne : ramener le chariot à gauche (_Carriage Return_, CR) et faire avancer le papier d’une ligne (_Line Feed_, LF). Plusieurs conventions coexistent :
 
-```
-Question 1. Quel est le rôle du prompt?
-```
-```
-Question 2. Quelle est la définition d’un fichier informatique?
-```
-```
-Question 3. Quels sont les deux catégories possibles pour classifier un fichier?
-```
-```
-Question 4. Quel est le rôle d’un shell?
-```
-```
-Question 5. Qu’est-ce que bash?
-```
-```
-Question 6. Est-il possible de supprimer de caractères dans un fichier texte en utilisant les services de base de l’OS?
-```
-```
-Question 7. Que signifie l’extension .txt à la fin d’un nom de fichier?
-```
-```
-Question 8. Que fait la commande mkdir?
-```
-```
-Question 9. Quelle est la différence entre un fichier texte et un fichier binaire?
-```
-```
-Question 10. Qu’est-ce qu’une session de travail?
-```
+| Système | Fin de ligne | Octets |
+|---|---|---|
+| Unix, GNU/Linux, macOS | LF | `0a` |
+| Mac OS jusqu’à la version 9 | CR | `0d` |
+| MS-DOS, Microsoft Windows | CR+LF | `0d 0a` |
 
-## Travail demandé
-
-### Exercice 1 : manipulation avec des commandes de base
-
-L’objectif de cet exercice est de manipuler des fichier textes à partir des commandes de base d’un système Unix/Linux.
-
-Question 11. Que font les commandes suivantes? (on suppose le fichier bonjour.txt non vide)
-```
-a) $ wc -l bonjour.txt
-b) $ sort bonjour.txt
-c) $ tac bonjour.txt
-d) $ head -1 bonjour.txt
-e) $ tail -2 bonjour.txt
-f) $ md5sum bonjour.txt > bonjour.md
-g) $ md5sum -c bonjour.md
-h) $ echo "fin" >> bonjour.txt
-i) $ md5sum -c bonjour.md
-j) $ touch bonjour.txt
-k) $ cat bonjour.txt | tr -s " " "."
-```
-
-Question 12. Donnez la ligne de commande qui permet d’écraser le contenu du fichier bonjour.txt.
-
-### Exercice 2 : deux programmes qui collaborent
-
-
-L’objectif de cet exercice est d’apprendre à d’adapter des commandes pour ses propres besoins.
-
-
-Question 13. Il n’existe pas de commande qui permet d’afficher une seule ligne quelconque d’un fichier texte. Donner la ligne de commande qui affiche uniquement la deuxième ligne du fichier bonjour.txt.
-
-### Exercice 3 : comptage de caractères
-
-
-L’objectif de cet exercice est de comprendre la notion de caractère.
-
-
-Question 14. On désire compter le nombre de caractères d’un fichier texte. Que permettent de faire les commandes suivantes?
-```
-a) $ echo "Hello world" > bonjour.txt
-b) $ wc -c bonjour.txt
-c)$ cat bonjour.txt | wc -c
-d) $ ls -l bonjour.txt
-```
-
-Question 15. La chaîne de caractères "Hello world" contient 11 caractères. Pourtant, la commande wc compte 12 caractères contenus dans ce fichier. Expliquez cette différence?
-
-
-### Exercice 4 : surveillance de fichiers
-
-
-L’objectif de cet exercice est de s’initier au rôle d’administrateur.
-
-L’administrateur d’un système est souvent amené à surveiller visuellement le contenu de certains fichiers (par exemple les fichiers de log ou de journalisation).
-Pour réaliser cet exercice en pratique, il est demandé d’utiliser deux consoles : une pour le suivi du fichier et l’autre pour le modifier.
-
-Question 16. Donnez l’option à utiliser avec la commande tail pour assurer le suivi du fichier bonjour.txt.
-
-### Exercice 5 : format des fichiers texte?
-
-L’objectif de cet exercice est de comprendre les différences entre OS concernant les fichiers texte.
-
-
-En fait, les fichiers texte n’ont pas de structure car ce ne sont qu’une suite d’octets encodant des caractères.
-Par contre, la notion de “fin de ligne” est ambiguë. Historiquement, cela provient des premiers terminaux qui nécessitaient deux actions pour un “saut de ligne” :
-
-Dans un fichier texte, la fin d’une ligne est représentée par un caractère de contrôle(ou une paire).
-
-Plusieurs conventions coexistent :
-
-- sous les systèmes Unix/Linux, la fin de ligne est indiquée par une nouvelle ligne (LF, 1 octet) ;
-- sous les machines Apple II et Mac OS jusqu’à la version 9, la fin de ligne est indiquée par un retour chariot (CR, 1 octet) ;
-- sous les systèmes CP/M, MS-DOS, OS/2 ou Microsoft Windows, la fin de ligne est indiquée par un retour chariot suivi d’une nouvelle ligne (CR+LF, 2 octets).
-
-Ainsi, lorsque l’on ouvre un fichier ASCII créé par un système sur un autre système, il faut en général faire de la mise en forme (c’est-à-dire refaire les fins de ligne) afin de pouvoir l’afficher et le lire de manière confortable. Mais les éditeurs de texte intelligents (ce qui n’est pas le cas du classique Notepad même sur les derniers Windows) peuvent détecter le type de fin de ligne et agir en conséquence. Les programmes utilisant les fichiers ASCII ne sont en général pas perturbés par un changement de type de fin de ligne ce qui permet d’échanger des fichiers texte entre OS différents.
+Ainsi, lorsque l’on ouvre sur un système un fichier texte créé sur un autre, il faut parfois refaire les fins de ligne. Les éditeurs de texte modernes détectent le type de fin de ligne et s’y adaptent, mais certains programmes (et les scripts shell !) le supportent mal.
 
 ```bash
 $ echo -e -n "Hello World\nBienvenue le monde\n" > bonjour_unix.txt
-$ file bonjour_unix.txt
+$ echo -e -n "Hello World\r\nBienvenue le monde\r\n" > bonjour_dos.txt
+$ file bonjour_unix.txt bonjour_dos.txt
+bonjour_unix.txt: ASCII text
+bonjour_dos.txt:  ASCII text, with CRLF line terminators
+$ ls -l bonjour_unix.txt bonjour_dos.txt
+$ cat -A bonjour_dos.txt
+Hello World^M$
+Bienvenue le monde^M$
 ```
+
+> **Question 11** — D’après `help echo`, que permet l’option `-e` ? Quelle est la différence de taille entre les deux fichiers ? Pourquoi ?
+
+> **Question 12** — Que représentent `^M` et `$` dans l’affichage de `cat -A` (`man cat`) ? Retrouvez les octets correspondants avec `hexdump -C bonjour_dos.txt`.
+
+Pour convertir un fichier Windows au format Unix, il suffit de supprimer les CR :
 
 ```bash
-$ echo -e -n "Hello World\r\nBienvenue le monde\r\n" > bonjour_dos.txt
-$ file bonjour_dos.txt
-$ vim bonjour_dos.txt
+$ tr -d '\r' < bonjour_dos.txt > bonjour_converti.txt
+$ file bonjour_converti.txt
 ```
 
-Remarque : pour quitter l’éditeur vim , faire Echap puis :q!
+> **Question 13** — Expliquez cette commande. Que contiendrait le fichier si l’on écrivait `tr -d '\r' < bonjour_dos.txt > bonjour_dos.txt` ? Pourquoi ? (faites l’essai sur une copie)
 
-Question 17. Observez en bas de page la détection du format[dos]par l’éditeur vim. 
-En vous aidant de l’aide (help echo), que permet l’option -e de la commande interne echo? Et l’option -n?
+_Remarque : les commandes `dos2unix` et `unix2dos` (paquet `dos2unix`) réalisent ces conversions ; l’éditeur `vim` affiche `[dos]` en bas de l’écran quand il ouvre un fichier au format Windows._
 
+### Étape 6 — L’encodage des caractères
 
-### Exercice 6 : l’encodage des caractères
+Un codage de caractères définit une manière de représenter les caractères (lettres, chiffres, symboles) par des octets.
 
-L’objectif de cet exercice est de comprendre les limites et les différences des encodages des caractères à l’intérieur des fichiers texte.
+- **ASCII** ne code que 128 caractères : pas de lettres accentuées, de cédilles, etc. utilisées par des langues comme le français.
+- Les normes **ISO 8859** étendent l’ASCII à 256 caractères, toujours sur **un octet** : ISO 8859-1 (_latin1_) pour les langues occidentales, puis ISO 8859-15 (_latin9_), qui ajoute notamment « œ » et « € ». Chaque région a sa propre variante : un même octet ne désigne pas le même caractère d’une norme à l’autre.
+- **Unicode** (ISO/CEI 10646) a pour ambition de représenter sans ambiguïté tous les signes écrits de toutes les langues : plus de 150 000 caractères, numérotés sur 21 bits (de U+0000 à U+10FFFF).
+- **UTF-8** (RFC 3629) est la façon la plus répandue d’enregistrer de l’Unicode, sur Linux comme sur Internet. C’est un **codage à longueur variable**, compatible avec l’ASCII :
 
-Les éditeurs de texte peuvent créer des fichiers texte avec l’encodage de caractères de leur choix. Un codage de caractères définit une manière de représenter les caractères (lettres, chiffres, symboles) dans un système informatique.
+| Caractères | Octets | Exemple |
+|---|---|---|
+| ASCII (U+0000 à U+007F) | 1 | `A` → `41` (identique à l’ASCII) |
+| lettres accentuées, grec, cyrillique… | 2 | `à` → `c3 a0` |
+| reste des langues vivantes, symboles | 3 | `€` → `e2 82 ac` |
+| emojis, écritures anciennes… | 4 | `😀` → `f0 9f 98 80` |
 
-Le premier codage largement répandu fut l’ASCII. Pour des raisons historiques (les grandes sociétés associées pour mettre au point l’ASCII étaient américaines) et techniques (7 bits disponibles seulement pour coder un caractère), ce codage ne prenait en compte que 128 caractères. De ce fait, l’ASCII ne comporte pas les caractères accentués, les cédilles, etc. utilisés par des langues comme le français. Ceci devint vite inadapté et un certain nombre de méthodes furent utilisées pour l’étendre.
+Le premier octet d’un caractère codé sur plusieurs octets indique la longueur de la séquence ; les octets suivants sont toujours compris entre `80` et `bf`.
 
-L’ISO a donc défini de nouvelles normes, ISO 8859-1, ISO 8859-2, etc. jusqu’à ISO 8859-15. Ces jeux de caractères permettent de coder la plupart des langues occidentales. Le français utilise le plus souvent ISO 8859-1, aussi nommé latin1, ou ISO 8859-15 (latin9), qui a l’avantage de contenir des caractères (ligatures) comme le « œ » ou le symbole «e».
-
-Il est indispensable pour l’échange d’information de connaître le codage utilisé. Ne pas le savoir peut rendre un document difficilement lisible (remplacement des lettres accentuées par d’autres suites de caractères, ...).
-
-Le besoin de supporter de multiples écritures demandait un nombre nettement plus élevé de caractères supportés et nécessitait une approche systématique du codage de caractère utilisé. Le codage Unicode a pour ambition d’être un surensemble de tous les autres, et est souvent représenté en UTF-8 ou en UTF-16.
-L’UTF-8, spécifié dans le RFC 3629, est le plus commun pour les applications Unix et Internet. 
-La norme internationale ISO/CEI 10646 définit l’ Universal Character Set (UCS) comme un jeu de caractères universel. Ce standard est le fondement d’Unicode. Environ 10 000 caractères (symboles, lettres, nombres, idéogrammes, logogrammes) sont recensés dans l’UCS.
-L’Unicode (ISO 10646) est un standard destiné à représenter sans ambiguïté tous les signes écrits de toutes les langues humaines connues. La structure de l’Unicode offre 21 bits pour chaque caractère.
-
-
-Question 18. Déterminez l’encodage utilisé sur votre session. Pour cela, on recherche (grep) le contenu de la variable d’environnement (env)LANG:
+Quel est l’encodage utilisé par votre session ? Il est défini par la variable d’environnement `LANG` :
 
 ```bash
 $ env | grep LANG
-LANG=fr_FR.UTF-
+LANG=fr_FR.UTF-8
 ```
-Les messages d’erreurs seront donc en français (fr_FR)
 
-Linux représente l’ **Unicode** en utilisant le format de transfert sur 8 bits ( **UTF-8** ). L’UTF-8 est un **codage à longueur variable**. 
+> **Question 14** — Quel est l’encodage de votre session ? Que signifie la partie `fr_FR` ?
 
-Il est conseillé pour la suite de consulter les pages de manuel suivantes :
+Encodons en UTF-8 une chaîne de caractères contenant le caractère `à` :
 
 ```bash
-$ man ascii
-$ man iso_8859-1 (et man iso_8859-15)
-$ man utf-
-$ man unicode
-$ man charsets
+$ date +"le %A %d %B %Y à %T" > date.txt
+$ cat date.txt
+le samedi 26 septembre 2026 à 23:32:56
+$ file date.txt
+date.txt: Unicode text, UTF-8 text
+$ hexdump -C date.txt
+00000000  6c 65 20 73 61 6d 65 64  69 20 32 36 20 73 65 70  |le samedi 26 sep|
+00000010  74 65 6d 62 72 65 20 32  30 32 36 20 c3 a0 20 32  |tembre 2026 .. 2|
+00000020  33 3a 33 32 3a 35 36 0a                           |3:32:56.|
+00000028
 ```
 
-L’encodage UTF-8 (un encodage Unicode multi-octets compatible ASCII) a les propriétés suivantes :
-
-- le jeu ASCII classique est encodé simplement par les octets 0x00 à 0x7f (compatibilité ASCII). Ceci signifie que les caractères du jeu ASCII 7 bits ont exactement le même codage en ASCII et en UTF-8.
-- Le premier octet d’une séquence multi-octets représentant un caractère UCS non ASCII est toujours dans l’intervalle 0xC0 à 0xFD et indique la longueur de la séquence multi-octets. Tous les octets suivants de cette séquence sont dans l’intervalle 0x80 à 0xBF.
-
-Encodons en UTF-8 une chaîne de caractères contenant le caractère ’à’ :
-```
-$ date +"le %A %d %B %Y à %T" > bonjour.txt
-
-$ cat bonjour.txt
-le mardi 17 juillet 2012 à 12:42:
-
-$ file bonjour.txt
-bonjour.txt: UTF-8 Unicode text
-
-$ hexdump -C bonjour.txt
-00000000 6c 65 20 6d 61 72 64 69 20 31 37 20 6a 75 69 6c |le mardi 17 juil|
-00000010 6c 65 74 20 32 30 31 32 20 c3 a0 20 31 32 3a 34 |let 2012 .. 12:4|
-00000020 32 3a 35 31 0a |2:51.|
-```
-
-Remarque : L’ASCII (jeu standard sur 7 bits) n’est pas modifié par UTF-8, et les gens utilisant uniquement l’ASCII ne remarqueront aucun changement : ni dans le codage, ni dans les tailles de fichiers.
-
-Question 19. À partir de l’affichage fourni par la commande hexdump, donnez la valeur des deux octets qui encodent le caractère ’à’.
-
-Il existe plusieurs commandes sous Linux qui permettent de convertir des fichiers texte d’un encodage vers un autre: iconv, recode, etc ...
-
-On va maintenant convertir le fichier texte bonjour.txt(qui est en UTF-8) en ISO8859-1 (latin1) :
+> **Question 15** — À partir de l’affichage de `hexdump`, donnez la valeur des octets qui encodent le caractère `à`. Combien d’octets occupent les autres caractères ?
 
 ```bash
-$ iconv -f UTF-8 -t ISO8859-1 bonjour.txt -o bonjour_latin1.txt
-$ cat bonjour_latin1.txt
-$ hexdump -C bonjour_latin1.txt
-00000000 6c 65 20 6d 61 72 64 69 20 31 37 20 6a 75 69 6c |le mardi 17 juil|
-00000010 6c 65 74 20 32 30 31 32 20 e0 20 31 32 3a 34 32 |let 2012. 12:42|
-00000020 3a 35 31 0a |:51.|
+$ echo -n "été" | wc -c
+5
+$ echo -n "été" | wc -m
+3
 ```
 
-Question 21. Que se passe-t-il lors de l’affichage du fichier avec la commande cat?
+> **Question 16** — Expliquez la différence entre les options `-c` et `-m` de `wc` (`man wc`). Un octet est-il toujours un caractère ?
 
-Question 22. À partir de l’affichage fourni par la commande hexdump, donnez la valeur qui encode le caractère ’à’ en ISO8859-1.
+Convertissons maintenant le fichier (qui est en UTF-8) en ISO 8859-1 avec `iconv` :
 
-Question 23. Correspond-elle à la valeur trouvée précédemment lors de l’assemblage réalisé en UTF-8?
+```bash
+$ iconv -f UTF-8 -t ISO-8859-1 date.txt -o date_latin1.txt
+$ file date_latin1.txt
+date_latin1.txt: ISO-8859 text
+$ cat date_latin1.txt
+$ hexdump -C date_latin1.txt
+```
 
-La commande iconv -l permet de lister l’ensemble des jeux codes connus et supportés.
+> **Question 17** — Que se passe-t-il lors de l’affichage du fichier avec la commande `cat` ? Pourquoi ?
 
-Question 24. Donnez alors la ligne de commande permettant de fournir (approximativement, c’est-à-dire sans tenir compte des alias) le nombre de jeux codes connus et supportés par la commande iconv.
+> **Question 18** — Quelle valeur encode le caractère `à` en ISO 8859-1 ? Correspond-elle à la valeur trouvée en UTF-8 ? Comparez les tailles des deux fichiers.
 
-Question 25. Idem mais pour la commande recode.
+Pour en savoir plus : `man ascii`, `man iso_8859-1`, `man iso_8859-15`, `man utf-8`, `man unicode`, `man charsets`.
+
+---
+
+## Exercices
+
+### Exercice 1 — Les commandes de base
+
+L’objectif de cet exercice est de manipuler des fichiers texte avec les commandes de base d’un système Unix/Linux. Créez d’abord un fichier de plusieurs lignes :
+
+```bash
+$ printf 'Linux  est   un noyau\nGNU est un projet\nbash  est un shell\n' > phrases.txt
+```
+
+> **Question 19** — Pour chaque commande, prédisez ce qu’elle affiche, puis vérifiez (aidez-vous de `man`) :
+>
+> ```bash
+> a) $ wc -l phrases.txt
+> b) $ sort phrases.txt
+> c) $ tac phrases.txt
+> d) $ head -1 phrases.txt
+> e) $ tail -2 phrases.txt
+> f) $ cat phrases.txt | tr -s " " "."
+> ```
+>
+> Pour `b)`, pourquoi la ligne `bash` apparaît-elle en premier ? Comparez avec `LC_ALL=C sort phrases.txt`.
+
+### Exercice 2 — Vérifier l’intégrité d’un fichier
+
+Une **somme de contrôle** (ou empreinte) est calculée à partir de tous les octets d’un fichier : la moindre modification du contenu la change.
+
+> **Question 20** — Exécutez les commandes suivantes dans l’ordre et expliquez chaque résultat. Pourquoi `touch` ne change-t-il pas l’empreinte ? À quoi sert une empreinte quand on télécharge une image ISO de Linux ?
+>
+> ```bash
+> a) $ md5sum phrases.txt > phrases.md5
+> b) $ cat phrases.md5
+> c) $ md5sum -c phrases.md5
+> d) $ touch phrases.txt
+> e) $ md5sum -c phrases.md5
+> f) $ echo "fin" >> phrases.txt
+> g) $ md5sum -c phrases.md5
+> ```
+
+_Remarque : MD5 n’est plus considéré comme sûr face à une falsification volontaire ; les distributions publient aujourd’hui des empreintes SHA-256 (`sha256sum`)._
+
+### Exercice 3 — Deux programmes qui collaborent
+
+L’objectif de cet exercice est d’apprendre à adapter des commandes à ses propres besoins.
+
+> **Question 21** — Sans utiliser `sed` ni `awk`, combinez deux commandes vues dans ce TP pour afficher uniquement la **deuxième** ligne du fichier `phrases.txt`. Comment afficher la ligne n° _n_ ?
+
+### Exercice 4 — Surveiller un fichier
+
+L’administrateur d’un système est souvent amené à surveiller en direct le contenu de certains fichiers, par exemple les fichiers de journalisation (_logs_). Pour cet exercice, ouvrez **deux terminaux** : l’un pour suivre le fichier, l’autre pour le modifier.
+
+> **Question 22** — Trouvez l’option de la commande `tail` qui affiche les nouvelles lignes au fur et à mesure qu’elles sont ajoutées. Créez le fichier avec `touch journal.txt`, puis lancez `tail` avec cette option sur `journal.txt` dans le premier terminal ; dans le second (placé dans le même répertoire), exécutez plusieurs fois `date >> journal.txt`. Qu’observez-vous ? Comment arrêter le suivi ?
+
+### Exercice 5 — Combien d’encodages ?
+
+> **Question 23** — La commande `iconv -l` liste les jeux de caractères connus. Donnez la ligne de commande qui affiche leur nombre. Pourquoi ce nombre n’est-il qu’une approximation du nombre réel d’encodages ?
+
+---
+
+## Questions de révision
+
+Ces questions vous permettent de vérifier que vous avez identifié et compris les points clés du TP. Répondez-y sans refaire les manipulations.
+
+> **Question 24** — Quel est le rôle d’un shell ? Qu’est-ce que bash ?
+
+> **Question 25** — Quels sont les trois flux standard d’un processus, leurs numéros et leur destination par défaut ?
+
+> **Question 26** — Quelle est la différence entre une redirection `>` et un tube `|` ?
+
+> **Question 27** — Quelle est la différence entre un fichier texte et un fichier binaire ? Un document Word est-il un fichier texte ?
+
+> **Question 28** — Que signifie l’extension `.txt` à la fin d’un nom de fichier pour le système ? Comment connaître le type réel d’un fichier ?
+
+> **Question 29** — Est-il possible de supprimer des caractères au milieu d’un fichier texte en utilisant les services de base de l’OS ? Comment fait alors un éditeur de texte ?
+
+> **Question 30** — Pourquoi la chaîne « Hello world », suivie d’un retour à la ligne, occupe-t-elle 12 octets sous Linux ? Combien en occuperait-elle dans un fichier Windows ?
+
+> **Question 31** — Combien d’octets occupe le caractère `é` en UTF-8 ? En ISO 8859-1 ? Et le caractère `e` ?
+
+---
 
 ## Bilan
 
-Ces dernières manipulations sur l’encodage des caractères prouvent que la situation n’est pas encore stable. Les problèmes se régleront probablement avec l’uniformisation Unicode. Mais, il y a des risques dans le cas d’échange entre systèmes hétérogènes. Cela concerne :
+- Un fichier texte n’est qu’une **suite d’octets** ; seul le **codage** (ASCII, ISO 8859-1, UTF-8…) permet de les interpréter comme des caractères. L’extension du nom ne compte pas : `file` examine le contenu.
+- Le shell **redirige** les flux standard (`>`, `>>`, `<`, `2>`) et **relie** les commandes par des tubes (`|`).
+- L’OS ne sait que remplacer des octets ou en ajouter à la fin : insérer ou supprimer du texte est le travail d’un éditeur.
+- Les **fins de ligne** (LF ou CR+LF) et l’**encodage** des caractères sont les deux pièges des échanges de fichiers texte entre systèmes.
+
+UTF-8 est aujourd’hui largement majoritaire, mais on rencontre encore des fichiers dans d’autres encodages : anciens fichiers, exports de logiciels, fichiers Windows. Les risques d’échange entre systèmes hétérogènes concernent :
 
 - l’utilisation des flux de texte dans les programmes
 - les échanges sur internet
 - les noms de fichiers et de répertoires
 
 Par précaution (et le technicien informatique est prudent !), il est donc conseillé de ne jamais utiliser de caractères étendus ou spéciaux (comme l’espace) dans les noms de fichiers et de répertoires, de privilégier l’encodage Unicode et d’être cohérent avec les fichiers qui permettent de déclarer l’encodage utilisé (cas des fichiers **html** et **xml** par exemple).
+
+## Pour aller plus loin
+
+- `file -i fichier` affiche le type MIME et l’encodage d’un fichier.
+- Une boucle `while` lit un fichier ligne par ligne, grâce à la redirection `<` : `while read ligne; do echo "contenu : $ligne"; done < phrases.txt`
+- La commande `recode` (paquet `recode`) convertit elle aussi les encodages : `recode -l` liste ceux qu’elle connaît.
+
+---
+
+[Cours GNU/Linux](../README.md#travaux-pratiques) · **TP 1 / 5** · [TP 2 →](tp2-fichiers-executables.md)
