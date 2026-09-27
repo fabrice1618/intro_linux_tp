@@ -116,9 +116,9 @@ Plusieurs solutions permettent de disposer d'un système Linux pour suivre le co
 | [TP « Commandes de base Linux »](tp_start/readme.md) | Parcours progressif et guidé, vérifié automatiquement par un script |
 | [TP1 - Les fichiers textes](tp/tp1-fichiers-texte.md) | Manipuler des fichiers « texte » et comprendre leur contenu |
 | [TP2 - Les fichiers exécutables](tp/tp2-fichiers-executables.md) | L'éditeur `vim`, scripts et programmes exécutables |
-| [TP3 - Ligne de commande](tp/tp3-ligne-de-commande.md) | Se déplacer dans l'arborescence, obtenir des informations sur le système |
-| [TP4 - Gestion des droits](tp/tp4-gestion-des-droits.md) | Gérer les droits sur les fichiers et les répertoires |
-| [TP5 - Commandes](tp/tp5-commandes.md) | Utilisation avancée des commandes |
+| [TP3 - Ligne de commande](tp/tp3-ligne-de-commande.md) | Se déplacer dans l'arborescence, trouver de l'aide, rechercher des fichiers, obtenir des informations sur le système |
+| [TP4 - Gestion des droits](tp/tp4-gestion-des-droits.md) | Gérer les droits sur les fichiers et les répertoires, `umask`, droits spéciaux |
+| [TP5 - Commandes](tp/tp5-commandes.md) | Codes de retour, caractères génériques, expressions régulières, `grep`, `sed` et `awk` |
 | [Serveur LAMP](serveur_LAMP/README.md) | Installer un serveur de développement Linux, Apache, MySQL, PHP |
 
 Progression conseillée pour la première séance : le mémento des [commandes de base](linux_commandes_base.md), le [TP1](tp/tp1-fichiers-texte.md), puis le [TP2](tp/tp2-fichiers-executables.md) (en partie).
@@ -460,7 +460,7 @@ N'utilisez pas la souris (ou très peu). Il existe beaucoup de raccourcis clavie
 
 **Utiliser plusieurs sessions shell** (ou onglets ou fenêtres) en parallèle. Par exemple, vous en utiliserez une pour saisir vos commandes et l'autre pour consulter les indispensables pages de manuel. Pour basculer de l'une à l'autre :
 
-- en mode console : `Ctrl + Fx` (où x est un chiffre identifiant le terminal)
+- en mode console : `Alt + Fx` (où x est un chiffre identifiant le terminal), ou `Ctrl + Alt + Fx` depuis l'interface graphique
 - en mode graphique, avec 2 onglets : `Ctrl + Page↑` ou `Ctrl + Page↓`, `Shift + ←` ou `Shift + →`
 - en mode graphique, avec 2 fenêtres : `Alt + Tab`
 
@@ -474,7 +474,7 @@ $ commande [options] <parametres>
 
 Le premier mot est le nom de la commande. Les autres mots sont des paramètres (ou arguments) de la commande. Certains mots sont des options qui changent le comportement de la commande. Les 2 crochets « `[` » et « `]` » indiquent que les options ne sont pas obligatoires. Il ne faut pas taper ces crochets sur la ligne de commande.
 
-Avant, une option était introduite par le signe « `-` » suivi d'une seule lettre. Le standard actuel GNU pour les options est d'utiliser « `--` » suivi du nom de l'option pour des raisons de clarté et de portabilité.
+Une option courte est introduite par le signe « `-` » suivi d'une seule lettre : c'est la forme historique, toujours utilisée (et la seule définie par la norme POSIX). Les commandes GNU proposent en plus des options longues, plus lisibles : « `--` » suivi du nom de l'option (par exemple `ls -a` ou `ls --all`).
 
 L'ordre des options n'a pas souvent d'importance :
 
@@ -498,6 +498,8 @@ Les commandes externes (donc des exécutables) sont généralement stockées dan
 - le répertoire `/sbin` : les commandes pour *root* (l'administrateur)
 - le répertoire `/bin` : des commandes et des *shells*
 - le répertoire `/usr/bin` : le répertoire de base des programmes
+
+> **Remarque** : sur les distributions récentes, `/bin` et `/sbin` ne sont plus que des liens symboliques vers `/usr/bin` et `/usr/sbin` (voir l'[Annexe n°2](#annexe-2--larborescence-unixlinux)).
 
 > **Remarque** : comme le système ne connaît pas les endroits où vous placez vos programmes, il faudra lui indiquer dans la variable d'environnement `$PATH`.
 
@@ -596,7 +598,7 @@ Aujourd'hui `bash` est le shell le plus répandu, bien qu'il existe beaucoup d'a
 
 Un shell Unix, aussi nommé interface en ligne de commande Unix, est un shell destiné au système d'exploitation Unix et de type Unix. L'utilisateur lance des commandes sous forme d'une entrée texte exécutée ensuite par le shell. Celui-ci est utilisable en conjonction avec un terminal (souvent virtuel).
 
-Dans les différents systèmes d'exploitation Microsoft Windows, le programme analogue est `command.com` ou `cmd.exe`.
+Sous Microsoft Windows, le programme analogue était `command.com` (MS-DOS) puis `cmd.exe` ; c'est aujourd'hui PowerShell.
 
 Le shell (coquille) est une interface permettant d'accéder au noyau (kernel) d'un système d'exploitation.
 
@@ -656,7 +658,7 @@ $ !10:p   # rappelle la commande n°10 et l'affiche (aucune exécution)
 
 # Formes syntaxiques :
 # !$  : correspond au dernier argument de la dernière commande
-# !*  : représente tous les arguments de la dernière commande sauf le premier
+# !*  : représente tous les arguments de la dernière commande (sans le nom de la commande)
 
 # Effacer l'historique
 $ history -c
@@ -1006,7 +1008,7 @@ $ touch fichier
 
 # Affiche le numéro d'inode (-i)
 $ ls -il fichier
-655480 -rw-rw-r-- 1 fab fab 11 sept. 5 12:14 fichier
+655480 -rw-rw-r-- 1 fab fab 0 sept. 5 12:13 fichier
 
 # Écrit dans un fichier
 $ echo "helloworld" >> fichier
@@ -1077,12 +1079,12 @@ EXTENTS:
 
 # Mais les données sont bien toujours là!
 $ sudo dd if=/dev/sdb2 bs=4096 skip=2656872 count=1 | hexdump -C
-00000000  68 65 6c 6c 6f 77 6f 72  6c 64 0a 00 00 00 00 00  |helloworld......|
 1+0 enregistrements lus
 1+0 enregistrements écrits
+4096 octets (4,1 kB) copiés, 4,1084e-05 s, 99,7 MB/s
+00000000  68 65 6c 6c 6f 77 6f 72  6c 64 0a 00 00 00 00 00  |helloworld......|
 00000010  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  |................|
-4096 octets (4,1 kB) copiés*
-, 4,1084e-05 s, 99,7 MB/s
+*
 00001000
 ```
 
@@ -1099,7 +1101,7 @@ Deux cas particuliers de fichiers binaires sont très courants :
 - un fichier **compressé** est un fichier (texte ou binaire) transformé par un algorithme pour diminuer sa taille (`gzip`, `bzip2`, `xz`, `zip`, ...) ;
 - une **archive** regroupe en un seul fichier plusieurs fichiers ou le contenu de toute une arborescence, données et descriptions comprises (`tar`). Les archives sont souvent compressées (`.tar.gz`, `.tar.xz`).
 
-Les fichiers texte ont un contenu pouvant être interprété directement comme du texte (une suite de bits représentant un caractère), la plupart du temps en codage ASCII (*American Standard Code for Information Interchange*).
+Les fichiers texte ont un contenu pouvant être interprété directement comme du texte (une suite de bits représentant un caractère), selon un codage de caractères : historiquement l'ASCII (*American Standard Code for Information Interchange*), aujourd'hui le plus souvent UTF-8, qui est compatible avec l'ASCII (voir [L'encodage des caractères](#lencodage-des-caractères)).
 
 > **Remarque** : L'ASCII est la norme de codage de caractères en informatique la plus ancienne et la plus connue. Avec l'avènement de la mondialisation des systèmes d'information, son usage se restreint progressivement à des domaines très techniques.
 
@@ -1152,7 +1154,7 @@ $ man charsets
 
 ```bash
 $ file bonjour.txt
-bonjour.txt: UTF-8 Unicode text
+bonjour.txt: Unicode text, UTF-8 text
 ```
 
 Il existe plusieurs commandes sous Linux qui permettent de convertir des fichiers texte d'un encodage vers un autre : `iconv`, `recode`, etc ...
@@ -1165,7 +1167,7 @@ $ iconv -f UTF-8 -t ISO8859-1 bonjour.txt -o bonjour_latin1.txt
 
 La commande `iconv -l` permet de lister l'ensemble des jeux codes connus et supportés.
 
-La situation concernant l'encodage des caractères n'est pas encore stable. Les problèmes se régleront probablement avec l'uniformisation Unicode. Mais, il y a des risques dans le cas d'échange entre systèmes hétérogènes. Cela concerne notamment :
+UTF-8 est aujourd'hui très largement majoritaire, mais on rencontre encore des fichiers dans d'autres encodages (anciens fichiers, exports de logiciels, fichiers Windows). Il y a donc des risques dans le cas d'échange entre systèmes hétérogènes. Cela concerne notamment :
 
 - l'utilisation des flux de texte dans les programmes
 - les échanges sur internet
@@ -1221,7 +1223,7 @@ $ pwd
 $ touch vide
 
 $ ls -l vide
--rw-r--r-- 1 fab fab 0 2010-07-17 15:56 vide
+-rw-rw-r-- 1 fab fab 0 sept.  2 18:30 vide
 
 $ file vide
 vide: empty
@@ -1232,7 +1234,7 @@ vide: empty
 ```bash
 $ echo "Hello world" > bonjour.txt
 $ ls -l bonjour.txt
--rw-r--r-- 1 fab fab 12 2010-07-17 15:55 bonjour.txt
+-rw-rw-r-- 1 fab fab 12 sept.  2 18:31 bonjour.txt
 
 $ file bonjour.txt
 bonjour.txt: ASCII text
@@ -1320,7 +1322,7 @@ $ cat bonjour.txt
 
 `vi` est l'éditeur de texte standard d'Unix et il a été l'éditeur favori de nombreux hackers jusqu'à l'arrivée d'Emacs en 1984. Tout système se conformant aux spécifications Unix intègre `vi` et il est donc encore largement utilisé par les utilisateurs (surtout les administrateurs et programmeurs) des différentes variantes d'Unix.
 
-La version incluse actuellement dans les Linux est le plus souvent `vim` (*vi improved*), un clone de `vi` qui comporte quelques différences avec celui-ci. `vi`/`vim` comprend trois modes de fonctionnement : le mode normal, le mode commande et le mode insertion. Après le lancement de `vi`/`vim`, c'est le mode normal qui est actif. Pour passer en mode insertion (de texte évidemment) il faut appuyer sur la touche `i` ou `o`. On sait que l'on est en mode insertion par l'affichage de `INSERT` en bas de la fenêtre. Pour sortir de ce mode, il faut appuyer sur la touche `Esc` et l'affichage de `INSERT` en bas de la fenêtre disparaît. Pour passer en mode commande, il faut taper ':'.
+La version incluse actuellement dans les Linux est le plus souvent `vim` (*vi improved*), un clone de `vi` qui comporte quelques différences avec celui-ci. `vi`/`vim` comprend trois modes de fonctionnement : le mode normal, le mode commande et le mode insertion. Après le lancement de `vi`/`vim`, c'est le mode normal qui est actif. Pour passer en mode insertion (de texte évidemment) il faut appuyer sur la touche `i` ou `o`. On sait que l'on est en mode insertion par l'affichage de `-- INSERT --` (`-- INSERTION --` en français) en bas de la fenêtre. Pour sortir de ce mode, il faut appuyer sur la touche `Esc` et cet affichage disparaît. Pour passer en mode commande, il faut taper ':'.
 
 **Quelques commandes intéressantes :**
 
@@ -1342,19 +1344,19 @@ H                    : se déplacer en haut de l'écran
 L                    : se déplacer en bas de l'écran
 M                    : se déplacer au milieu de l'écran
 z.                   : décaler l'affichage avec la ligne courante au centre
-z (return)           : décaler l'affichage avec la ligne courante en haut
-z-                   : décaler l'affichage pour que la ligne courante
+z (Entrée)           : décaler l'affichage avec la ligne courante en haut
+z-                   : décaler l'affichage avec la ligne courante en bas
 :num_ligne           : se déplacer à la ligne num_ligne
 G (ou :$)            : aller à la fin du fichier
 u                    : annulation de la dernière modification
 dd                   : suppression de la ligne courante
-2dd                  : suppression des deux lignes suivantes
+2dd                  : suppression de la ligne courante et de la suivante
 D                    : suppression de la fin de la ligne à partir du curseur
 :3,7 d               : suppression des lignes 3 à 7
 :3,7 t 10            : copie des lignes 3 à 7 après la ligne 10
 :3,7 m 10            : transfert des lignes 3 à 7 après la ligne 10
 yy                   : mémorisation de la ligne courante (copier)
-3yy                  : mémorisation des 3 lignes suivantes (copier)
+3yy                  : mémorisation de la ligne courante et des 2 suivantes (copier)
 p                    : copie ce qui a été mémorisé après le curseur
 P                    : copie ce qui a été mémorisé avant le curseur
 :set nu              : affichage des numéros de ligne
@@ -1382,7 +1384,7 @@ $ cp /etc/passwd .
 $ ls
 ```
 
-> **Remarque** : le fichier `passwd` contient la liste des utilisateurs de la machine (sans les mots de passe) et le répertoire `/etc` contient l'ensemble des fichiers de configuration de la machine (ce sont tous des fichiers textes ASCII)
+> **Remarque** : le fichier `passwd` contient la liste des utilisateurs de la machine (sans les mots de passe) et le répertoire `/etc` contient l'ensemble des fichiers de configuration de la machine (ce sont presque tous des fichiers texte)
 
 ```bash
 # Faire une copie de sauvegarde d'un fichier :
@@ -1416,7 +1418,7 @@ $ find $HOME -name "*.txt" -exec ls -l {} \;
 $ rm listeUtilisateurs.txt
 ```
 
-> **Remarque** : l'option `-f` force la suppression (sans demander de confirmation) et celui-ci a été supprimé de manière définitive!
+> **Remarque** : le fichier a été supprimé de manière définitive (il n'y a pas de corbeille en ligne de commande) ! L'option `-f` force la suppression, sans jamais demander de confirmation.
 
 ```bash
 # Copier un répertoire :
@@ -1562,8 +1564,8 @@ En plus de ces droits de base, il existe aussi des droits spéciaux pour les fic
 C'est grâce au bit *SUID* que `sudo` permet d'exécuter des commandes en "*root*" :
 
 ```bash
-$ ls -l /usr/bin/sudo
--rwsr-xr-x 2 root root 70K mars  12 17:35 /usr/bin/sudo
+$ ls -lh /usr/bin/sudo
+-rwsr-xr-x 1 root root 276K mars  12 17:35 /usr/bin/sudo
 ```
 
 ```mermaid
@@ -1582,7 +1584,7 @@ sequenceDiagram
 
 Des droits spéciaux s'appliquent aussi pour les répertoires :
 
-- le droit `s` (dans le bloc `g`) : (*SGID bit*) lorsqu'un répertoire sera créé, il le sera avec le GID du répertoire parent et non avec celui du propriétaire qui le crée (modification du fonctionnement par défaut et permet un travail collaboratif)
+- le droit `s` (dans le bloc `g`) : (*SGID bit*) lorsqu'un fichier ou un sous-répertoire sera créé dans ce répertoire, il le sera avec le GID du répertoire et non avec le groupe principal de l'utilisateur qui le crée (modification du fonctionnement par défaut et permet un travail collaboratif)
 - le droit `t` (dans le bloc `o`) : (*sticky bit*) seul le propriétaire d'un fichier pourra le supprimer (restriction du droit `w` pour tous)
 
 C'est le cas du répertoire `/tmp`, où tout le monde peut écrire mais où chacun ne peut supprimer que ses propres fichiers :
@@ -1682,6 +1684,8 @@ u=rwx,g=rx,o=rx
 # Exemple : 2 -> 010 soit r-x (le droit w sera bloqué par le masque)
 ```
 
+> **Remarque** : sur Ubuntu et Debian, le masque par défaut d'un utilisateur est souvent `0002` (chaque utilisateur a son propre groupe privé) : les fichiers sont alors créés en `rw-rw-r--` et les répertoires en `rwxrwxr-x`, comme dans les exemples de la partie [Manipuler des fichiers](#manipuler-des-fichiers).
+
 Un fichier est toujours créé par un programme : une commande (`touch`, `cat`, `cp`, ...), un éditeur (`vim`, `geany`, ...), un compilateur (`gcc`), ou tout autre application (`nautilus`, `syslog`, ...).
 
 **Exemple :**
@@ -1705,7 +1709,7 @@ flowchart LR
 
 Lors de la copie d'un fichier, c'est le même principe qui est appliqué en utilisant cette fois les droits du fichier source. Il existe des options (`-p`, `-a`, ...) qui modifient ce comportement et permettent de préserver les propriétés du fichier source.
 
-> **Remarque** : par contre si le fichier destination existe (écrasement), le masque n'est pas utilisé et à la place on utilise les droits du fichier destination : droits fichier source & droits fichier destination
+> **Remarque** : par contre si le fichier destination existe (écrasement), son contenu est remplacé mais ses droits ne changent pas : le fichier destination conserve ses propres droits (sauf avec les options `-p` ou `-a`).
 
 ### Changer de propriétaire : chown et chgrp
 
@@ -1753,8 +1757,10 @@ En savoir plus : `$ man 7 regex`
 ?         désigne un caractère quelconque
 [...]     désigne un caractère quelconque appartenant à la liste
 [!...]    désigne une liste de caractères à exclure
-{...,...} désigne une liste de caractères (une chaîne)
+{...,...} génère une liste de mots (voir la remarque ci-dessous)
 ```
+
+> **Remarque** : les accolades ne sont pas un motif de noms de fichiers : `{a,b,c}` produit tous les mots de la liste, que les fichiers correspondants existent ou non (`echo fichier{1,2,3}.txt` affiche `fichier1.txt fichier2.txt fichier3.txt` ; `mkdir -p projet/{src,doc}` crée deux répertoires). Enfin, si aucun fichier ne correspond à un motif, bash le transmet tel quel à la commande.
 
 **Exemples :**
 
@@ -1771,6 +1777,7 @@ $ ls *.?
 abc.s  codage.c
 
 $ ls ?.?
+ls: impossible d'accéder à '?.?': Aucun fichier ou dossier de ce nom
 
 $ ls f*
 fichier.txt
@@ -1808,7 +1815,7 @@ Les expressions régulières (*regular expressions*) sont beaucoup utilisées so
 *         remplace zéro fois ou n fois le caractère qui le précède
 \+        remplace 1 fois ou n fois le caractère qui le précède
 \?        remplace zéro fois ou une fois le caractère qui le précède
-\b        désigne la chaîne vide (en début ou en fin de ligne)
+\b        désigne une limite de mot (le début ou la fin d'un mot)
 [...]     désigne un caractère quelconque appartenant à la liste
 ^         désigne le début de la ligne
 $         désigne la fin de la ligne
@@ -1844,6 +1851,8 @@ $         désigne la fin de la ligne
 | `(...)` | groupement | `(détecté)` | « détecté » | « détect », « détectés » |
 | `^` | début de ligne | `^a` | « a » en début de ligne | « ba » |
 | `$` | fin de ligne | `a$` | « a » en fin de ligne | « ab » |
+
+Dans ces tableaux, « correspond à » s'entend pour la chaîne entière. Attention : `grep` cherche le motif n'importe où dans la ligne. La ligne « totoo » est donc affichée par `grep -E 'toto?'`, car elle contient « toto » ; pour imposer la ligne entière, on encadre le motif par `^` et `$` (`grep -E '^toto?$'`).
 
 Entre crochets `[]`, les caractères spéciaux perdent leur signification : `[.?*]` désigne l'un des trois caractères « . », « ? » ou « * ». Pour neutraliser un caractère spécial ailleurs, il faut l'« échapper » en le faisant précéder d'un `\` (anti-slash). Enfin, les groupes placés entre `(` et `)` peuvent être rappelés par leur numéro d'ordre précédé de `\` : `\1`, `\2`, ...
 
@@ -1903,7 +1912,7 @@ Il est possible d'annuler l'interprétation d'un caractère spécial ou de contr
 ```
 \         : l'antislash annule la signification du caractère suivant
 '...'     : les simples quotes annulent tous les caractères
-"..."     : les doubles quotes annulent tous les caractères sauf ', \ et $
+"..."     : les doubles quotes annulent tous les caractères sauf ` (accent grave), \ et $
 ```
 
 ### Les filtres grep, sed et awk
@@ -1925,7 +1934,7 @@ D'autres classes POSIX sont disponibles : `[:alpha:]` (lettres), `[:alnum:]` (le
 ```
 1d                     : supprime la première ligne de l'entrée.
 /^$/d                  : supprime toutes les lignes vides.
-/Linux/p               : affiche seulement les lignes contenant Linux
+/Linux/p               : affiche seulement les lignes contenant Linux (avec l'option -n : sed -n '/Linux/p')
 s/Windows/Linux/       : substitue Linux à chaque première instance de Windows
 s/Windows/Linux/g      : substitue Linux à chaque instance de Windows
 s/ *$//                : supprime tous les espaces à la fin de toutes les lignes.
@@ -1937,8 +1946,8 @@ s/Windows //g          : supprime toutes les instances de Windows, en laissant l
 `awk` est un langage d'examen et de traitement de motifs. `awk` possède un langage de manipulation de texte plein de fonctionnalités avec une syntaxe proche du C. `awk` découpe chaque ligne d'entrée en champs. Par défaut, un champ est une chaîne de caractères consécutifs délimités par des espaces (bien qu'il existe des options pour changer le délimiteur). `awk` analyse et opère sur chaque champ, ce qui le rend idéal pour gérer des fichiers texte structurés, particulièrement des tableaux, des données organisées en ensembles cohérents, tels que des lignes et des colonnes.
 
 ```bash
-# Taille des partitions montées :
-$ df | sed 1d | awk '{print $1 " = " $2}'
+# Taille des partitions montées (sed 1d supprime la ligne d'en-tête) :
+$ df -h | sed 1d | awk '{print $1 " = " $2}'
 /dev/sda5 = 12G
 /dev/sda7 = 34G
 /dev/sda1 = 100M
@@ -1946,7 +1955,7 @@ $ df | sed 1d | awk '{print $1 " = " $2}'
 /dev/sda4 = 51G
 
 # Espace disponible sur les partitions montées :
-$ df | sed 1d | awk '{print $1 " = " $4}'
+$ df -h | sed 1d | awk '{print $1 " = " $4}'
 /dev/sda5 = 912M
 ...
 
@@ -1963,12 +1972,12 @@ $ getent passwd | grep bash
 # Remplacer le shell bash par le shell csh pour tous les utilisateurs :
 $ getent passwd | grep bash | sed 's/bash/csh/g'
 
-# Afficher toutes les lignes contenant au moins une occurrence de bash ou sh:
-$ getent passwd | grep '\(bash\|sh\)\+'
+# Afficher les comptes dont le shell se termine par bash ou sh :
+$ getent passwd | grep '\(bash\|sh\)$'
 
 # Exploiter un motif :
-$ echo "thierry.vaira@orange.fr" | sed 's/\(.*\)\@\(.*\)/nom:\1 domain:\2/'
-nom:thierry.vaira domain:orange.fr
+$ echo "prenom.nom@example.fr" | sed 's/\(.*\)@\(.*\)/nom:\1 domain:\2/'
+nom:prenom.nom domain:example.fr
 
 # Extraire les adresses IPv4 de la machine :
 $ ip -4 addr | grep -Eo "([0-9]{1,3}\.){3}[0-9]{1,3}"
@@ -2030,7 +2039,7 @@ $ chmod ugo+x script.sh
 
 # Vérification
 $ ls -l script.sh
--rwxr-xr-x 1 fab fab 38 2010-08-05 11:22 script.sh
+-rwxr-xr-x 1 fab fab 37 sept.  5 11:22 script.sh
 
 # Exécution du script
 $ ./script.sh
@@ -2059,8 +2068,8 @@ je suis un script
   ```
 - utiliser une fonction de lancement de commande du *shell* :
   ```bash
-  $ ./monscript
   $ source monscript
+  $ . monscript
   ```
 
 La différence est importante : `./monscript` et `sh monscript` exécutent le script dans un **nouveau processus** (un sous-shell), alors que `source` l'exécute dans le **shell courant**.
@@ -2174,7 +2183,7 @@ $ echo ${#PASSWORD}
 6
 
 # Fixer la valeur par défaut d'une variable nulle :
-$ echo ${nom_utilisateur:='whoami'}
+$ echo ${nom_utilisateur:=$(whoami)}
 
 # Utiliser des tableaux :
 $ tableau[1]=fab
@@ -2215,7 +2224,7 @@ $ echo $NOM_FICHIER
 toto.txt
 
 # Afficher le chemin absolu de son répertoire personnel :
-$ getent passwd | grep $(whoami) | cut -d: -f6
+$ getent passwd | grep "^$(whoami):" | cut -d: -f6
 $ echo $HOME
 ```
 
@@ -2348,7 +2357,7 @@ printf "Un message : hello %s\n" $CHAINE
 Pour réaliser la saisie sur le périphérique d'entrée (généralement le clavier), on utilisera `read` :
 
 ```bash
-#!/bin/sh
+#!/bin/bash
 # Saisie du nom
 echo -n "Entrez votre nom: "
 read nom
@@ -2363,6 +2372,8 @@ echo $TOUCHE
 exit 0
 ```
 
+> **Remarque** : les options `-s`, `-n` et `-t` de `read` sont propres à `bash` : avec `#!/bin/sh` (qui lance `dash` sur Debian et Ubuntu), ce script échouerait (`read: Illegal option -s`).
+
 ### Les commandes internes utiles
 
 Un certain nombre de commandes sont exécutées directement par le shell et ne sont pas des programmes externes (`help` affiche leur aide). Les plus utiles dans un script :
@@ -2376,7 +2387,7 @@ Un certain nombre de commandes sont exécutées directement par le shell et ne s
 - `export`, `unset` : exportent ou suppriment une variable ;
 - `source` (ou `.`) : exécute un script dans le shell courant.
 
-Quelques commandes externes sont aussi très utilisées dans les scripts : `test` (tests sur les fichiers, les chaînes de caractères et les nombres), `expr` (évaluation d'expressions) et `bc` (calculatrice pour des calculs complexes ou sur des réels).
+Quelques autres commandes sont aussi très utilisées dans les scripts : `test` (tests sur les fichiers, les chaînes de caractères et les nombres, commande interne de bash qui existe aussi en commande externe `/usr/bin/test`), et les commandes externes `expr` (évaluation d'expressions) et `bc` (calculatrice pour des calculs complexes ou sur des réels).
 
 ### Les tests et conditions
 
@@ -2623,7 +2634,7 @@ done
 
 # shell script : for3.sh
 # Autres boucles for simples
-for PLANETE in Mercure Vénus Terre Mars Jupiter Saturne Uranus Neptune Pluton
+for PLANETE in Mercure Vénus Terre Mars Jupiter Saturne Uranus Neptune
 do
     echo $PLANETE
 done
@@ -2724,7 +2735,7 @@ Les fonctions permettent l'appel de commandes dans l'environnement courant (part
 
 **Les propriétés des fonctions sont :**
 
-- passage de paramètres possibles (`$0` `$1` `$2`...) ;
+- passage de paramètres possibles (`$1` `$2`... et `$#` ; `$0` reste le nom du script) ;
 - variables locales possibles ;
 - rapidité car la fonction est lue à la déclaration et non à l'exécution ;
 - retourner une valeur de retour (`return`).
@@ -2884,7 +2895,7 @@ h) $ echo "fin" >> bonjour.txt                        : ajoute la chaîne "fin" 
 i) $ md5sum -c bonjour.md5                            : vérifie un hachage MD5
 j) $ touch bonjour.txt                                : met à jour l'horodatage du fichier
 k) $ cat bonjour.txt | tr -s ' ' '.'                  : affiche le contenu en remplaçant
-                                                         tous les espaces par des points
+                                                         chaque suite d'espaces par un seul point
 ```
 
 ---
@@ -2904,7 +2915,7 @@ Voici quelques répertoires usuels à la racine d'un système GNU/Linux :
 /dev       : fichiers spéciaux d'accès aux périphériques
 
 /etc       : fichiers de configuration système spécifiques à la machine
-             (ce sont tous des fichiers textes ASCII)
+             (ce sont presque tous des fichiers texte)
 
 /home      : répertoires personnels des utilisateurs
 
