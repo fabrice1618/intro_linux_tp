@@ -910,8 +910,13 @@ def e8_script():
 def e9_myvar():
     valeur = os.environ.get("MYVAR")
     if valeur:
+        if REPONSES.get("9.myvar") != valeur:
+            enregistrer_reponse("9.myvar", valeur)   # validée une fois : reste acquise dans un autre terminal
         return OK(f"MYVAR = « {valeur} », reçue de votre shell",
                   "Ce script est un processus ENFANT de votre shell : il ne reçoit que les variables exportées.")
+    if "9.myvar" in REPONSES:
+        return OK(f"MYVAR exportée (validée lors d'une vérification précédente : « {REPONSES['9.myvar']} »)",
+                  "Dans ce terminal, MYVAR n'est pas exportée : chaque terminal a son propre shell.")
     if valeur == "":
         return KO("MYVAR est exportée mais vide", "Donnez-lui une valeur.")
     return KO("MYVAR n'est pas visible par ce script",
