@@ -72,14 +72,20 @@ EOF
 cat > data/salut.sh <<'EOF'
 #!/usr/bin/env bash
 echo "Bonjour $USER ! Le script $0 s'exécute."
-echo "Ses permissions : $(stat -c '%a (%A)' "$0")"
+echo "Ses permissions : $(ls -l "$0" | cut -c1-10)"
 EOF
 chmod 644 data/salut.sh
 
 # Espace de travail : les autres dossiers sont créés par l'étudiant à l'étape 3
 mkdir -p workspace/preuves workspace/.verify
 # Empreintes des données : verify.py signale si data/ a été modifié par erreur
-(cd data && find . -type f -print0 | sort -z | xargs -0 sha256sum) > workspace/.verify/data.sha256
+# (sha256sum sous Linux, shasum -a 256 sous macOS : même format de sortie)
+if command -v sha256sum >/dev/null 2>&1; then
+    somme() { sha256sum "$@"; }
+else
+    somme() { shasum -a 256 "$@"; }
+fi
+(cd data && find . -type f | LC_ALL=C sort | while IFS= read -r f; do somme "$f"; done) > workspace/.verify/data.sha256
 
 chmod +x verify.py || true
 echo "Préparation terminée."
